@@ -19,7 +19,7 @@
 export default {
     methods: {
         addNewContact(){
-            // this.$router.push({name: 'new-contact'});
+            this.$router.push({name: 'new-contact'});
         }
     }
 }

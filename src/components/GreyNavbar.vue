@@ -1,5 +1,6 @@
 <template>
     <nav class="navbar">
+        
         <img src="../assets/white-logo.svg" />
         <img src="../assets/images/menu.svg" />
     </nav>
@@ -7,14 +8,13 @@
 
 <style lang="scss" scoped>
     nav.navbar{
-        background-color: $primary;
+        background-color: $accent;
         padding: 15px 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         position: fixed;
         width: 100%;
-        z-index: 10;
 
         img{
             height: 20px;

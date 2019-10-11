@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from './views/Home.vue';
 import Onboard from './views/Onboard.vue';
 import Auth from './views/Auth.vue';
+import FullScreen from './views/FullScreen.vue';
 
 Vue.use(Router)
 
@@ -31,31 +32,35 @@ export default new Router({
                 name: 'register-name',
                 component: () => import( /* webpackChunkName: "auth" */ './views/auth/RegisterName.vue')
             }, ]
-        },
-        {
+        }, {
             path: '/home',
             component: Home,
             children: [{
-                path: '',
-                name: 'home',
-                component: () => import( /* webpackChunkName: "home" */ './views/home/Activity.vue')
-            }, 
-            {
-                path: 'topup',
-                name: 'topup',
-                component: () => import( /* webpackChunkName: "home" */ './views/home/Topup.vue')
-            }, 
-            {
-                path: 'contacts',
-                name: 'contacts',
-                component: () => import( /* webpackChunkName: "home" */ './views/home/Contacts.vue')
-            },
-            // {
-            //     path: 'register-name',
-            //     name: 'register-name',
-            //     component: () => import( /* webpackChunkName: "home" */ './views/home/RegisterName.vue')
-            // }, 
-        ]
+                    path: '',
+                    name: 'home',
+                    component: () => import( /* webpackChunkName: "home" */ './views/home/Activity.vue')
+                },
+                {
+                    path: 'topup',
+                    name: 'topup',
+                    component: () => import( /* webpackChunkName: "home" */ './views/home/Topup.vue')
+                },
+                {
+                    path: 'contacts',
+                    name: 'contacts',
+                    component: () => import( /* webpackChunkName: "home" */ './views/home/Contacts.vue')
+                },
+            ]
+        },
+        {
+            path: '/',
+            component: FullScreen,
+            children: [{
+                    path: 'contact/new',
+                    name: 'new-contact',
+                    component: () => import( /* webpackChunkName: "contact" */ './views/contact/NewContact.vue')
+                },
+            ]
         },
 
     ]
