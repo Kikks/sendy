@@ -5,7 +5,7 @@
         </div>
         <div class="card-holder elevate">
             <div>
-                <h1>Enter your Verification code</h1>
+                <h1>Enter your verification code</h1>
             </div>
             <tl-input/>
             <div class="row align-items-center">

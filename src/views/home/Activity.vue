@@ -10,12 +10,35 @@
             </div>
         </div>
         <div class="recent-activity">
-            <h2>Recent Actions</h2>
+            <h2 class="mb-4">Recent Actions</h2>
+            <div v-for="(n, i) in 7" :key="i" class="activityRow">
+                <div class="row activityRowf">
+                    <div class="col-6 blue">
+                        Airtime Sent
+                    </div>
+                    <div class="col-6 text-right red">
+                        NGN6,000
+                    </div>
+                </div>
+                <div class="row activityRows">
+                    <div class="col-6">
+                    30 Sep, 2019
+                    </div>
+                    <div class="col-6 text-right">
+                        Cashier Group
+                    </div>
+                </div>
+                 <hr>
+            </div>
+           
         </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
+// hr{
+//     margin-top: 50px;
+// }
     .activity{
         background-color: $primary;
         min-height: 100vh;
@@ -41,6 +64,22 @@
         background-color: white;
         height: 800px;
         border-radius: 20px 20px 0px 0px;  
+        .activityRow{
+            padding:5px 0;
+            // background-color: red;
+            .activityRowf{
+                .red{
+                    color:#F43939;
+                }
+                .blue{
+                    color:#030039
+                }
+            }
+            .activityRows{
+                color:lightgray;
+                font-size:14px;
+            }
+        }
 
         h2{
             font-size: 17px;
