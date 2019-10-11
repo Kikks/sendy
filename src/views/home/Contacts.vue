@@ -9,15 +9,16 @@
                     <button class="addBtn" @click="addNewContact()">+ Add New</button>
                 </div>
             </div>
-                <div class="row switcher">
-                    <div @click="tab=!tab" class="col-6 switch" :class="tab ? 'active':''">
-                        Individuals
-                    </div>
-                    <div @click="tab=!tab" class="col-6 switch" :class="!tab ? 'active':''">
-                        Groups
-                    </div>
+            <div class="switcher my-1">
+                <div @click="tab=true" class="switch" :class="tab ? 'active':''">
+                    Individuals
                 </div>
-             <div v-for="(contact, i) in contacts" :key="i" class="activityRow">
+                <div @click="tab=false" class="switch" :class="!tab ? 'active':''">
+                    Groups
+                </div>
+            </div>
+
+             <div v-for="(contact, i) in filteredContacts" :key="i" class="activityRow">
                 <div class="row firstRow">
                     <div class="col-6 blue">
                        {{contact.name}}
@@ -29,14 +30,14 @@
                 </div>
                 <div class="row secondRow">
                     <div class="col-6 blue">
-                        {{contact.number}}
+                        <span v-if="tab">{{contact.number}}</span>
+                        <span v-else>{{contact.recipients}} Recipients</span>
                     </div>
                     <div class="col-6 text-right">
                         {{contact.duration}}
                     </div>
                 </div>
             </div>
-
             
         </div>
     </div>
@@ -46,58 +47,69 @@
 export default {
     data(){
         return{
-            tab:true,
+            tab: true,
             contacts:[
                 {
                     name:'My Number',
                     amount:5000,
                     number:+2348092345676,
-                    duration:'monthly'
+                    duration:'Monthly'
                 },
                 {
                     name:'Wife',
                     amount:4000,
-                   number:+2348092345676,
-                    duration:'monthly'
+                    number:+2348092345676,
+                    duration:'Monthly'
                 },
                 {
                     name:'Nathan',
                     amount:3000,
                     number:+2348092345676,
-                    duration:'weekly'
+                    duration:'Weekly'
                 },
                 {
                     name:'Joshua',
                     amount:500,
                     number:+2348092345676,
-                    duration:'monthly'
+                    duration:'Monthly'
                 },
-                // {
-                //     name:'My Number',
-                //     amount:5000,
-                //     recipients: 10,
-                //     duration:'monthly'
-                // },
-                // {
-                //     name:'Wife',
-                //     amount:4000,
-                //     recipients: 10,
-                //     duration:'monthly'
-                // },
-                // {
-                //     name:'My Number',
-                //     amount:5000,
-                //     recipients: 10,
-                //     duration:'monthly'
-                // },
-                // {
-                //     name:'My Number',
-                //     amount:5000,
-                //     recipients: 10,
-                //     duration:'monthly'
-                // },
+                {
+                    name:'Fellowship Group',
+                    amount:5000,
+                    recipients: 10,
+                    duration:'Monthly'
+                },
+                {
+                    name:'Cashier Group',
+                    amount:4000,
+                    recipients: 10,
+                    duration:'Monthly'
+                },
+                {
+                    name:'National Commitee',
+                    amount:5000,
+                    recipients: 10,
+                    duration:'Monthly'
+                },
+                {
+                    name:'Receptionists',
+                    amount:5000,
+                    recipients: 10,
+                    duration:'Monthly'
+                },
             ]
         }
+    },
+    computed: {
+        filteredContacts(){
+            return this.contacts.filter(contact => {
+                if(contact.recipients && !this.tab){
+                    return true;
+                }else if(!contact.recipients && this.tab){
+                    return true;
+                }
+            }); 
+        },
     },
     methods: {
         addNewContact(){
@@ -122,21 +134,25 @@ export default {
         h2{
             font-size: 17px;
         }
-       .switcher{
-           border:1px solid blue;
-           border-radius:5px;
-           text-align:center;
-           .switch{
-               padding:10px 0;
-               color:#006FFF;
-           }
-           .active{
-               background-color:#006FFF;
-               color: #FFFFFF; 
-            //    border:1px solid blue;
-                // border-radius:5px;
-           }
-       }
+        .switcher{
+            border: 1px solid $primary;
+            border-radius: 5px;
+            text-align: center;
+            display: flex;
+
+            .switch{
+                flex: 1;
+                padding: 4px 0;
+                color: $primary;
+                font-size: 16px;
+            }
+            .active{
+                background-color: $primary;
+                color: #FFFFFF; 
+                //    border:1px solid blue;
+                    // border-radius:5px;
+            }
+        }
         .activityRow{
             padding: 20px 0;
             border-bottom: 0.5px solid #E6EDFF;

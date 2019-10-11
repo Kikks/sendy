@@ -16,10 +16,10 @@
             <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
             <div class="row mt-4">
                 <div class="col-6">
-                    <tl-input placeholder="Save Date" />
+                    <tl-input placeholder="Save Date" type="date" />
                 </div>
                 <div class="col-6">
-                    <tl-input placeholder="End Date" />
+                    <tl-input placeholder="End Date" type="date" />
                 </div>
             </div>
 

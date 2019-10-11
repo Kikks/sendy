@@ -5,7 +5,7 @@
                 <h1>Enter your phone number</h1>
             </div>
 
-           <tl-input type="number" class="mb-5" placeholder="Phone"/>
+           <tl-input type="tel" class="mb-5" placeholder="Phone"/>
 
             <div class="text-right">
                 <div class="round-btn" @click="gotoNext()">
