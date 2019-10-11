@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue';
+import Onboard from './views/Onboard.vue';
 import Auth from './views/Auth.vue';
 
 Vue.use(Router)
@@ -10,8 +11,8 @@ export default new Router({
     base: process.env.BASE_URL,
     routes: [{
             path: '/',
-            name: 'home',
-            component: Home
+            name: 'onboard',
+            component: Onboard
         },
         {
             path: '/auth',
@@ -30,6 +31,25 @@ export default new Router({
                 name: 'register-name',
                 component: () => import( /* webpackChunkName: "auth" */ './views/auth/RegisterName.vue')
             }, ]
+        },
+        {
+            path: '/home',
+            component: Home,
+            children: [{
+                path: '',
+                name: 'home',
+                component: () => import( /* webpackChunkName: "home" */ './views/home/Activity.vue')
+            }, 
+            // {
+            //     path: 'verify',
+            //     name: 'verify',
+            //     component: () => import( /* webpackChunkName: "home" */ './views/home/Verify.vue')
+            // }, {
+            //     path: 'register-name',
+            //     name: 'register-name',
+            //     component: () => import( /* webpackChunkName: "home" */ './views/home/RegisterName.vue')
+            // }, 
+        ]
         },
 
     ]

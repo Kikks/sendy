@@ -10,7 +10,7 @@
             </p>
 
             <div class="text-right">
-                <button class="round-btn">
+                <button class="round-btn" @click="gotoNext()">
                     <icon name="arrow-right" />
                 </button>
             </div>
@@ -22,6 +22,11 @@
 
 export default {
   name: 'registername',
+  methods: {
+      gotoNext(){
+          this.$router.push({name: 'home'});
+      }
+  }
 }
 </script>
 
