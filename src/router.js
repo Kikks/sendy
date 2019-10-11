@@ -56,11 +56,14 @@ export default new Router({
             path: '/',
             component: FullScreen,
             children: [{
-                    path: 'contact/new',
-                    name: 'new-contact',
-                    component: () => import( /* webpackChunkName: "contact" */ './views/contact/NewContact.vue')
-                },
-            ]
+                path: 'contact/new',
+                name: 'new-contact',
+                component: () => import( /* webpackChunkName: "home" */ './views/contact/NewContact.vue')
+            }, {
+                path: 'send-airtime',
+                name: 'send-airtime',
+                component: () => import( /* webpackChunkName: "home" */ './views/airtime/SendAirtime.vue')
+            }, ]
         },
 
     ]

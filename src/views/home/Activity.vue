@@ -4,7 +4,7 @@
             <h3 class="mb-3">Wallet Balance</h3>
             <h1 class="mb-4">NGN4,000</h1>
             <div class="px-5">
-                <button class="btn outline">
+                <button class="btn outline" @click="gotoAirtime()">
                     Send Airtime
                 </button>
             </div>
@@ -68,6 +68,11 @@ export default {
                     add: true,
                 },
             ]
+        }
+    },
+    methods: {
+        gotoAirtime(){
+            this.$router.push({name: "send-airtime"});
         }
     }
 }

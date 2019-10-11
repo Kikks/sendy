@@ -77,7 +77,7 @@ export default {
         button{
             border: none;
             background-color: transparent;
-            color: $accent;
+            color: $text-color;
         }
     }
 
