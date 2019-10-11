@@ -63,6 +63,18 @@ export default new Router({
                 path: 'send-airtime',
                 name: 'send-airtime',
                 component: () => import( /* webpackChunkName: "home" */ './views/airtime/SendAirtime.vue')
+            }, {
+                path: 'profile',
+                name: 'profile',
+                component: () => import( /* webpackChunkName: "home" */ './views/settings/Profile.vue')
+            }, {
+                path: 'security',
+                name: 'security',
+                component: () => import( /* webpackChunkName: "home" */ './views/settings/Security.vue')
+            }, {
+                path: 'about',
+                name: 'about',
+                component: () => import( /* webpackChunkName: "home" */ './views/settings/About.vue')
             }, ]
         },
 

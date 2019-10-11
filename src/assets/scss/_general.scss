@@ -133,3 +133,8 @@ input {
 .bg-accent {
     background-color: $accent;
 }
+
+.d-flex{
+    display: flex;
+    flex-direction: column;
+}
