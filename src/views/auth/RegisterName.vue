@@ -9,13 +9,12 @@
     
             <div class="row align-items-center mt-5">
                 <div class="col-6 text-left">
-                    Skip
+                    <button>Skip</button>
                 </div>
                 <div class="col-6 text-right">
-                    <button class="round-btn">
+                    <button class="round-btn" @click="gotoNext()">
                         <icon name="arrow-right" />
                     </button>
-                    
                 </div>
             </div>
         </div>
@@ -26,6 +25,11 @@
 
 export default {
   name: 'registername',
+  methods: {
+      gotoNext(){
+          this.$router.push({name: 'home'});
+      }
+  }
 }
 </script>
 

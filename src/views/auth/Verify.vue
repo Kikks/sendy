@@ -10,7 +10,7 @@
             <tl-input/>
             <div class="row align-items-center">
                 <div class="col-6 text-left">
-                    Resend
+                    <button>Resend</button>
                 </div>
                 <div class="col-6 text-right">
                     <button class="round-btn" @click="gotoNext()">

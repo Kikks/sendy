@@ -35,7 +35,7 @@ a {
 
 .btn{
     padding: 8px 10px;
-    border-radius: 5px;
+    border-radius: 6px;
     outline: none;
     border: 0px;
     background-color: $primary;
@@ -88,11 +88,11 @@ a {
         }
     }
     &.outline {
-        border-color: $primary;
+        border-color: white;
         background-color: transparent;
-        color: $primary !important;
+        color: white !important;
         &:hover{
-            background-color: transparentize($color: $primary, $amount: 0.9);
+            background-color: transparentize($color: white, $amount: 0.9);
         }
     }
 }

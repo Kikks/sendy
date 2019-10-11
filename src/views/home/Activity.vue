@@ -1,0 +1,49 @@
+<template>
+    <div class="activity">
+        <div class="header">
+            <h3 class="mb-3">Wallet Balance</h3>
+            <h1 class="mb-4">NGN4,000</h1>
+            <div class="px-5">
+                <button class="btn outline">
+                    Send Airtime
+                </button>
+            </div>
+        </div>
+        <div class="recent-activity">
+            <h2>Recent Actions</h2>
+        </div>
+    </div>
+</template>
+
+<style lang="scss" scoped>
+    .activity{
+        background-color: $primary;
+        min-height: 100vh;
+    }
+    .header{
+        background-color: $primary;
+        color: white;
+        text-align: center;
+        padding-top: 30px;
+        padding-bottom: 40px;
+        h3{
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        h1{
+            color: white;
+            font-weight: bold;
+        }
+    }
+    .recent-activity{
+        padding: 20px;
+        background-color: white;
+        height: 800px;
+        border-radius: 20px 20px 0px 0px;  
+
+        h2{
+            font-size: 17px;
+        }
+    }
+</style>

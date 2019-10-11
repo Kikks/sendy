@@ -1,22 +1,22 @@
 <template>
-	<div class="home px-4">
-		<div>
-			<img alt="Vue logo" src="../assets/logo.png">
-		</div>
-
-		<p>
-			Automate airtime for your loved ones and members of staff in a recurring manner
-		</p>
-
-		<button class="btn" @click="gotoNext">Start Sending</button>
+	<div class="home">
+        <Navbar />
+        <div style="height: 40px;"></div>
+        <router-view />
+        <BottomNavbar />
 	</div>
 </template>
 
 <script>
-// @ is an alias to /src
+import Navbar from "@/components/Navbar.vue";
+import BottomNavbar from "@/components/BottomNavbar.vue";
 
 export default {
   name: 'home',
+  components: {
+      Navbar,
+      BottomNavbar,
+  },
   methods: {
       gotoNext(){
           this.$router.push({name: 'signup'});
@@ -24,14 +24,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.home{
-    // border: 1px solid red;
-    text-align: center;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-	justify-content: space-around;
-}
-</style>
