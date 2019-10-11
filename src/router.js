@@ -40,11 +40,17 @@ export default new Router({
                 name: 'home',
                 component: () => import( /* webpackChunkName: "home" */ './views/home/Activity.vue')
             }, 
+            {
+                path: 'topup',
+                name: 'topup',
+                component: () => import( /* webpackChunkName: "home" */ './views/home/Topup.vue')
+            }, 
+            {
+                path: 'contacts',
+                name: 'contacts',
+                component: () => import( /* webpackChunkName: "home" */ './views/home/Contacts.vue')
+            },
             // {
-            //     path: 'verify',
-            //     name: 'verify',
-            //     component: () => import( /* webpackChunkName: "home" */ './views/home/Verify.vue')
-            // }, {
             //     path: 'register-name',
             //     name: 'register-name',
             //     component: () => import( /* webpackChunkName: "home" */ './views/home/RegisterName.vue')
