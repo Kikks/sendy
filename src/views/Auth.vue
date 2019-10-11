@@ -1,6 +1,8 @@
 <template>
 <div>
-    <div class="blue-back"></div>
+    <div class="blue-back">
+      
+    </div>
 
 	<router-view />
 </div>

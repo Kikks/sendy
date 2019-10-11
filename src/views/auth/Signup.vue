@@ -5,9 +5,7 @@
                 <h1>Enter your phone number</h1>
             </div>
 
-            <p>
-                Automate airtime for your loved ones and members of staff in a recurring manner
-            </p>
+           <tl-input label="Phone"/>
 
             <div class="text-right">
                 <button class="round-btn" @click="gotoNext()">
