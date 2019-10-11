@@ -11,21 +11,21 @@
         </div>
         <div class="recent-activity">
             <h2 class="mb-4">Recent Actions</h2>
-            <div v-for="(n, i) in 7" :key="i" class="activityRow">
+            <div v-for="(activity, i) in activities" :key="i" class="activityRow">
                 <div class="row activityRowf">
                     <div class="col-6 blue">
-                        Airtime Sent
+                       {{activity.description}}
                     </div>
-                    <div class="col-6 text-right red">
-                        NGN6,000
+                    <div class="col-6 text-right" :class="{red:activity.add, green:!activity.add}">
+                        NGN{{activity.amount}}
                     </div>
                 </div>
                 <div class="row activityRows">
                     <div class="col-6">
-                    30 Sep, 2019
+                   {{activity.date}}
                     </div>
                     <div class="col-6 text-right">
-                        Cashier Group
+                        {{activity.group}}
                     </div>
                 </div>
                  <hr>
@@ -34,7 +34,44 @@
         </div>
     </div>
 </template>
-
+<script>
+export default {
+    data(){
+        return{
+            activities:[
+                {
+                    description: 'Airtime Sent',
+                    amount: 6000,
+                    date: '30 Sep, 2019',
+                    group: 'Cashier Group',
+                    add: false,
+                },
+                {
+                    description: 'Wallet Top-up',
+                    amount: 10000,
+                    date: '26 Sep, 2019',
+                    group: 'Cashier Group',
+                    add: true,
+                },
+                {
+                    description: 'Airtime Sent',
+                    amount: 3000,
+                    date: '24 Sep, 2019',
+                    group: 'Cashier Group',
+                    add: false,
+                },
+                {
+                    description: 'Wallet Top-up',
+                    amount: 10000,
+                    date: '30 Sep, 2019',
+                    group: 'Cashier Group',
+                    add: true,
+                },
+            ]
+        }
+    }
+}
+</script>
 <style lang="scss" scoped>
 // hr{
 //     margin-top: 50px;
@@ -70,6 +107,9 @@
             .activityRowf{
                 .red{
                     color:#F43939;
+                }
+                .green{
+                    color: #54C100;
                 }
                 .blue{
                     color:#030039
