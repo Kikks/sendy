@@ -2,17 +2,21 @@
 	<div class="registername px-4">
         <div class="card-holder elevate">
             <div>
-                <h1>Enter your phone number</h1>
+                <h1>Personalize your experience</h1>
             </div>
-
-            <p>
-                Register
-            </p>
-
-            <div class="text-right">
-                <button class="round-btn">
-                    <icon name="arrow-right" />
-                </button>
+            <tl-input label="Full Name"/>
+            <tl-input label="Email"/>
+    
+            <div class="row align-items-center mt-5">
+                <div class="col-6 text-left">
+                    Skip
+                </div>
+                <div class="col-6 text-right">
+                    <button class="round-btn">
+                        <icon name="arrow-right" />
+                    </button>
+                    
+                </div>
             </div>
         </div>
 	</div>
