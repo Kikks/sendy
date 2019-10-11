@@ -1,7 +1,16 @@
 <template>
 	<div class="verify px-4">
-        <div class="verify-top text-center">
-            Please type the verification code sent to <span style="font-weight:bold">+234808***1500</span>
+        <div class="verify-top">
+            <div class="row align-items-center">
+                <div class="col-2">
+                    <div>
+                        <icon name="cellphone"></icon>
+                    </div>
+                </div>
+                <div class="col-10">
+                    Please type the verification code sent to <span style="font-weight:bold">+234808***1500</span>
+                </div>
+            </div>
         </div>
         <div class="card-holder elevate">
             <div class="mb-4">
