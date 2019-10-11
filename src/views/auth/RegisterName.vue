@@ -1,15 +1,16 @@
 <template>
 	<div class="registername px-4">
         <div class="card-holder elevate">
-            <div>
+            <div class="mb-4">
                 <h1>Personalize your experience</h1>
             </div>
-            <tl-input label="Full Name"/>
-            <tl-input label="Email"/>
+
+            <tl-input class="mb-4" placeholder="Full Name"/>
+            <tl-input type="email" class="mb-4" placeholder="Email"/>
     
             <div class="row align-items-center mt-5">
                 <div class="col-6 text-left">
-                    <button>Skip</button>
+                    <button @click="gotoNext()">Skip</button>
                 </div>
                 <div class="col-6 text-right">
                     <button class="round-btn" @click="gotoNext()">
@@ -39,8 +40,7 @@ export default {
         border-radius: 10px;
         background-color: white;
         padding: 50px 30px;
-        margin-top: 25vh;
-        min-height: 60vh;
+        margin-top: 20vh;
         display: flex;
         flex-direction: column;
         justify-content: space-between;

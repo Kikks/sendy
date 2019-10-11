@@ -19,7 +19,7 @@ export default {
 .blue-back{
     position: absolute;
     background-color: $primary;
-    min-height: 45vh;
+    min-height: 40vh;
     width: 100%;
     z-index: -1;
     top: 0;

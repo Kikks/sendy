@@ -1,16 +1,16 @@
 <template>
 	<div class="signup px-4">
         <div class="card-holder elevate">
-            <div>
+            <div class="mb-4">
                 <h1>Enter your phone number</h1>
             </div>
 
-           <tl-input label="Phone"/>
+           <tl-input type="number" class="mb-5" placeholder="Phone"/>
 
             <div class="text-right">
-                <button class="round-btn" @click="gotoNext()">
+                <div class="round-btn" @click="gotoNext()">
                     <icon name="arrow-right" />
-                </button>
+                </div>
             </div>
         </div>
 	</div>
@@ -34,8 +34,7 @@ export default {
         border-radius: 10px;
         background-color: white;
         padding: 50px 30px;
-        margin-top: 25vh;
-        min-height: 60vh;
+        margin-top: 20vh;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
