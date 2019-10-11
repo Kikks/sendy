@@ -12,23 +12,23 @@
         <div class="recent-activity">
             <h2 class="mb-4">Recent Actions</h2>
             <div v-for="(activity, i) in activities" :key="i" class="activityRow">
-                <div class="row activityRowf">
+                <div class="row firstRow">
                     <div class="col-6 blue">
                        {{activity.description}}
                     </div>
-                    <div class="col-6 text-right" :class="{red:activity.add, green:!activity.add}">
+                    <!-- <div class="col-6 text-right" :class="{red: !activity.add, green: activity.add}"> -->
+                    <div class="col-6 text-right" :class="activity.add ? 'green' : 'red'">
                         NGN{{activity.amount}}
                     </div>
                 </div>
-                <div class="row activityRows">
-                    <div class="col-6">
-                   {{activity.date}}
+                <div class="row secondRow">
+                    <div class="col-6 blue">
+                        {{activity.date}}
                     </div>
                     <div class="col-6 text-right">
                         {{activity.group}}
                     </div>
                 </div>
-                 <hr>
             </div>
            
         </div>
@@ -99,25 +99,24 @@ export default {
     .recent-activity{
         padding: 20px;
         background-color: white;
-        height: 800px;
+        min-height: 80vh;
         border-radius: 20px 20px 0px 0px;  
         .activityRow{
-            padding:5px 0;
-            // background-color: red;
-            .activityRowf{
-                .red{
-                    color:#F43939;
-                }
-                .green{
-                    color: #54C100;
-                }
-                .blue{
-                    color:#030039
-                }
+            padding: 20px 0;
+            border-bottom: 0.5px solid #E6EDFF;
+            .red{
+                color:#F43939;
             }
-            .activityRows{
-                color:lightgray;
-                font-size:14px;
+            .green{
+                color: #54C100;
+            }
+            .blue{
+                color:#030039
+            }
+
+            .secondRow{
+                font-size: 14px;
+                opacity: 0.5;
             }
         }
 
