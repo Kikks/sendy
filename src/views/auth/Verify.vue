@@ -1,12 +1,12 @@
 <template>
-	<div class="signup px-4">
+	<div class="verify px-4">
         <div class="card-holder elevate">
             <div>
                 <h1>Enter your phone number</h1>
             </div>
 
             <p>
-                Automate airtime for your loved ones and members of staff in a recurring manner
+                Verify
             </p>
 
             <div class="text-right">
@@ -21,17 +21,17 @@
 <script>
 
 export default {
-  name: 'signup',
+  name: 'verify',
   methods: {
       gotoNext(){
-          this.$router.push({name:"verify"});
+          this.$router.push({name:"register-name"});
       }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.signup{
+.verify{
     .card-holder{
         border-radius: 10px;
         background-color: white;

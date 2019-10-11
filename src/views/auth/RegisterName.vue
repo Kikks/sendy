@@ -1,16 +1,16 @@
 <template>
-	<div class="signup px-4">
+	<div class="registername px-4">
         <div class="card-holder elevate">
             <div>
                 <h1>Enter your phone number</h1>
             </div>
 
             <p>
-                Automate airtime for your loved ones and members of staff in a recurring manner
+                Register
             </p>
 
             <div class="text-right">
-                <button class="round-btn" @click="gotoNext()">
+                <button class="round-btn">
                     <icon name="arrow-right" />
                 </button>
             </div>
@@ -21,17 +21,12 @@
 <script>
 
 export default {
-  name: 'signup',
-  methods: {
-      gotoNext(){
-          this.$router.push({name:"verify"});
-      }
-  }
+  name: 'registername',
 }
 </script>
 
 <style lang="scss" scoped>
-.signup{
+.registername{
     .card-holder{
         border-radius: 10px;
         background-color: white;
