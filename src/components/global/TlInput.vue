@@ -2,7 +2,7 @@
     <div class="input-box mt-4">
         <label v-if="label" class="label">{{label}}</label>
         <div class="input-holder">
-            <input :type="typeToShow" v-model="myValue" />
+            <input :type="typeToShow" v-model="myValue" :placeholder="placeholder" />
 
             <icon v-if="icon" :name="icon" :size="iconSize" />
             <button v-if="type == 'password'" @click="togglePasswordVisible()">
@@ -32,6 +32,10 @@ export default {
             default: "text",
         },
         value: {
+            type: String,
+            default: "",
+        },
+        placeholder: {
             type: String,
             default: "",
         },

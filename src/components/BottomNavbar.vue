@@ -1,18 +1,18 @@
 <template>
     <div class="floating-tab">
         <div class="tabs">
-            <div class="tab active">
+            <router-link :to="{name: 'home'}" tag="div" class="tab" exact-active-class="active">
                 <icon name="home" />
                 <div class="text">Home</div>
-            </div>
-            <div class="tab">
+            </router-link>
+            <router-link :to="{name: 'topup'}" tag="div" class="tab" active-class="active">
                 <icon name="trending-up" />
                 <div class="text">Top up</div>
-            </div>
-            <div class="tab">
+            </router-link>
+            <router-link :to="{name: 'contacts'}" tag="div" class="tab" active-class="active">
                 <icon name="account-circle-outline" />
                 <div class="text">Contacts</div>
-            </div>
+            </router-link>
         </div>
     </div>
 </template>
