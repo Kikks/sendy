@@ -17,9 +17,14 @@
                 <tl-input class="mt-5" placeholder="Name" />
                 <tl-input class="mt-5" placeholder="Phone" type="tel" />
                 <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
+                <!-- <div class="num">
+                    <label>+234 <img src="flag.png" alt="flag">|</label>
+                    <input type="number" placeholder="Phone">
+                    <icon name="chevron-down"></icon>
+                </div> -->
             </div>
             <div v-else>
-                <tl-input class="mt-5" placeholder="Search Recipient" icon="search"/>
+                <tl-input class="mt-5" placeholder="Search Recipient" icon="magnify"/>
                 <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
             </div>
 
@@ -76,5 +81,19 @@ export default {
             left:3.5px;
             width:98%;
         }
+        // .num{
+        //     padding:10px 0;
+        //     margin-top:30px;
+        //     border-bottom:1px solid lightgray;
+        //     display:flex;
+        //     flex-direction: row;
+        //     align-items: center;
+        //     input{
+        //         border:none;
+        //         ::placeholder{
+        //             margin-left:60px;
+        //         }
+        //     }
+        // }
     }
 </style>

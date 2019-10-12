@@ -8,11 +8,11 @@
 
         <div class="new-contact">
             <p class="text-center">
-                Enter recipient's name, phone number and airtime frequency
+                Enter group name, phone numbers and airtime frequency
             </p>
 
-            <tl-input class="mt-5" placeholder="Name" />
-            <tl-input class="mt-5" placeholder="Phone" type="tel" />
+            <tl-input class="mt-5" placeholder="Group Name" />
+            <tl-input class="mt-5" placeholder="Phone Numbers" type="tel" />
             <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
             <div class="row mt-4 mb-5">
                 <div class="col-6">
@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div>
-                Status (Active)
+                Status (Inactive)
             </div>
 
             <button class="btn mt-5">Save Changes</button>
