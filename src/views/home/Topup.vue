@@ -3,7 +3,7 @@
         <div class="recent-activity">
             <h2 class="mt-3">Fund Sendy Wallet</h2>
 
-            <tl-input class="mt-5" placeholder="Enter Amount" />
+            <tl-input class="amount" placeholder="Enter Amount" />
 
             <button class="btn mt-5">Continue</button>
 
@@ -23,9 +23,12 @@
         background-color: white;
         height: 800px;
         border-radius: 20px 20px 0px 0px;  
-
+        .amount{
+            margin-bottom:80px
+        }
         h2{
             font-size: 17px;
+            margin-bottom:120px;
         }
     }
 </style>

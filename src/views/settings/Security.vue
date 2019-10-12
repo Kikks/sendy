@@ -4,8 +4,8 @@
 
         <div class="security">
             <div>
-                <p class="text-center mb-5">
-                    Enter a new Password
+                <p class="text-center mt-1 mb-5">
+                   Enter reciepient's name, phone number and airtime frequency
                 </p>
 
                 <tl-input type="password" class="mb-5" placeholder="Enter Password" />
