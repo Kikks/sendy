@@ -13,12 +13,17 @@
                     Saved Recipients
                 </div>
             </div>
+            <div v-if="tab">
+                <tl-input class="mt-5" placeholder="Name" />
+                <tl-input class="mt-5" placeholder="Phone" type="tel" />
+                <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
+            </div>
+            <div v-else>
+                <tl-input class="mt-5" placeholder="Search Recipient" icon="search"/>
+                <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
+            </div>
 
-            <tl-input class="mt-5" placeholder="Name" />
-            <tl-input class="mt-5" placeholder="Phone" type="tel" />
-            <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
-
-            <button class="btn mt-5" @click="transfer()">Transfer</button>
+            <button class="btn fixedbtn mt-5" @click="transfer()">Transfer</button>
         </div>
 
     </div>
@@ -64,6 +69,12 @@ export default {
                 //    border:1px solid blue;
                     // border-radius:5px;
             }
+        }
+        .fixedbtn{
+            position: fixed;
+            top:680px;
+            left:3.5px;
+            width:98%;
         }
     }
 </style>
