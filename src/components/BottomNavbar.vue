@@ -26,6 +26,8 @@
         min-height: 60px;
         bottom: 10px;
         text-align: center;
+        max-width: $full-width;
+
         .tabs{
             margin: auto;
             width: 92%;

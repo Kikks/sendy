@@ -38,7 +38,7 @@
                 <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
             </div>
 
-            <button class="btn fixedbtn mt-5" @click="transfer()">Transfer</button>
+            <button class="btn mt-5" @click="transfer()">Transfer</button>
         </div>
 
     </div>

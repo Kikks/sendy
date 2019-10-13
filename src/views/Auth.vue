@@ -1,11 +1,11 @@
 <template>
-<div>
-    <div class="blue-back">
-      
-    </div>
+    <div>
+        <div class="blue-back"></div>
 
-	<router-view />
-</div>
+        <div class="content">
+            <router-view />
+        </div>
+    </div>
 </template>
 
 <script>
@@ -21,7 +21,12 @@ export default {
     background-color: $primary;
     min-height: 40vh;
     width: 100%;
-    z-index: -1;
+    max-width: $full-width;
+    z-index: 1;
     top: 0;
+}
+.content{
+    position: relative;
+    z-index: 2;
 }
 </style>

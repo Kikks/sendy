@@ -1,18 +1,20 @@
 <template>
-    <nav class="navbar">
-        <div class="leading">
-            <slot name="leading">
-                <button class="p-0" @click="pop()">
-                    <icon name="chevron-left" size="1" />
-                    Back
-                </button>
-            </slot>
-        </div>
-        <div class="title">{{title}}</div>
-        <div class="trailing text-right">
-            <slot name="trailing"></slot>
-        </div>
-    </nav>
+    <div class="nav-container">
+        <nav class="navbar">
+            <div class="leading">
+                <slot name="leading">
+                    <button class="p-0" @click="pop()">
+                        <icon name="chevron-left" size="1" />
+                        Back
+                    </button>
+                </slot>
+            </div>
+            <div class="title">{{title}}</div>
+            <div class="trailing text-right">
+                <slot name="trailing"></slot>
+            </div>
+        </nav>
+    </div>
 </template>
 
 <script>
@@ -32,6 +34,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+    .nav-container{
+        max-width: $full-width;
+    }
     nav.navbar{
         position: fixed;
         top: 0;
@@ -42,6 +47,7 @@ export default {
         align-items: center;
         position: fixed;
         width: 100%;
+        max-width: $full-width;
 
         .title{
             text-align: center;
