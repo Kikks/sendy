@@ -12,6 +12,11 @@
                 <div @click="tab=false" class="switch" :class="!tab ? 'active':''">
                     Saved Recipients
                 </div>
+            </div> 
+            <div v-if="search">
+                <tl-input icon="magnify"></tl-input>
+                <div class="search">
+                </div>
             </div>
             <div v-if="tab">
                 <tl-input class="mt-5" placeholder="Name" />
@@ -38,6 +43,7 @@ export default {
     data(){
         return{
             tab: true,
+            search:false,
         }
     },
     methods: {
@@ -81,19 +87,12 @@ export default {
             left:3.5px;
             width:98%;
         }
-        // .num{
-        //     padding:10px 0;
-        //     margin-top:30px;
-        //     border-bottom:1px solid lightgray;
-        //     display:flex;
-        //     flex-direction: row;
-        //     align-items: center;
-        //     input{
-        //         border:none;
-        //         ::placeholder{
-        //             margin-left:60px;
-        //         }
-        //     }
-        // }
+        .search{
+            width:100%;
+            height:300px;
+            background: #FFFFFF;
+            box-shadow: 0px 20px 50px #E9EDEE;
+            border-radius: 0px 0px 10px 10px;
+        }
     }
 </style>
