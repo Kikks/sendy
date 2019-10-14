@@ -13,28 +13,27 @@
                     Saved Recipients
                 </div>
             </div> 
-            <div class="search" v-if="search">
-                <tl-input icon="magnify"></tl-input>
-                <div class="searchbox">
-                    <div class="searchist pt-3" v-for="(n,i) in 3" :key="i">
-                        <div class="row">
-                            <div class="col-6">Nathan</div>
-                            <div class="col-6 text-right" >NGN500</div>
-                        </div>
-                        <div class="row searchrow">
-                            <div class="col-6">+234 801 123 4567</div>
-                            <div class="col-6 text-right">Monthly</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div v-if="tab">
                 <tl-input class="mt-5" placeholder="Name" />
                 <tl-input class="mt-5" placeholder="Phone" type="tel" />
                 <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
             </div>
             <div v-else>
-                <tl-input class="mt-5" placeholder="Search Recipient" icon="magnify"/>
+                <tl-input class="mt-5" v-model="searchTerm" placeholder="Search Recipient" icon="magnify"/>
+                <div class="search" v-if="searchTerm.length > 0">
+                    <div class="searchbox px-3 pb-3">
+                        <div class="searchitem pt-3" v-for="(n,i) in 3" :key="i">
+                            <div class="row">
+                                <div class="col-6">Nathan</div>
+                                <div class="col-6 text-right" >NGN500</div>
+                            </div>
+                            <div class="row searchrow">
+                                <div class="col-6">+234 801 123 4567</div>
+                                <div class="col-6 text-right">Monthly</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
             </div>
 
@@ -48,7 +47,8 @@ export default {
     data(){
         return{
             tab: true,
-            search:false,
+            // search: true,
+            searchTerm: '',
         }
     },
     methods: {
@@ -97,11 +97,19 @@ export default {
             width:90%;
         }
         .searchbox{
-            width:100%;
+            width: 100%;
             height:300px;
             background: #FFFFFF;
             box-shadow: 0px 20px 50px #E9EDEE;
             border-radius: 0px 0px 10px 10px;
+
+            .searchitem{
+                border-bottom: 1px solid lightgray;
+                &:last-child{
+                    border-bottom: 0px solid lightgray;
+                }
+            }
+
             .searchrow{
                 color:lightgray;
             }
