@@ -113,7 +113,11 @@ export default {
     },
     methods: {
         addNewContact(){
-            this.$router.push({name: 'new-contact'});
+            if(this.tab){
+                this.$router.push({name: 'new-contact'});
+            }else{
+                this.$router.push({name: 'new-group-contact'});
+            }
         }
     }
 }

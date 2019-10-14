@@ -60,6 +60,10 @@ export default new Router({
                 name: 'new-contact',
                 component: () => import( /* webpackChunkName: "home" */ './views/contact/NewContact.vue')
             }, {
+                path: 'contact/new-group',
+                name: 'new-group-contact',
+                component: () => import( /* webpackChunkName: "home" */ './views/contact/GroupContact.vue')
+            }, {
                 path: 'send-airtime',
                 name: 'send-airtime',
                 component: () => import( /* webpackChunkName: "home" */ './views/airtime/SendAirtime.vue')
