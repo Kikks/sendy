@@ -1,12 +1,13 @@
 import Vue from 'vue'
-import Router from 'vue-router'
+import Router from 'vue-router';
+import axios from 'axios';
 import store from './store.js';
 import Home from './views/Home.vue';
 import Onboard from './views/Onboard.vue';
 import Auth from './views/Auth.vue';
 import FullScreen from './views/FullScreen.vue';
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
     mode: 'history',
@@ -31,7 +32,16 @@ export default new Router({
             }, {
                 path: 'register-name',
                 name: 'register-name',
-                component: () => import( /* webpackChunkName: "auth" */ './views/auth/RegisterName.vue')
+                component: () => import( /* webpackChunkName: "auth" */ './views/auth/RegisterName.vue'),
+                beforeEnter: (to, from, next) => {
+                    if (from.name === 'signup') {
+                        next();
+                        return;
+                    }
+                    next({
+                        name: 'signup'
+                    });
+                }
             }, ]
         }, {
             path: '/home',
@@ -51,7 +61,10 @@ export default new Router({
                     name: 'contacts',
                     component: () => import( /* webpackChunkName: "home" */ './views/home/Contacts.vue')
                 },
-            ]
+            ],
+            beforeEnter: (to, from, next) => {
+                isLoggedIn(next);
+            }
         },
         {
             path: '/',
@@ -85,3 +98,22 @@ export default new Router({
 
     ]
 })
+
+const isLoggedIn = (next) => {
+
+    if (!store.state.isLoggedIn) {
+        const userData = JSON.parse(window.localStorage.getItem("tinylabs-sendy-user"));
+        console.log(userData);
+        if (userData) {
+            axios.defaults.headers.common['Authorization'] = `jwt ${userData.token}`;
+            store.commit('setUser', userData);
+            next();
+            return;
+        } else {
+            next({
+                name: 'onboard'
+            });
+        }
+    }
+    next();
+};
