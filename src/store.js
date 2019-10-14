@@ -8,42 +8,58 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         isRegistered: false,
-        user: {}
+        isLoggedIn: false,
+        user: {},
+        currentPhoneNumber: ""
     },
     getters: {
         getIsRegistered(state) {
             return state.isRegistered;
         },
-        getUser(state){
+        getUser(state) {
             return state.user;
+        },
+        getCurrentPhoneNumber(state) {
+            return state.currentPhoneNumber;
         }
+
     },
     mutations: {
         setIsRegistered(state, payload) {
             state.isRegistered = payload;
         },
-        setUser(state, payload){
+        setUser(state, payload) {
             state.user = payload;
+            state.isLoggedIn = true;
+        },
+        setCurrentPhoneNumber(state, payload) {
+            state.currentPhoneNumber = payload;
         }
     },
     actions: {
-        login({ commit }, { phoneNumber, password }){
+        login({
+            commit
+        }, {
+            phoneNumber,
+            password,
+            email
+        }) {
             return new Promise((resolve, reject) => {
                 const url = `${process.env.VUE_APP_GEN_AUTH_SVC_URL}/auth/login`;
-                
+
                 axios
                     .post(url, {
                         phoneNumber,
                         password,
                         app: `${process.env.VUE_APP_APP_ID}`,
-                        email: 'danieel@gmail.com'
+                        email: email ? `${email}` : 'danieel@gmail.com'
                     })
                     .then(response => {
                         const user = response.data.data.user;
                         const token = response.data.data.token;
 
                         const userData = {
-                            ...user, 
+                            ...user,
                             token
                         };
 
@@ -54,22 +70,24 @@ export default new Vuex.Store({
                     })
                     .catch(error => {
                         reject(error);
-                    })
+                    });
 
             });
         },
-        checkIsRegistered({ commit }, data) {
+        checkIsRegistered({
+            commit
+        }, data) {
             return new Promise((resolve, reject) => {
                 const url = `${process.env.VUE_APP_GEN_AUTH_SVC_URL}/auth/check`;
                 axios
                     .post(url, data)
                     .then(response => {
                         const isNotRegistered = response.data.data;
-                        
-                        if(!isNotRegistered){
+
+                        if (!isNotRegistered) {
                             commit('setIsRegistered', !isNotRegistered);
                         } else {
-                            commit('setIsRegistered', !isNotRegistered)
+                            commit('setIsRegistered', !isNotRegistered);
                         }
                         resolve(response);
                     })
@@ -77,7 +95,7 @@ export default new Vuex.Store({
                         Helpers.errorResponse(error, (response) => {
                             console.log(response);
                             reject(error);
-                        })
+                        });
                     });
             });
         }

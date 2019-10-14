@@ -29,14 +29,14 @@ export default {
     methods: {
         gotoNext() {
             if (this.phone) {
-
-                if(this.isLoading) return;
+                if (this.isLoading) return;
                 this.isLoading = true;
-                
+
                 this.$store
-                    .dispatch('checkIsRegistered', { phoneNumber: this.phone })
+                    .dispatch("checkIsRegistered", { phoneNumber: this.phone })
                     .then(response => {
                         this.isLoading = false;
+                        this.$store.commit("setCurrentPhoneNumber", this.phone);
                         this.$router.push({ name: "register-name" });
                     });
             }
