@@ -106,14 +106,15 @@ export default {
             border-radius: 0px 0px 10px 10px;
 
             .searchitem{
-                border-bottom: 1px solid lightgray;
+                border-bottom: 1px solid#E6EDFF;;
                 &:last-child{
-                    border-bottom: 0px solid lightgray;
+                    border-bottom: none;
                 }
             }
 
             .searchrow{
-                color:lightgray;
+                color:#D2D5DB;
+                font-size:14px;
             }
         }
     }
