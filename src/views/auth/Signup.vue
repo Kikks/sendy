@@ -9,7 +9,8 @@
 
             <div class="text-right">
                 <div class="round-btn" @click="gotoNext()">
-                    <icon name="arrow-right" />
+                    <icon name="loading" spin v-if="isLoading" />
+                    <icon name="arrow-right" v-else />
                 </div>
             </div>
         </div>
@@ -21,13 +22,23 @@ export default {
     name: "signup",
     data() {
         return {
-            phone: ""
+            isLoading: false,
+            phone: "23480609170253"
         };
     },
     methods: {
         gotoNext() {
             if (this.phone) {
-                this.$router.push({ name: "register-name" });
+
+                if(this.isLoading) return;
+                this.isLoading = true;
+                
+                this.$store
+                    .dispatch('checkIsRegistered', { phoneNumber: this.phone })
+                    .then(response => {
+                        this.isLoading = false;
+                        this.$router.push({ name: "register-name" });
+                    });
             }
             //this.$router.push({name:"verify"});
         }

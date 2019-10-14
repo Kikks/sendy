@@ -1,6 +1,9 @@
 import Vue from 'vue';
+import Toasted from 'vue-toasted';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
+
+Vue.use(Toasted,{ position: "bottom-center", duration : 3000 });
 
 const requireComponent = require.context(
     './components/global',

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from './store.js';
 import Home from './views/Home.vue';
 import Onboard from './views/Onboard.vue';
 import Auth from './views/Auth.vue';
