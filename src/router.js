@@ -93,7 +93,10 @@ export default new Router({
                 path: 'about',
                 name: 'about',
                 component: () => import( /* webpackChunkName: "home" */ './views/settings/About.vue')
-            }, ]
+            }, ],
+            beforeEnter(to, from, next){
+                isLoggedIn(next);
+            }
         },
 
     ]

@@ -13,7 +13,7 @@
 
             <tl-input class="mt-5" placeholder="Name" v-model="name"/>
             <tl-input class="mt-5" placeholder="Phone" type="tel"  v-model="phone"/>
-            <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="amount" />
+            <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="airtime_amount" />
             <div class="row mt-4 mb-5">
                 <div class="col-6">
                     <tl-input placeholder="Start Date" type="date" v-model="start_date" />
@@ -41,31 +41,75 @@
                 Status (Active)
             </div>
 
-            <button class="btn mt-5">Save Changes</button>
+            <button class="btn mt-5" :disabled="canSubmit || isLoading" @click="addContact">
+                <icon name="loading" spin class="mr-1" size="0.9" v-if="isLoading" />Save Changes
+            </button>
         </div>
 
     </div>
 </template>
 <script>
+import axios from 'axios';
+import Helpers from '../../utils/Helpers';
 export default {
      data(){
         return{
             ticked:"daily",
             name: "",
             phone: "",
-            amount: "",
+            airtime_amount: "",
             start_date: "",
-            end_date: ""
-
+            end_date: "",
+            isLoading: false
+        }
+    },
+    computed: {
+        canSubmit(){
+            if(this.name.length < 1 || 
+                this.phone.length < 1 || 
+                this.airtime_amount.length < 1 || 
+                this.start_date.length < 1 || 
+                this.end_date.length < 1
+            ) {
+                return true;
+            }
+            return false;
         }
     },
     methods: {
         addContact(){
-            const url = ``;
+            if(this.isLoading) return;
+            this.isLoading = true;
+
+            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact`;
+            const data = {
+                name: this.name,
+                phoneNumber: this.phone,
+                currencyCode: "NGN",
+                airtimeAmount: Number(this.airtime_amount),
+                startDate: this.start_date,
+                endDate: this.end_date,
+                frequency: this.ticked,
+                type: "individual",
+                status: "active"
+            };
+            
+            axios
+                .post(url, data)
+                .then(response => {
+                    this.isLoading = false;
+                    this.$toasted.show(response.data.message);
+                    this.$router.push({name: 'contacts'});
+                })
+                .catch(error => {
+                    Helpers.errorResponse(error, (response) => {
+                        this.isLoading = false;
+                        this.$toasted.show(response);
+                    });
+                });
         },
         changeIcon(data){
-            this.ticked =data;
-            // console.log(this.ticked)
+            this.ticked = data;
         },
      }
 }
