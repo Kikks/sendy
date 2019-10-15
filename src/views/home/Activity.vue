@@ -35,6 +35,9 @@
     </div>
 </template>
 <script>
+import axios from 'axios';
+import Helpers from '../../utils/Helpers';
+
 export default {
     data(){
         return{
@@ -71,9 +74,27 @@ export default {
         }
     },
     methods: {
+        getActivities(){
+            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/log`;
+            console.log(url);
+
+            axios
+                .get(url)
+                .then(response => {
+                    console.log(response);
+                })
+                .catch(error => {
+                    Helpers.errorResponse(error, (response) => {
+                        this.errorMessage = response;
+                    });
+                });
+        },
         gotoAirtime(){
             this.$router.push({name: "send-airtime"});
         }
+    },
+    mounted(){
+        this.getActivities();
     }
 }
 </script>

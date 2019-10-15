@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     data(){
         return{
@@ -112,6 +113,17 @@ export default {
         },
     },
     methods: {
+        getContacts(){
+            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact`;
+            axios
+            .get(url)
+            .then(response => {
+                console.log(response);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        },
         addNewContact(){
             if(this.tab){
                 this.$router.push({name: 'new-contact'});
@@ -119,6 +131,9 @@ export default {
                 this.$router.push({name: 'new-group-contact'});
             }
         }
+    },
+    mounted(){
+        this.getContacts();
     }
 }
 </script>

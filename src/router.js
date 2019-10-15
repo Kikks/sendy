@@ -100,10 +100,8 @@ export default new Router({
 })
 
 const isLoggedIn = (next) => {
-
     if (!store.state.isLoggedIn) {
         const userData = JSON.parse(window.localStorage.getItem("tinylabs-sendy-user"));
-        console.log(userData);
         if (userData) {
             axios.defaults.headers.common['Authorization'] = `jwt ${userData.token}`;
             store.commit('setUser', userData);

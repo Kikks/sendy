@@ -95,7 +95,8 @@ export default {
         .search{
             position:absolute;
             width:90%;
-            max-width: calc($full-width - 10%);
+            // max-width: calc($full-width - 10px);
+            max-width: $full-width;
         }
         .searchbox{
             width: 100%;
