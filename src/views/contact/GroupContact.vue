@@ -12,7 +12,10 @@
             </p>
 
             <tl-input class="mt-5" placeholder="Group Name" />
-            <tl-input class="mt-5" placeholder="Phone Numbers" type="tel" />
+            <div class="text-right mt-2 add-phone-number-icon" @click="createNewPhoneNumber()">
+                <icon name="plus" />
+            </div>
+            <tl-input class="new-contact-phone-input" :placeholder="`Phone Number ${index + 1}`" type="tel" v-for="(phone, index) in phones" :key="index" :value="phones[index]" @input="handleChange" />
             <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
             <div class="row mt-4 mb-5">
                 <div class="col-6">
@@ -62,20 +65,43 @@
             font-size:16px;
             font-weight:bold;
         }
+        .new-contact-phone-input {
+            &:nth-child(1) {
+                margin-top: 0px !important;
+                background: red;
+            }
+        }
+        .add-phone-number-icon{
+            cursor: pointer;
+        }
     }
 </style>
 <script>
 export default {
      data(){
         return{
-            ticked:'daily'
+            ticked:'daily',
+            phones: ["ii"],
+            phone: ""
         }
     },
     methods: {
         changeIcon(data){
             this.ticked =data;
-            // console.log(this.ticked)
         },
+        createNewPhoneNumber(){
+            //console.log(this.phones);
+
+            this.phones.push(this.phone);
+            this.phone = "";
+            //console.log(this.phones);
+            //console.log(this.phones[0]);
+            //console.log("hey");
+            //this.phones.unshift("");
+        },
+        handleChange($event) {
+            this.phone = $event;
+        }
      }
 }
 </script>

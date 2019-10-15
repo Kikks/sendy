@@ -17,24 +17,30 @@
                     Groups
                 </div>
             </div>
-
-             <div v-for="(contact, i) in filteredContacts" :key="i" class="activityRow">
+            <div 
+                class="d-flex justify-content-center align-items-center" 
+                style="height: 50vh"
+                v-if="isLoading"
+            >
+                <icon name="loading" spin primary />
+            </div>
+             <div v-for="(contact) in filteredContacts" :key="contact.id" class="activityRow">
                 <div class="row firstRow">
                     <div class="col-6 blue">
                        {{contact.name}}
                     </div>
                     <!-- <div class="col-6 text-right" :class="{red: !activity.add, green: activity.add}"> -->
                     <div class="col-6 text-right">
-                        NGN{{contact.amount}}
+                        NGN{{contact.airtimeAmount}}
                     </div>
                 </div>
                 <div class="row secondRow">
                     <div class="col-6 blue">
-                        <span v-if="tab">{{contact.number}}</span>
+                        <span v-if="tab">{{contact.phoneNumber[0]}}</span>
                         <span v-else>{{contact.recipients}} Recipients</span>
                     </div>
                     <div class="col-6 text-right">
-                        {{contact.duration}}
+                        {{contact.frequency}}
                     </div>
                 </div>
             </div>
@@ -49,56 +55,8 @@ export default {
     data(){
         return{
             tab: true,
-            contacts:[
-                {
-                    name:'My Number',
-                    amount:5000,
-                    number:+2348092345676,
-                    duration:'Monthly'
-                },
-                {
-                    name:'Wife',
-                    amount:4000,
-                    number:+2348092345676,
-                    duration:'Monthly'
-                },
-                {
-                    name:'Nathan',
-                    amount:3000,
-                    number:+2348092345676,
-                    duration:'Weekly'
-                },
-                {
-                    name:'Joshua',
-                    amount:500,
-                    number:+2348092345676,
-                    duration:'Monthly'
-                },
-                {
-                    name:'Fellowship Group',
-                    amount:5000,
-                    recipients: 10,
-                    duration:'Monthly'
-                },
-                {
-                    name:'Cashier Group',
-                    amount:4000,
-                    recipients: 10,
-                    duration:'Monthly'
-                },
-                {
-                    name:'National Commitee',
-                    amount:5000,
-                    recipients: 10,
-                    duration:'Monthly'
-                },
-                {
-                    name:'Receptionists',
-                    amount:5000,
-                    recipients: 10,
-                    duration:'Monthly'
-                },
-            ]
+            isLoading: false,
+            contacts:[]
         }
     },
     computed: {
@@ -114,10 +72,13 @@ export default {
     },
     methods: {
         getContacts(){
+            this.isLoading = true;
             const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact`;
             axios
             .get(url)
             .then(response => {
+                this.isLoading = false;
+                this.contacts = response.data.data;
                 console.log(response);
             })
             .catch(error => {
@@ -182,6 +143,10 @@ export default {
             .secondRow{
                 font-size: 14px;
                 opacity: 0.5;
+            }
+
+            &:last-child {
+                margin-bottom: 72px;
             }
         }
         
