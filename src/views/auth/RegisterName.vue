@@ -109,7 +109,6 @@ export default {
                 });
         },
         register() {
-            console.log(this.currentPhoneNumber);
             const url = `${process.env.VUE_APP_GEN_AUTH_SVC_URL}/auth/register`;
             const data = {
                 firstName: this.firstName,

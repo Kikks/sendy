@@ -11,15 +11,15 @@
                 Enter recipient's name, phone number and airtime frequency
             </p>
 
-            <tl-input class="mt-5" placeholder="Name" />
-            <tl-input class="mt-5" placeholder="Phone" type="tel" />
-            <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
+            <tl-input class="mt-5" placeholder="Name" v-model="name"/>
+            <tl-input class="mt-5" placeholder="Phone" type="tel"  v-model="phone"/>
+            <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="amount" />
             <div class="row mt-4 mb-5">
                 <div class="col-6">
-                    <tl-input placeholder="Start Date" type="date" />
+                    <tl-input placeholder="Start Date" type="date" v-model="start_date" />
                 </div>
                 <div class="col-6">
-                    <tl-input placeholder="End Date" type="date" />
+                    <tl-input placeholder="End Date" type="date" v-model="end_date" />
                 </div>
             </div>
             <div class="frequency mb-5">
@@ -46,7 +46,30 @@
 
     </div>
 </template>
+<script>
+export default {
+     data(){
+        return{
+            ticked:"daily",
+            name: "",
+            phone: "",
+            amount: "",
+            start_date: "",
+            end_date: ""
 
+        }
+    },
+    methods: {
+        addContact(){
+            const url = ``;
+        },
+        changeIcon(data){
+            this.ticked =data;
+            // console.log(this.ticked)
+        },
+     }
+}
+</script>
 <style lang="scss" scoped>
     .new-contact{
         margin-top: 55px;
@@ -64,18 +87,3 @@
         }
     }
 </style>
-<script>
-export default {
-     data(){
-        return{
-            ticked:'daily'
-        }
-    },
-    methods: {
-        changeIcon(data){
-            this.ticked =data;
-            // console.log(this.ticked)
-        },
-     }
-}
-</script>
