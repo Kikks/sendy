@@ -128,6 +128,7 @@ export default {
             color:#030039;
             font-size:16px;
             font-weight:bold;
+            height: 54px;
         }
     }
 </style>

@@ -1,9 +1,13 @@
 import Vue from 'vue';
 import Toasted from 'vue-toasted';
+import ToggleButton from 'vue-js-toggle-button';
+import DatePicker from 'vuejs-datepicker';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
 
+Vue.component('date-picker',DatePicker);
 Vue.use(Toasted,{ position: "bottom-center", duration : 3000 });
+Vue.use(ToggleButton);
 
 const requireComponent = require.context(
     './components/global',
