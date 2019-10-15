@@ -12,11 +12,24 @@
             </p>
 
             <tl-input class="mt-5" placeholder="Group Name" />
-            <div class="text-right mt-2 add-phone-number-icon" @click="createNewPhoneNumber()">
+            <!-- <div class="text-right mt-2 add-phone-number-icon" @click="createNewPhoneNumber()">
                 <icon name="plus" />
+            </div> -->
+
+            <div class="row align-center mt-4" v-for="(phone, index) in phones" :key="phone.id">
+                <div class="col-1 text-center">
+                    <icon name="delete" color="red" @click.native="deleteNumber(index)" v-if="phones.length > 1" />
+                </div>
+                <div class="col-10">
+                    <tl-input class="new-contact-phone-input" :placeholder="`Phone Number ${index + 1}`" type="tel" v-model="phone.value" @input="handleChange" />
+                </div>
+                <div class="col-1 text-center" v-if="index == 0">
+                    <icon name="plus" color="green" @click.native="createNewPhoneNumber()" />
+                </div>
             </div>
-            <tl-input class="new-contact-phone-input" :placeholder="`Phone Number ${index + 1}`" type="tel" v-for="(phone, index) in phones" :key="index" :value="phones[index]" @input="handleChange" />
+
             <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
+
             <div class="row mt-4 mb-5">
                 <div class="col-6">
                     <tl-input placeholder="Start Date" type="date" />
@@ -49,6 +62,42 @@
 
     </div>
 </template>
+<script>
+export default {
+     data(){
+        return{
+            ticked:'daily',
+            phones: [
+                {id: 1, value: ""}
+            ],
+            phone: ""
+        }
+    },
+    methods: {
+        changeIcon(data){
+            this.ticked =data;
+        },
+        createNewPhoneNumber(){
+            console.log(this.phones[this.phones.length-1].value);
+
+            if(!this.phones[this.phones.length-1].value){
+                return;
+            }
+
+            this.phones.push({
+                value: "",
+                id: Math.random()
+            });
+        },
+        deleteNumber(index){
+            this.phones.splice(index,1);
+        },
+        handleChange($event) {
+            // this.phone = $event;
+        }
+     }
+}
+</script>
 
 <style lang="scss" scoped>
     .new-contact{
@@ -76,32 +125,3 @@
         }
     }
 </style>
-<script>
-export default {
-     data(){
-        return{
-            ticked:'daily',
-            phones: ["ii"],
-            phone: ""
-        }
-    },
-    methods: {
-        changeIcon(data){
-            this.ticked =data;
-        },
-        createNewPhoneNumber(){
-            //console.log(this.phones);
-
-            this.phones.push(this.phone);
-            this.phone = "";
-            //console.log(this.phones);
-            //console.log(this.phones[0]);
-            //console.log("hey");
-            //this.phones.unshift("");
-        },
-        handleChange($event) {
-            this.phone = $event;
-        }
-     }
-}
-</script>
