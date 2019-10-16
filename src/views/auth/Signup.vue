@@ -4,9 +4,18 @@
             <div class="mb-4">
                 <h1>Enter your phone number</h1>
             </div>
-
-            <tl-input type="tel" class="mb-5" placeholder="Phone" v-model="phone" />
-
+            <vue-phone-number-input 
+                valid-color="#006FFF" 
+                :translations="phoneNumberInputOptions" 
+                default-country-code="NG" 
+                class="mb-5" 
+                v-model="phone" 
+                size="lg" 
+                required 
+                error 
+                :countries-height="25" 
+                @update="handlePhoneInputUpdate"
+            />
             <div class="text-right">
                 <div class="round-btn" @click="gotoNext()">
                     <icon name="loading" spin v-if="isLoading" />
@@ -18,29 +27,39 @@
 </template>
 
 <script>
+//23480609170253
 export default {
     name: "signup",
     data() {
         return {
             isLoading: false,
-            phone: "23480609170253"
+            phone: "",
+            phoneNumberInputOptions: {
+                countrySelectorLabel: 'Code',
+                countrySelectorError: 'Select a valid code',
+                phoneNumberLabel: 'Phone',
+                example: 'Invalid number. e.g :'
+            },
+            formattedPhoneNumberInfo: {}
         };
     },
     methods: {
         gotoNext() {
-            if (this.phone) {
+            if (this.formattedPhoneNumberInfo.isValid) {
                 if (this.isLoading) return;
                 this.isLoading = true;
-
                 this.$store
-                    .dispatch("checkIsRegistered", { phoneNumber: this.phone })
+                    .dispatch("checkIsRegistered", { phoneNumber: this.formattedPhoneNumberInfo.formattedNumber })
                     .then(response => {
                         this.isLoading = false;
-                        this.$store.commit("setCurrentPhoneNumber", this.phone);
+                        this.$store.commit("setCurrentPhoneNumber", this.formattedPhoneNumberInfo.formattedNumber);
                         this.$router.push({ name: "register-name" });
                     });
             }
             //this.$router.push({name:"verify"});
+        },
+        handlePhoneInputUpdate($event){
+            this.formattedPhoneNumberInfo = $event;
         }
     }
 };

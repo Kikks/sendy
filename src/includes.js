@@ -4,8 +4,11 @@ import ToggleButton from 'vue-js-toggle-button';
 import DatePicker from 'vuejs-datepicker';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
+import VuePhoneNumberInput from 'vue-phone-number-input';
+import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
-Vue.component('date-picker',DatePicker);
+Vue.component('vue-phone-number-input', VuePhoneNumberInput);
+Vue.component('date-picker', DatePicker);
 Vue.use(Toasted,{ position: "bottom-center", duration : 3000 });
 Vue.use(ToggleButton);
 
