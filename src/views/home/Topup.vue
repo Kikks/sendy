@@ -14,6 +14,8 @@
     </div>
 </template>
 <script>
+import axios from 'axios';
+import Helpers from '../../utils/Helpers';
 export default {
     data(){
         return {
@@ -25,16 +27,39 @@ export default {
             let x = PaystackPop.setup({
                 key: 'pk_test_38a312e4b92df2c8768937d0aef988143689589b',
                 email: 'danieel@gmail.com', //danieel@gmail.com adedejiayokunledaniel@gmail.com
-                amount: 1+(65),
+                amount: 100000+(65),
                 currency: "NGN",
-                callback: function(response){
+                callback: response => {
                     console.log(response);
+                    this.refPay(response);
                 },
-                onClose: function(){
-                    alert('window closed');
-                }
+                onClose: () => console.log('closed')
             });
             x.openIframe();
+        },
+        refPay(response){
+            console.log('start ref pay');
+            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/payment`;
+            axios
+                .post(url, {
+                    reference: response.reference
+                })
+                .then(response => {
+                    console.log(response);
+                    this.we();
+                })
+                .catch(error => {
+                    Helpers.errorResponse(error, response => {
+                        console.log(error);
+                    })
+                });
+        },
+        we(){
+            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/transaction`;
+            axios.get(url)
+            .then(response => {
+                console.log(response);
+            });
         }
     }
 }

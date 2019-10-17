@@ -80,11 +80,19 @@
                 </div>
             </div>
 
-            <button class="btn mt-5" :disabled="canSubmit" @click="addGroupContact">Save Changes</button>
+            <button 
+                class="btn mt-5" 
+                :disabled="canSubmit || isLoading" 
+                @click="addGroupContact"
+            >   
+                <icon name="loading" spin v-if="isLoading" class="mr-2" size="0.9" /> Save Changes
+            </button>
         </div>
     </div>
 </template>
 <script>
+import axios from 'axios';
+import Helpers from '../../utils/Helpers.js';
 import countries_code from "../../country_code.json";
 export default {
     data() {
@@ -130,11 +138,6 @@ export default {
             return false;
         }
     },
-    watch: {
-        formattedPhones(x) {
-            console.log(x);
-        }
-    },
     methods: {
         changeIcon(data) {
             this.ticked = data;
@@ -158,9 +161,21 @@ export default {
             console.log(this.formattedPhones);
         },
         addGroupContact() {
+            
             if (this.isLoading) return;
-            //this.isLoading = true;
+            
+            if(this.formattedPhoneNumberInfo.hasOwnProperty('isValid') && 
+                this.formattedPhoneNumberInfo.isValid
+            ){
+                this.formattedPhones.push(this.formattedPhoneNumberInfo.formattedNumber);
+            }
 
+            if(this.formattedPhones.length < 1){
+                this.$toasted.show("Phone numbers cannot be empty");
+                return;
+            }
+        
+            this.isLoading = true;
             const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact`;
 
             const data = {
@@ -174,9 +189,6 @@ export default {
                 type: "group",
                 status: this.status ? "active" : "inactive"
             };
-
-            console.log(data);
-            return;
             axios
                 .post(url, data)
                 .then(response => {

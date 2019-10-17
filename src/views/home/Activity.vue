@@ -11,14 +11,27 @@
         </div>
         <div class="recent-activity">
             <h2 class="mb-4">Recent Actions</h2>
-            <div v-for="(activity, i) in activities" :key="i" class="activityRow">
+            <div 
+                class="d-flex justify-content-center align-items-center" 
+                style="height: 50vh"
+                v-if="isLoading"
+            >
+                <icon name="loading" spin primary />
+            </div>
+            <div 
+                class="d-flex justify-content-center align-items-center" 
+                style="height: 50vh"
+                v-if="errorMessage"
+            >
+                {{errorMessage}}
+            </div>
+            <div v-for="(activity, i) in refinedActivities" :key="i" class="activityRow">
                 <div class="row firstRow">
                     <div class="col-6 blue">
                        {{activity.description}}
                     </div>
-                    <!-- <div class="col-6 text-right" :class="{red: !activity.add, green: activity.add}"> -->
-                    <div class="col-6 text-right" :class="activity.add ? 'green' : 'red'">
-                        NGN{{activity.amount}}
+                    <div class="col-6 text-right" :class="activity.type  === 'credit' ? 'green' : 'red'">
+                        {{ activity.currency }}{{ activity.amount }}
                     </div>
                 </div>
                 <div class="row secondRow">
@@ -26,7 +39,7 @@
                         {{activity.date}}
                     </div>
                     <div class="col-6 text-right">
-                        {{activity.group}}
+                        {{ activity.title ? activity.title : '----' }}
                     </div>
                 </div>
             </div>
@@ -36,55 +49,45 @@
 </template>
 <script>
 import axios from 'axios';
+import moment from 'moment';
 import Helpers from '../../utils/Helpers';
 
 export default {
     data(){
         return{
-            activities:[
-                {
-                    description: 'Airtime Sent',
-                    amount: 6000,
-                    date: '30 Sep, 2019',
-                    group: 'Cashier Group',
-                    add: false,
-                },
-                {
-                    description: 'Wallet Top-up',
-                    amount: 10000,
-                    date: '26 Sep, 2019',
-                    group: 'Cashier Group',
-                    add: true,
-                },
-                {
-                    description: 'Airtime Sent',
-                    amount: 3000,
-                    date: '24 Sep, 2019',
-                    group: 'Cashier Group',
-                    add: false,
-                },
-                {
-                    description: 'Wallet Top-up',
-                    amount: 10000,
-                    date: '30 Sep, 2019',
-                    group: 'Cashier Group',
-                    add: true,
-                },
-            ]
+            activities:[],
+            isLoading: false,
+            errorMessage: ""
+        }
+    },
+    computed: {
+        refinedActivities(){
+            let refinedArray = [];
+            this.activities.forEach(activity => {
+                refinedArray.push({
+                    ...activity,
+                    date: moment(activity.createdAt).format('MMM Do YY'),
+                });
+            });
+            return refinedArray;
         }
     },
     methods: {
         getActivities(){
-            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/log`;
+            this.isLoading = true;
+            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/transaction`;
             console.log(url);
 
             axios
                 .get(url)
                 .then(response => {
+                    this.activities = response.data.data;
+                    this.isLoading = false;
                     console.log(response);
                 })
                 .catch(error => {
                     Helpers.errorResponse(error, (response) => {
+                        this.isLoading = false;
                         this.errorMessage = response;
                     });
                 });
@@ -143,6 +146,10 @@ export default {
             .secondRow{
                 font-size: 14px;
                 opacity: 0.5;
+            }
+
+            &:last-child {
+                margin-bottom: 72px;
             }
         }
 
