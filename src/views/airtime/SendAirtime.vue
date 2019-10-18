@@ -6,17 +6,17 @@
             <h3><b>Select Categories</b></h3>
 
             <div class="switcher mt-3">
-                <div @click="tab=true" class="switch" :class="tab ? 'active':''">
+                <div @click="tab=true" class="switch" :class="tab && 'active'">
                     New Recipient
                 </div>
-                <div @click="tab=false" class="switch" :class="!tab ? 'active':''">
+                <div @click="tab=false" class="switch" :class="!tab && 'active'">
                     Saved Recipients
                 </div>
             </div> 
             <div v-if="tab">
-                <tl-input class="mt-5" placeholder="Name" />
-                <tl-input class="mt-5" placeholder="Phone" type="tel" />
-                <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
+                <tl-input class="mt-5" placeholder="Name" v-model="name" />
+                <tl-input class="mt-5" placeholder="Phone" type="tel" v-model="phoneNumber" />
+                <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="airtimeAmount" />
             </div>
             <div v-else>
                 <tl-input class="mt-5" v-model="searchTerm" placeholder="Search Recipient" icon="magnify"/>
@@ -34,7 +34,7 @@
                         </div>
                     </div>
                 </div>
-                <tl-input class="mt-5" placeholder="Airtime Amount" type="number" />
+                <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="airtimeAmount" />
             </div>
 
             <button class="btn mt-5" @click="transfer()">Transfer</button>
@@ -43,20 +43,44 @@
     </div>
 </template>
 <script>
+import axios from 'axios';
+import Helpers from '../../utils/Helpers';
 export default {
     data(){
         return{
             tab: true,
             // search: true,
             searchTerm: '',
+            name: "",
+            phoneNumber: "",
+            airtimeAmount: ""
+
         }
     },
     methods: {
         transfer(){
-            let password = prompt("Enter password to complete transfer");
-            if(password){
-                alert("The sum of NGN3000 has been successfully sent");
-            }
+
+            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/airtime`;
+
+            axios.get(`${process.env.VUE_APP_SENDY_SVC_URL}/sendy/user`).then(response => console.log(response));
+            const data = {
+                value: Number(this.airtimeAmount),
+                category: this.tab ? "newRecipient" : "savedRecipient",
+                currencyCode: "NGN",
+                phoneNumber: [this.phoneNumber]
+            };
+
+            axios
+                .post(url, data)
+                .then(response => {
+                    console.log(response);
+                })
+                .catch(error => {
+                    Helpers.errorResponse(error, response => {
+                        console.log(response);
+                    });
+                });
+
         }
     },
 }

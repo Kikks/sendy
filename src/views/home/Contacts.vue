@@ -24,6 +24,13 @@
             >
                 <icon name="loading" spin primary />
             </div>
+            <div 
+                class="d-flex justify-content-center align-items-center" 
+                style="height: 50vh"
+                v-if="errorMessage"
+            >
+                {{errorMessage}}
+            </div>
              <div v-for="(contact) in filteredContacts" :key="contact.id" class="activityRow">
                 <div class="row firstRow">
                     <div class="col-6 blue">
@@ -31,13 +38,13 @@
                     </div>
                     <!-- <div class="col-6 text-right" :class="{red: !activity.add, green: activity.add}"> -->
                     <div class="col-6 text-right">
-                        NGN{{contact.airtimeAmount}}
+                        {{ contact.currencyCode }}{{contact.airtimeAmount}}
                     </div>
                 </div>
                 <div class="row secondRow">
                     <div class="col-6 blue">
                         <span v-if="tab">{{contact.phoneNumber[0]}}</span>
-                        <span v-else>{{contact.recipients}} Recipients</span>
+                        <span v-else>{{ contact.phoneNumber.length }} Recipients</span>
                     </div>
                     <div class="col-6 text-right">
                         {{contact.frequency}}
@@ -51,20 +58,22 @@
 
 <script>
 import axios from 'axios';
+import Helpers from '../../utils/Helpers';
 export default {
     data(){
         return{
             tab: true,
             isLoading: false,
-            contacts:[]
+            contacts:[],
+            errorMessage: ""
         }
     },
     computed: {
         filteredContacts(){
             return this.contacts.filter(contact => {
-                if(contact.recipients && !this.tab){
+                if(contact.type === "group" && !this.tab){
                     return true;
-                }else if(!contact.recipients && this.tab){
+                }else if(contact.type === "individual" && this.tab){
                     return true;
                 }
             }); 
@@ -79,10 +88,12 @@ export default {
             .then(response => {
                 this.isLoading = false;
                 this.contacts = response.data.data;
-                console.log(response);
             })
             .catch(error => {
-                console.log(error);
+                Helpers.errorResponse(error, response => {
+                    this.isLoading = false;
+                    this.errorMessage = response;
+                });
             });
         },
         addNewContact(){

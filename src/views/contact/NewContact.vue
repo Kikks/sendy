@@ -12,7 +12,19 @@
             </p>
 
             <tl-input class="mt-5" placeholder="Name" v-model="name"/>
-            <tl-input class="mt-5" placeholder="Phone" type="tel"  v-model="phone"/>
+            <vue-phone-number-input
+                valid-color="#006FFF"
+                :translations="phoneNumberInputOptions"
+                default-country-code="NG"
+                v-model="rawPhone"
+                size="lg"
+                required
+                error
+                :countries-height="25"
+                :only-countries="countriesCode"
+                class="mt-5"
+                @update="handlePhoneInputUpdate"
+            />
             <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="airtime_amount" />
             <div class="row mt-4 mb-5">
                 <div class="col-6">
@@ -37,10 +49,18 @@
                     <icon v-if="ticked =='monthly'" name="check"></icon>
                 </div>
             </div>
-            <div>
-                Status (Active)
+            <div class="row justify-content-space-between">
+                <div class="col">Status {{ status ? '(Active)' : '(Inactive)' }}</div>
+                <div class="col-6 text-right">
+                    <toggle-button
+                        v-model="status"
+                        :height="30"
+                        :width="60"
+                        class="ml-2"
+                        :color="status_color_options"
+                    />
+                </div>
             </div>
-
             <button class="btn mt-5" :disabled="canSubmit || isLoading" @click="addContact">
                 <icon name="loading" spin class="mr-1" size="0.9" v-if="isLoading" />Save Changes
             </button>
@@ -51,16 +71,38 @@
 <script>
 import axios from 'axios';
 import Helpers from '../../utils/Helpers';
+import countries_code from "../../country_code.json";
+
 export default {
      data(){
         return{
             ticked:"daily",
             name: "",
             phone: "",
+            rawPhone: "",
             airtime_amount: "",
             start_date: "",
             end_date: "",
-            isLoading: false
+            isLoading: false,
+            status: false,
+            status_color_options: {
+                checked: "#4CD964",
+                unchecked: "#FC001F"
+            },
+            phoneNumberInputOptions: {
+                countrySelectorLabel: "Code",
+                countrySelectorError: "Select a valid code",
+                phoneNumberLabel: "Phone",
+                example: "Invalid e.g : "
+            },
+            countriesCode: countries_code,
+            phoneNumberMetaData: {}
+
+        }
+    },
+    watch: {
+        phone(x){
+            console.log(x);
         }
     },
     computed: {
@@ -69,7 +111,8 @@ export default {
                 this.phone.length < 1 || 
                 this.airtime_amount.length < 1 || 
                 this.start_date.length < 1 || 
-                this.end_date.length < 1
+                this.end_date.length < 1 || 
+                !this.phoneNumberMetaData.isValid
             ) {
                 return true;
             }
@@ -91,7 +134,7 @@ export default {
                 endDate: this.end_date,
                 frequency: this.ticked,
                 type: "individual",
-                status: "active"
+                status: this.status ? "active" : "inactive"
             };
             
             axios
@@ -107,6 +150,12 @@ export default {
                         this.$toasted.show(response);
                     });
                 });
+        },
+        handlePhoneInputUpdate($event){
+            this.phoneNumberMetaData = $event;
+            if($event.isValid){
+                this.phone = $event.formattedNumber;
+            }
         },
         changeIcon(data){
             this.ticked = data;
@@ -128,6 +177,7 @@ export default {
             color:#030039;
             font-size:16px;
             font-weight:bold;
+            height: 54px;
         }
     }
 </style>

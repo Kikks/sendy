@@ -5,7 +5,7 @@
 
             <tl-input class="amount" placeholder="Enter Amount" />
 
-            <button class="btn mt-5">Continue</button>
+            <button class="btn mt-5" @click="pay">Continue</button>
 
             <p class="mt-5 text-center pt-5">
                 Having your wallet funded keeps your contacts credited recurrently
@@ -13,7 +13,57 @@
         </div>
     </div>
 </template>
+<script>
+import axios from 'axios';
+import Helpers from '../../utils/Helpers';
+export default {
+    data(){
+        return {
 
+        };
+    },
+    methods: {
+        pay(){
+            let x = PaystackPop.setup({
+                key: 'pk_test_38a312e4b92df2c8768937d0aef988143689589b',
+                email: 'danieel@gmail.com', //danieel@gmail.com adedejiayokunledaniel@gmail.com
+                amount: 100000+(65),
+                currency: "NGN",
+                callback: response => {
+                    console.log(response);
+                    this.refPay(response);
+                },
+                onClose: () => console.log('closed')
+            });
+            x.openIframe();
+        },
+        refPay(response){
+            console.log('start ref pay');
+            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/payment`;
+            axios
+                .post(url, {
+                    reference: response.reference
+                })
+                .then(response => {
+                    console.log(response);
+                    this.we();
+                })
+                .catch(error => {
+                    Helpers.errorResponse(error, response => {
+                        console.log(error);
+                    })
+                });
+        },
+        we(){
+            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/transaction`;
+            axios.get(url)
+            .then(response => {
+                console.log(response);
+            });
+        }
+    }
+}
+</script>
 <style lang="scss" scoped>
     .activity{
         min-height: 100vh;
