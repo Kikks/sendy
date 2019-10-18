@@ -2,7 +2,11 @@
 	<div class="home">
         <Navbar />
         <div style="height: 40px;"></div>
-        <router-view />
+
+        <keep-alive>
+            <router-view />
+        </keep-alive>
+
         <BottomNavbar />
 	</div>
 </template>
