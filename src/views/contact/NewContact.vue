@@ -125,10 +125,13 @@ export default {
             this.isLoading = true;
 
             const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact`;
+
+            const currencyCode = Helpers.assignCurrencyCode(this.phoneNumberMetaData.countryCode);
+
             const data = {
                 name: this.name,
                 phoneNumber: this.phone,
-                currencyCode: "NGN",
+                currencyCode,
                 airtimeAmount: Number(this.airtime_amount),
                 startDate: this.start_date,
                 endDate: this.end_date,

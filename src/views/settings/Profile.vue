@@ -13,7 +13,20 @@
                 </div> -->
                 <tl-input class="mb-5" placeholder="First Name" v-model="first_name" />
                 <tl-input class="mb-5" placeholder="Last Name" v-model="last_name"  />
-                <tl-input type="tel" class="mb-5" placeholder="Phone" v-model="phone" />
+                <!-- <tl-input type="tel" class="mb-5" placeholder="Phone" v-model="phone" /> -->
+                <vue-phone-number-input
+                    valid-color="#006FFF"
+                    :translations="phoneNumberInputOptions"
+                    default-country-code="NG"
+                    v-model="rawPhone"
+                    size="lg"
+                    required
+                    error
+                    :countries-height="25"
+                    :only-countries="countriesCode"
+                    class="mt-4 mb-5"
+                    @update="handlePhoneInputUpdate"
+                />
                 <tl-input type="email" class="mb-5" placeholder="Email" v-model="email" />
             </div>
 
@@ -31,14 +44,25 @@
 
 <script>
 import Helpers from '../../utils/Helpers';
+import countries_code from "../../country_code.json";
+
 export default {  
     data(){
         return {
             first_name: "",
             last_name: "",
+            rawPhone: "",
             phone: "",
             email: "",
-            isLoading: false
+            isLoading: false,
+            phoneNumberInputOptions: {
+                countrySelectorLabel: "Code",
+                countrySelectorError: "Select a valid code",
+                phoneNumberLabel: "Phone",
+                example: "Invalid e.g : "
+            },
+            countriesCode: countries_code,
+            phoneNumberMetaData: {}
         }
     },
     //+23480609170253 danieel@gmail.com
@@ -46,7 +70,8 @@ export default {
         canSubmit(){
             if(this.first_name.length < 1 || 
                 this.last_name.length < 1 || 
-                this.phone.length < 1
+                this.phone.length < 1 ||
+                !this.phoneNumberMetaData.isValid
             ){
                 return true;
             }
@@ -63,13 +88,14 @@ export default {
         updateProfile(){
             this.isLoading = true;
 
+            const currencyCode = Helpers.assignCurrencyCode(this.phoneNumberMetaData.countryCode);
             const data = {
                 firstName: this.first_name,
                 lastName: this.last_name,
                 phoneNumber: this.phone,
-                email: this.email
+                email: this.email,
+                currencyCode
             };
-
             this.$store.dispatch('updateUser', { data, type: 'update_info' })
                 .then(response => {
                     this.isLoading = false;
@@ -83,10 +109,15 @@ export default {
                     });
                 });
         },
+        handlePhoneInputUpdate($event){
+            this.phoneNumberMetaData = $event;
+            if($event.isValid){
+                this.phone = $event.formattedNumber;
+            }
+        },
         setDefaultFormValues(){
             this.first_name = this.user.firstName;
             this.last_name = this.user.lastName;
-            this.phone = this.user.phoneNumber;
             this.email = this.user.email;
         }
     },

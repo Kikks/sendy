@@ -8,7 +8,6 @@
             <p class="text-center">Enter group name, phone numbers and airtime frequency</p>
 
             <tl-input class="mt-5" placeholder="Group Name" v-model="groupName" />
-
             <div class="row align-center mt-4" v-for="(phone, index) in phones" :key="phone.id">
                 <div class="col-1 text-center">
                     <icon
@@ -22,13 +21,13 @@
                     <vue-phone-number-input
                         valid-color="#006FFF"
                         :translations="phoneNumberInputOptions"
-                        default-country-code="NG"
+                        :default-country-code="defaultCode"
                         v-model="phone.value"
                         size="lg"
                         required
                         error
                         :countries-height="25"
-                        :only-countries="countriesCode"
+                        :only-countries="onlyCountryCodes"
                         @update="handlePhoneInputUpdate"
                     />
                 </div>
@@ -94,6 +93,7 @@
 import axios from 'axios';
 import Helpers from '../../utils/Helpers.js';
 import countries_code from "../../country_code.json";
+
 export default {
     data() {
         return {
@@ -117,10 +117,18 @@ export default {
             countriesCode: countries_code,
             formattedPhoneNumberInfo: {},
             formattedPhones: [],
-            isLoading: false
+            isLoading: false,
+            defaultCode: "NG",
         };
     },
     computed: {
+        onlyCountryCodes(){
+            if(this.phones.length < 2){
+                return this.countriesCode;
+            }
+
+            return this.countriesCode.filter(cc => cc == this.defaultCode);
+        },
         filterPhoneNumbers() {
             return this.formattedPhones.filter(
                 (phone, index) => this.formattedPhones.indexOf(phone) === index
@@ -150,6 +158,8 @@ export default {
             if (!this.formattedPhoneNumberInfo.isValid) {
                 return;
             }
+            this.defaultCode = this.formattedPhoneNumberInfo.countryCode;
+
             this.formattedPhones.push(
                 this.formattedPhoneNumberInfo.formattedNumber
             );
@@ -175,11 +185,13 @@ export default {
         
             this.isLoading = true;
             const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact`;
+            
+            const currencyCode = Helpers.assignCurrencyCode(this.defaultCode);
 
             const data = {
                 name: this.groupName,
                 phoneNumber: this.filterPhoneNumbers,
-                currencyCode: "NGN",
+                currencyCode,
                 airtimeAmount: Number(this.airtimeAmount),
                 startDate: this.startDate,
                 endDate: this.endDate,
@@ -203,6 +215,7 @@ export default {
                 });
         },
         deleteNumber(index) {
+            this.formattedPhones.splice(index, 1);
             this.phones.splice(index, 1);
         },
         handlePhoneInputUpdate($event) {

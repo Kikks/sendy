@@ -13,7 +13,20 @@
             </div>
             <div v-if="tab">
                 <tl-input class="mt-5" placeholder="Name" v-model="name" />
-                <tl-input class="mt-5" placeholder="Phone" type="tel" v-model="phoneNumber" />
+                <vue-phone-number-input
+                    valid-color="#006FFF"
+                    :translations="phoneNumberInputOptions"
+                    default-country-code="NG"
+                    v-model="rawPhone"
+                    size="lg"
+                    required
+                    error
+                    :countries-height="25"
+                    :only-countries="countriesCode"
+                    class="mt-5"
+                    @update="handlePhoneInputUpdate"
+                />
+                <!-- <tl-input class="mt-5" placeholder="Phone" type="tel" v-model="phoneNumber" /> -->
                 <tl-input
                     class="mt-5"
                     placeholder="Airtime Amount"
@@ -66,7 +79,9 @@
 <script>
 import axios from "axios";
 import { directive as onClickaway } from 'vue-clickaway';
-import Helpers from "../../utils/Helpers";
+import Helpers from "../../utils/Helpers.js";
+import countries_code from "../../country_code.json";
+
 export default {
     directives: {
         onClickaway: onClickaway,
@@ -77,11 +92,25 @@ export default {
             // search: true,
             searchTerm: "",
             name: "",
-            phoneNumber: "+2348060917025",
+            phoneNumber: "",
             airtimeAmount: "",
             isLoading: false,
             selectedContactId: "",
             showSearch: false,
+            rawPhone: "",
+            phone: "",
+            status_color_options: {
+                checked: "#4CD964",
+                unchecked: "#FC001F"
+            },
+            phoneNumberInputOptions: {
+                countrySelectorLabel: "Code",
+                countrySelectorError: "Select a valid code",
+                phoneNumberLabel: "Phone",
+                example: "Invalid e.g : "
+            },
+            countriesCode: countries_code,
+            phoneNumberMetaData: {}
         };
     },
     watch: {
@@ -122,7 +151,8 @@ export default {
         canSubmit() {
             if (
                 this.tab && this.name.length < 1 ||
-                this.tab && this.phoneNumber.length < 1
+                this.tab && this.phone.length < 1 ||
+                this.tab && !this.phoneNumberMetaData.isValid
             ) {
                 return true;
             }
@@ -157,12 +187,14 @@ export default {
 
             this.isLoading = true;
 
+            const currencyCode = Helpers.assignCurrencyCode(this.phoneNumberMetaData.countryCode);
+
             const data = {
                 value: Number(this.airtimeAmount),
                 category: this.tab ? "newRecipient" : "savedRecipient",
-                currencyCode: "NGN"
+                currencyCode
             };
-            
+
             if(this.tab){
                 data.phoneNumber = [this.phoneNumber];
             } else {
@@ -182,7 +214,13 @@ export default {
                         this.$toasted.show(response);
                     });
                 });
-        }
+        },
+        handlePhoneInputUpdate($event){
+            this.phoneNumberMetaData = $event;
+            if($event.isValid){
+                this.phone = $event.formattedNumber;
+            }
+        },
     },
     mounted(){
         if(this.contacts.length < 1) {
