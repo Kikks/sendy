@@ -142,6 +142,7 @@ export default {
                 .then(response => {
                     this.isLoading = false;
                     this.$toasted.show(response.data.message);
+                    this.$store.dispatch('getContacts');
                     this.$router.push({name: 'contacts'});
                 })
                 .catch(error => {

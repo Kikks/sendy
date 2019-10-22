@@ -27,17 +27,24 @@
                     v-model="searchTerm"
                     placeholder="Search Recipient"
                     icon="magnify"
+                    type="text"
+                    key="searchTerm"
                 />
-                <div class="search" v-if="searchTerm.length > 0">
-                    <div class="searchbox px-3 pb-3">
-                        <div class="searchitem pt-3" v-for="(n,i) in 3" :key="i">
+                <div class="search" v-if="shouldShowSearchBox">
+                    <div class="searchbox px-3 pb-3" v-on-clickaway="away">
+                        <div class="row pt-3" v-if="contacts.length < 1">
+                            <div class="col-12">
+                                Not found
+                            </div>
+                        </div>
+                        <div class="searchitem pt-3" v-for="(contact) in contacts" :key="contact.id" @click="selectContact(contact)">
                             <div class="row">
-                                <div class="col-6">Nathan</div>
-                                <div class="col-6 text-right">NGN500</div>
+                                <div class="col-6">{{contact.name}}</div>
+                                <div class="col-6 text-right">{{contact.currencyCode}}{{contact.airtimeAmount}}</div>
                             </div>
                             <div class="row searchrow">
-                                <div class="col-6">+234 801 123 4567</div>
-                                <div class="col-6 text-right">Monthly</div>
+                                <div class="col-6">{{contact.phoneNumber[0]}}</div>
+                                <div class="col-6 text-right">{{contact.frequency}}</div>
                             </div>
                         </div>
                     </div>
@@ -58,29 +65,73 @@
 </template>
 <script>
 import axios from "axios";
+import { directive as onClickaway } from 'vue-clickaway';
 import Helpers from "../../utils/Helpers";
 export default {
+    directives: {
+        onClickaway: onClickaway,
+    },
     data() {
         return {
             tab: true,
             // search: true,
             searchTerm: "",
             name: "",
-            phoneNumber: "",
-            airtimeAmount: "+2348060917025",
-            isLoading: false
+            phoneNumber: "+2348060917025",
+            airtimeAmount: "",
+            isLoading: false,
+            selectedContactId: "",
+            showSearch: false,
         };
     },
+    watch: {
+        contacts(newValue) {
+            if(newValue.length < 1) {
+                this.selectedContactId = "";
+            }
+        },
+        searchTerm(v){
+            if(v.length > 1){
+                this.showSearch = true;
+            }
+        }
+    },
     computed: {
+        shouldShowSearchBox(){
+            if(this.showSearch && this.searchTerm.length > 0){
+                return true;
+            }
+
+            return false;
+        },
+        contacts(){
+            return this.$store.getters.getContacts
+                        .filter(contact => {
+                            if(contact.type === 'individual') {
+                                return true;
+                            }
+                        })
+                        .filter(contact => {
+                            if(!this.searchTerm) {
+                                return true;
+                            }
+                             return (typeof contact.name === "string" && contact.name.toLowerCase().indexOf(this.searchTerm.toLowerCase()) !== -1) ||
+                                    (typeof contact.phoneNumber === "string" && contact.phoneNumber.toLowerCase().indexOf(this.searchTerm.toLowerCase()) !== -1);
+                        });
+        },
         canSubmit() {
             if (
-                (this.tab && this.name.length < 1) ||
-                (this.tab && this.phoneNumber.length < 1)
+                this.tab && this.name.length < 1 ||
+                this.tab && this.phoneNumber.length < 1
             ) {
                 return true;
             }
 
-            if (this.airtimeAmount.length < 1) {
+            if (!this.tab && this.selectedContactId.length < 1) {
+                return true;
+            }
+
+            if(this.airtimeAmount < 1) {
                 return true;
             }
 
@@ -88,26 +139,41 @@ export default {
         }
     },
     methods: {
+        away(){
+            this.searchTerm = "";
+            this.showSearch = false;
+        },
+        selectContact(contact){
+            this.searchTerm = contact.name;
+            this.selectedContactId = contact.id;
+            setTimeout(() => {
+                this.showSearch = false;
+            }, 0);
+        },
         transfer() {
             if (this.isLoading) return;
 
             const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/airtime`;
+
             this.isLoading = true;
-            axios
-                .get(`${process.env.VUE_APP_SENDY_SVC_URL}/sendy/user`)
-                .then(response => console.log(response));
+
             const data = {
                 value: Number(this.airtimeAmount),
                 category: this.tab ? "newRecipient" : "savedRecipient",
-                currencyCode: "NGN",
-                phoneNumber: [this.phoneNumber]
+                currencyCode: "NGN"
             };
-
+            
+            if(this.tab){
+                data.phoneNumber = [this.phoneNumber];
+            } else {
+                data.contact = this.selectedContactId
+            }
             axios
                 .post(url, data)
                 .then(response => {
                     this.isLoading = false;
                     this.$toasted.show(response.data.message);
+                    this.$store.dispatch('getActivities');
                     this.$router.push({ name: "home" });
                 })
                 .catch(error => {
@@ -116,6 +182,11 @@ export default {
                         this.$toasted.show(response);
                     });
                 });
+        }
+    },
+    mounted(){
+        if(this.contacts.length < 1) {
+            this.$store.dispatch('getContacts');
         }
     }
 };
@@ -156,14 +227,16 @@ export default {
         width: 90%;
         // max-width: calc($full-width - 10px);
         max-width: $full-width;
+        z-index: 1;
     }
     .searchbox {
         width: 100%;
         max-width: $full-width;
-        height: 300px;
+        height: auto;
         background: #ffffff;
         box-shadow: 0px 20px 50px #e9edee;
         border-radius: 0px 0px 10px 10px;
+        overflow-y: scroll;
 
         .searchitem {
             border-bottom: 1px solid#E6EDFF;

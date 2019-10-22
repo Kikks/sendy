@@ -49,38 +49,33 @@ export default {
         return {
             activities: [],
             isLoading: false,
-            errorMessage: "",
-            userInfo: {}
+            errorMessage: ""
         };
     },
     computed: {
         refinedActivities() {
             let refinedArray = [];
-            this.activities.forEach(activity => {
+            this.$store.getters.getActivities.forEach(activity => {
                 refinedArray.push({
                     ...activity,
                     date: moment(activity.createdAt).format("MMM Do YY")
                 });
             });
             return refinedArray;
+        },
+        userInfo(){
+            return this.$store.getters.getUserInfo;
         }
     },
     methods: {
         getUserInfo() {
-            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/user`;
-            axios.get(url).then(response => {
-                this.userInfo = response.data.data;
-            });
+            
         },
         getActivities() {
             this.isLoading = true;
-            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/transaction`;
-            axios
-                .get(url)
+            this.$store.dispatch('getActivities')
                 .then(response => {
-                    this.activities = response.data.data;
                     this.isLoading = false;
-                    console.log(response);
                 })
                 .catch(error => {
                     Helpers.errorResponse(error, response => {
@@ -88,14 +83,17 @@ export default {
                         this.errorMessage = response;
                     });
                 });
+            
         },
         gotoAirtime() {
             this.$router.push({ name: "send-airtime" });
         }
     },
     mounted() {
-        this.getUserInfo();
-        this.getActivities();
+        this.$store.dispatch('getUserInfo');
+        if(this.$store.getters.getActivities.length < 1) {
+            this.getActivities();
+        }
     }
 };
 </script>

@@ -16,6 +16,9 @@
                     <router-link :to="{name: 'profile'}" tag="div" class="nav-item">
                         Profile
                     </router-link>
+                    <router-link :to="{name: 'addcard'}" tag="div" class="nav-item">
+                        Add Card
+                    </router-link>
                     <router-link :to="{name: 'security'}" tag="div" class="nav-item">
                         Security
                     </router-link>

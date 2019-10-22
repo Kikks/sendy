@@ -10,7 +10,10 @@ export default new Vuex.Store({
         isRegistered: false,
         isLoggedIn: false,
         user: {},
-        currentPhoneNumber: ""
+        userInfo: {},
+        currentPhoneNumber: "",
+        contacts: [],
+        activities: []
     },
     getters: {
         getIsRegistered(state) {
@@ -21,6 +24,15 @@ export default new Vuex.Store({
         },
         getCurrentPhoneNumber(state) {
             return state.currentPhoneNumber;
+        },
+        getContacts(state) {
+            return state.contacts;
+        },
+        getUserInfo(state) {
+            return state.userInfo;
+        },
+        getActivities(state){
+            return state.activities;
         }
 
     },
@@ -34,7 +46,16 @@ export default new Vuex.Store({
         },
         setCurrentPhoneNumber(state, payload) {
             state.currentPhoneNumber = payload;
-        }
+        },
+        setContacts(state, payload){
+            state.contacts = payload;
+        },
+        setUserInfo(state, payload) {
+            state.userInfo = payload;
+        },
+        setActivities(state, payload) {
+            state.activities = payload
+        },
     },
     actions: {
         login({
@@ -92,12 +113,79 @@ export default new Vuex.Store({
                         resolve(response);
                     })
                     .catch(error => {
-                        Helpers.errorResponse(error, (response) => {
-                            console.log(response);
-                            reject(error);
-                        });
+                        reject(error);
                     });
             });
+        },
+        getContacts({ commit }){
+            return new Promise((resolve, reject) => {
+
+                const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact`;
+                axios
+                .get(url)
+                .then(response => {
+                    commit('setContacts', response.data.data);
+                    resolve(response);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+            });
+        },
+        getUserInfo({ commit }) {
+            return new Promise((resolve, reject) => {
+
+                const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/user`;
+                axios
+                .get(url)
+                .then(response => {
+                    commit('setUserInfo',  response.data.data);
+                    resolve(response);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+            });
+        },
+        getActivities({ commit }){
+            return new Promise((resolve, reject) => {
+                const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/transaction`;
+                axios
+                    .get(url)
+                    .then(response => {
+                        commit('setActivities', response.data.data);
+                        resolve(response);
+                    })
+                    .catch(error => {
+                      reject(error);
+                    });
+                });
+        },
+        updateUser({ commit }, { data, type }){
+            return new Promise((resolve, reject) => {
+                const url = `${process.env.VUE_APP_GEN_AUTH_SVC_URL}/auth/user`;
+                axios
+                    .patch(url, data)
+                    .then(response => {
+                        if(type === 'update_info'){
+                            const userData = JSON.parse(window.localStorage.getItem("tinylabs-sendy-user"));
+                            const updatedUserData = {
+                                ...userData,
+                                firstName: data.firstName && data.firstName,
+                                lastName: data.lastName && data.lastName,
+                                phoneNumber: data.phoneNumber && data.phoneNumber,
+                                email: data.email && data.email
+                            };
+                            commit('setUser', updatedUserData);
+                            window.localStorage.setItem("tinylabs-sendy-user", JSON.stringify(updatedUserData));
+                        }
+
+                        resolve(response);
+                    })
+                    .catch(error => {
+                        reject(error);
+                    });
+                });
         }
     }
 });

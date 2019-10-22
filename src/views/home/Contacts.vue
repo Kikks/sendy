@@ -64,37 +64,34 @@ export default {
         return{
             tab: true,
             isLoading: false,
-            contacts:[],
             errorMessage: ""
         }
     },
     computed: {
         filteredContacts(){
-            return this.contacts.filter(contact => {
+            return this.$store.getters.getContacts.filter(contact => {
                 if(contact.type === "group" && !this.tab){
                     return true;
                 }else if(contact.type === "individual" && this.tab){
                     return true;
                 }
             }); 
-        },
+        }
     },
     methods: {
         getContacts(){
             this.isLoading = true;
-            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact`;
-            axios
-            .get(url)
-            .then(response => {
-                this.isLoading = false;
-                this.contacts = response.data.data;
-            })
-            .catch(error => {
-                Helpers.errorResponse(error, response => {
-                    this.isLoading = false;
-                    this.errorMessage = response;
-                });
-            });
+            this.$store
+                    .dispatch('getContacts')
+                    .then(response => {
+                        this.isLoading = false;
+                    })
+                    .catch(error => {
+                         Helpers.errorResponse(error, response => {
+                            this.isLoading = false;
+                            this.errorMessage = response;
+                        });
+                    });
         },
         addNewContact(){
             if(this.tab){
@@ -105,7 +102,9 @@ export default {
         }
     },
     mounted(){
-        this.getContacts();
+        if(this.$store.getters.getContacts.length < 1) {
+            this.getContacts();
+        }
     }
 }
 </script>

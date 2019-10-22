@@ -57,6 +57,11 @@ export default new Router({
                     component: () => import( /* webpackChunkName: "home" */ './views/home/Topup.vue')
                 },
                 {
+                    path: 'directtopup',
+                    name: 'directtopup',
+                    component: () => import( /* webpackChunkName: "home" */ './views/Topup/DirectTopup.vue')
+                },
+                {
                     path: 'contacts',
                     name: 'contacts',
                     component: () => import( /* webpackChunkName: "home" */ './views/home/Contacts.vue')
@@ -93,7 +98,11 @@ export default new Router({
                 path: 'about',
                 name: 'about',
                 component: () => import( /* webpackChunkName: "home" */ './views/settings/About.vue')
-            }, ],
+            }, {
+                path: 'addcard',
+                name: 'addcard',
+                component: () => import( /* webpackChunkName: "home" */ './views/settings/AddCard.vue')
+            }],
             beforeEnter(to, from, next){
                 isLoggedIn(next);
             }

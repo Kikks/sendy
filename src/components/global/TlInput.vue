@@ -58,6 +58,9 @@ export default {
     watch: {
         myValue(v){
             this.$emit("input", v);
+        },
+        value(v){
+            this.myValue = v;
         }
     },
     methods: {
