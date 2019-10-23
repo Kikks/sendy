@@ -28,10 +28,24 @@
             <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="airtime_amount" />
             <div class="row mt-4 mb-5">
                 <div class="col-6">
-                    <tl-input placeholder="Start Date" type="date" v-model="start_date" />
+                    <date-picker 
+                        placeholder="Start Date" 
+                        input-class="date-picker"
+                        v-model="start_date"
+                        calendar-class="calendar-area"
+                        format="yyyy-MM-dd"
+                    ></date-picker>
                 </div>
                 <div class="col-6">
-                    <tl-input placeholder="End Date" type="date" v-model="end_date" />
+                    <date-picker 
+                        placeholder="End Date" 
+                        input-class="date-picker"
+                        v-model="end_date"
+                        calendar-class="calendar-area right"
+                        format="yyyy-MM-dd"
+                        :disabled-dates="{to: new Date(start_date)}"
+                        :disabled="!start_date && true"
+                    ></date-picker>
                 </div>
             </div>
             <div class="frequency mb-5">
@@ -70,6 +84,7 @@
 </template>
 <script>
 import axios from 'axios';
+import moment from 'moment';
 import Helpers from '../../utils/Helpers';
 import countries_code from "../../country_code.json";
 
@@ -93,16 +108,11 @@ export default {
                 countrySelectorLabel: "Code",
                 countrySelectorError: "Select a valid code",
                 phoneNumberLabel: "Phone",
-                example: "Invalid e.g : "
+                example: ""
             },
             countriesCode: countries_code,
             phoneNumberMetaData: {}
 
-        }
-    },
-    watch: {
-        phone(x){
-            console.log(x);
         }
     },
     computed: {
@@ -133,8 +143,8 @@ export default {
                 phoneNumber: this.phone,
                 currencyCode,
                 airtimeAmount: Number(this.airtime_amount),
-                startDate: this.start_date,
-                endDate: this.end_date,
+                startDate: moment(this.start_date).format('YYYY-MM-DD'),
+                endDate: moment(this.end_date).format('YYYY-MM-DD'),
                 frequency: this.ticked,
                 type: "individual",
                 status: this.status ? "active" : "inactive"
@@ -167,7 +177,7 @@ export default {
      }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
     .new-contact{
         margin-top: 55px;
         padding: 20px;
@@ -183,5 +193,28 @@ export default {
             font-weight:bold;
             height: 54px;
         }
+
+        .date-picker {
+            width: 100% !important;
+            padding: 20px 0 0;
+            border: none;
+            border-bottom: 1px solid lightgray;  
+        }
+
+        .calendar-area {
+
+            &.right {
+                right: -1vh !important;
+            }
+            
+            .selected {
+                background: red !important;
+            }
+        }
+
+        .field.vue-input-ui .lm-text-danger{
+            color: green !important;
+        }
+
     }
 </style>
