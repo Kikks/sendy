@@ -15,7 +15,10 @@ export default new Router({
     routes: [{
             path: '/',
             name: 'onboard',
-            component: Onboard
+            component: Onboard,
+            beforeEnter: (to, from, next) => {
+                isLoggedIn(next);
+            }
         },
         {
             path: '/auth',

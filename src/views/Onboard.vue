@@ -21,6 +21,11 @@ export default {
       gotoNext(){
           this.$router.push({name: 'signup'});
       }
+  },
+  mounted(){
+      if(this.$store.state.isLoggedIn){
+          this.$router.push({ name: 'home'});
+      }
   }
 }
 </script>
