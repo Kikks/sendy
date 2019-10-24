@@ -9,7 +9,7 @@
             :required="required"
             :error="error"
             :countries-height="countriesHeight"
-            :only-countries="allowSelectCountries ? countriesCode : null"
+            :only-countries="allowSelectCountries ? onlyCountries : null"
             class="mt-5"
             @update="handlePhoneInputUpdate"
             :class="`${hasError ? 'error-state' : 'success-state'}`"
@@ -49,6 +49,12 @@ export default {
             type: Boolean,
             default: true
         },
+        onlyCountries: {
+            type: Array,
+            default() {
+                return country_code
+            }
+        },
         uniqueName: {
             type: String,
             default: Math.random().toString(),
@@ -68,8 +74,7 @@ export default {
                 countrySelectorError: "Select a valid code",
                 phoneNumberLabel: "Phone",
                 example: ""
-            },
-            countriesCode: country_code
+            }
         }
     },
     methods: {

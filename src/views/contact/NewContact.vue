@@ -12,7 +12,7 @@
             </p>
 
             <tl-input class="mt-5" placeholder="Name" v-model="name"/>
-            <phone-input v-model="phone" uniqueName="err" />
+            <phone-input v-model="phone" uniqueName="newcontact" />
             <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="airtime_amount" />
             <div class="row mt-4 mb-5">
                 <div class="col-6">

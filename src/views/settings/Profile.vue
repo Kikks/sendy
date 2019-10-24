@@ -14,7 +14,8 @@
                 <tl-input class="mb-5" placeholder="First Name" v-model="first_name" />
                 <tl-input class="mb-5" placeholder="Last Name" v-model="last_name"  />
                 <!-- <tl-input type="tel" class="mb-5" placeholder="Phone" v-model="phone" /> -->
-                <vue-phone-number-input
+                <phone-input v-model="phone" />
+                <!-- <vue-phone-number-input
                     valid-color="#006FFF"
                     :translations="phoneNumberInputOptions"
                     default-country-code="NG"
@@ -26,7 +27,7 @@
                     :only-countries="countriesCode"
                     class="mt-4 mb-5"
                     @update="handlePhoneInputUpdate"
-                />
+                /> -->
                 <tl-input type="email" class="mb-5" placeholder="Email" v-model="email" />
             </div>
 
@@ -51,18 +52,10 @@ export default {
         return {
             first_name: "",
             last_name: "",
-            rawPhone: "",
+            phone: "",
             phone: "",
             email: "",
             isLoading: false,
-            phoneNumberInputOptions: {
-                countrySelectorLabel: "Code",
-                countrySelectorError: "Select a valid code",
-                phoneNumberLabel: "Phone",
-                example: "Invalid e.g : "
-            },
-            countriesCode: countries_code,
-            phoneNumberMetaData: {}
         }
     },
     //+23480609170253 danieel@gmail.com
@@ -70,8 +63,7 @@ export default {
         canSubmit(){
             if(this.first_name.length < 1 || 
                 this.last_name.length < 1 || 
-                this.phone.length < 1 ||
-                !this.phoneNumberMetaData.isValid
+                this.phone.length < 1
             ){
                 return true;
             }
@@ -88,11 +80,11 @@ export default {
         updateProfile(){
             this.isLoading = true;
 
-            const currencyCode = Helpers.assignCurrencyCode(this.phoneNumberMetaData.countryCode);
+            const currencyCode = Helpers.assignCurrencyCode(this.phone.split('-')[1]);
             const data = {
                 firstName: this.first_name,
                 lastName: this.last_name,
-                phoneNumber: this.phone,
+                phoneNumber: this.phone.split('-')[0],
                 email: this.email,
                 currencyCode
             };

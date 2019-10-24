@@ -18,17 +18,11 @@
                     />
                 </div>
                 <div class="col-10">
-                    <vue-phone-number-input
-                        valid-color="#006FFF"
-                        :translations="phoneNumberInputOptions"
-                        :default-country-code="defaultCode"
-                        v-model="phone.value"
-                        size="lg"
-                        required
-                        error
-                        :countries-height="25"
-                        :only-countries="onlyCountryCodes"
-                        @update="handlePhoneInputUpdate"
+                    <phone-input 
+                        v-model="phone.value" 
+                        :uniqueName="`group-contact-${phone.id}`"
+                        :defaultCountryCode="defaultCode"
+                        :onlyCountries="onlyCountryCodes" 
                     />
                 </div>
                 <div class="col-1 text-center" v-if="index == 0">
@@ -45,10 +39,24 @@
 
             <div class="row mt-4 mb-5">
                 <div class="col-6">
-                    <tl-input placeholder="Start Date" type="date" v-model="startDate" />
+                    <date-picker 
+                        placeholder="Start Date" 
+                        input-class="date-picker"
+                        v-model="startDate"
+                        calendar-class="calendar-area"
+                        format="yyyy-MM-dd"
+                    ></date-picker>
                 </div>
                 <div class="col-6">
-                    <tl-input placeholder="End Date" type="date" v-model="endDate" />
+                    <date-picker 
+                        placeholder="End Date" 
+                        input-class="date-picker"
+                        v-model="endDate"
+                        calendar-class="calendar-area right"
+                        format="yyyy-MM-dd"
+                        :disabled-dates="{to: new Date(startDate)}"
+                        :disabled="!startDate && true"
+                    ></date-picker>
                 </div>
             </div>
             <div class="frequency mb-5">
@@ -91,6 +99,7 @@
 </template>
 <script>
 import axios from 'axios';
+import moment from 'moment';
 import Helpers from '../../utils/Helpers.js';
 import countries_code from "../../country_code.json";
 
@@ -108,15 +117,7 @@ export default {
                 checked: "#4CD964",
                 unchecked: "#FC001F"
             },
-            phoneNumberInputOptions: {
-                countrySelectorLabel: "Code",
-                countrySelectorError: "Select a valid code",
-                phoneNumberLabel: "Phone",
-                example: "Invalid e.g : "
-            },
             countriesCode: countries_code,
-            formattedPhoneNumberInfo: {},
-            formattedPhones: [],
             isLoading: false,
             defaultCode: "NG",
         };
@@ -126,20 +127,24 @@ export default {
             if(this.phones.length < 2){
                 return this.countriesCode;
             }
-
             return this.countriesCode.filter(cc => cc == this.defaultCode);
         },
-        filterPhoneNumbers() {
-            return this.formattedPhones.filter(
-                (phone, index) => this.formattedPhones.indexOf(phone) === index
-            );
+        refinedPhoneNumbers() {
+            let refinedArray = [];
+            this.phones.forEach(phone => {
+                refinedArray.push(
+                    phone.value.split('-')[0]
+                );
+            });
+            return refinedArray.filter((phone, index) => refinedArray.indexOf(phone) === index);
         },
         canSubmit() {
             if (
                 this.groupName.length < 1 ||
                 this.airtimeAmount.length < 1 ||
                 this.startDate.length < 1 ||
-                this.endDate.length < 1
+                this.endDate.length < 1 ||
+                !this.phones[this.phones.length - 1].value
             ) {
                 return true;
             }
@@ -155,14 +160,7 @@ export default {
                 return;
             }
 
-            if (!this.formattedPhoneNumberInfo.isValid) {
-                return;
-            }
-            this.defaultCode = this.formattedPhoneNumberInfo.countryCode;
-
-            this.formattedPhones.push(
-                this.formattedPhoneNumberInfo.formattedNumber
-            );
+            this.defaultCode = this.phones[this.phones.length - 1].value.split('-')[1];
             this.phones.push({
                 value: "",
                 id: Math.random()
@@ -172,17 +170,6 @@ export default {
             
             if (this.isLoading) return;
             
-            if(this.formattedPhoneNumberInfo.hasOwnProperty('isValid') && 
-                this.formattedPhoneNumberInfo.isValid
-            ){
-                this.formattedPhones.push(this.formattedPhoneNumberInfo.formattedNumber);
-            }
-
-            if(this.formattedPhones.length < 1){
-                this.$toasted.show("Phone numbers cannot be empty");
-                return;
-            }
-        
             this.isLoading = true;
             const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact`;
             
@@ -190,11 +177,11 @@ export default {
 
             const data = {
                 name: this.groupName,
-                phoneNumber: this.filterPhoneNumbers,
+                phoneNumber: this.refinedPhoneNumbers,
                 currencyCode,
                 airtimeAmount: Number(this.airtimeAmount),
-                startDate: this.startDate,
-                endDate: this.endDate,
+                startDate: moment(this.startDate).format('YYYY-MM-DD'),
+                endDate: moment(this.endDate).format('YYYY-MM-DD'),
                 frequency: this.ticked,
                 type: "group",
                 status: this.status ? "active" : "inactive"
@@ -217,9 +204,6 @@ export default {
         deleteNumber(index) {
             this.formattedPhones.splice(index, 1);
             this.phones.splice(index, 1);
-        },
-        handlePhoneInputUpdate($event) {
-            this.formattedPhoneNumberInfo = $event;
         }
     }
 };
@@ -241,6 +225,25 @@ export default {
         font-weight: bold;
         height: 54px;
     }
+
+    .date-picker {
+        width: 100% !important;
+        padding: 20px 0 0;
+        border: none;
+        border-bottom: 1px solid lightgray;  
+    }
+
+    .calendar-area {
+
+        &.right {
+            right: -1vh !important;
+        }
+        
+        .selected {
+            background: red !important;
+        }
+    }
+
     .new-contact-phone-input {
         &:nth-child(1) {
             margin-top: 0px !important;

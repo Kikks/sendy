@@ -13,7 +13,7 @@
             </div>
             <div v-if="tab">
                 <tl-input class="mt-5" placeholder="Name" v-model="name" />
-                <phone-input v-model="phone" />
+                <phone-input v-model="phone" uniqueName="sendairtime"/>
                 <tl-input
                     class="mt-5"
                     placeholder="Airtime Amount"
