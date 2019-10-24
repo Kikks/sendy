@@ -3,12 +3,12 @@
   "short_name": "Sendy",
   "icons": [
     {
-      "src": "./img/icons/android-chrome-192x192.png",
+      "src": "./img/icons/Sendy-app-icon.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "./img/icons/android-chrome-512x512.png",
+      "src": "./img/icons/Sendy-app-icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
@@ -16,5 +16,6 @@
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#FFFFFF",
-  "theme_color": "#006FFF"
+  "theme_color": "#006FFF",
+  "orientation": "portrait"
 }

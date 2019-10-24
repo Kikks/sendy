@@ -176,7 +176,8 @@ export default {
             }
             
             .selected {
-                background: red !important;
+                background: #006FFF !important;
+                color: white !important;
             }
         }
 
