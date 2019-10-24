@@ -13,20 +13,7 @@
             </div>
             <div v-if="tab">
                 <tl-input class="mt-5" placeholder="Name" v-model="name" />
-                <vue-phone-number-input
-                    valid-color="#006FFF"
-                    :translations="phoneNumberInputOptions"
-                    default-country-code="NG"
-                    v-model="rawPhone"
-                    size="lg"
-                    required
-                    error
-                    :countries-height="25"
-                    :only-countries="countriesCode"
-                    class="mt-5"
-                    @update="handlePhoneInputUpdate"
-                />
-                <!-- <tl-input class="mt-5" placeholder="Phone" type="tel" v-model="phoneNumber" /> -->
+                <phone-input v-model="phone" />
                 <tl-input
                     class="mt-5"
                     placeholder="Airtime Amount"
@@ -80,7 +67,6 @@
 import axios from "axios";
 import { directive as onClickaway } from 'vue-clickaway';
 import Helpers from "../../utils/Helpers.js";
-import countries_code from "../../country_code.json";
 
 export default {
     directives: {
@@ -89,28 +75,17 @@ export default {
     data() {
         return {
             tab: true,
-            // search: true,
             searchTerm: "",
             name: "",
-            phoneNumber: "",
             airtimeAmount: "",
             isLoading: false,
             selectedContactId: "",
             showSearch: false,
-            rawPhone: "",
             phone: "",
             status_color_options: {
                 checked: "#4CD964",
                 unchecked: "#FC001F"
-            },
-            phoneNumberInputOptions: {
-                countrySelectorLabel: "Code",
-                countrySelectorError: "Select a valid code",
-                phoneNumberLabel: "Phone",
-                example: "Invalid e.g : "
-            },
-            countriesCode: countries_code,
-            phoneNumberMetaData: {}
+            }
         };
     },
     watch: {
@@ -151,8 +126,7 @@ export default {
         canSubmit() {
             if (
                 this.tab && this.name.length < 1 ||
-                this.tab && this.phone.length < 1 ||
-                this.tab && !this.phoneNumberMetaData.isValid
+                this.tab && this.phone.length < 1
             ) {
                 return true;
             }
@@ -187,7 +161,7 @@ export default {
 
             this.isLoading = true;
 
-            const currencyCode = Helpers.assignCurrencyCode(this.phoneNumberMetaData.countryCode);
+            const currencyCode = Helpers.assignCurrencyCode(this.phone.split('-')[1]);
 
             const data = {
                 value: Number(this.airtimeAmount),
@@ -196,7 +170,7 @@ export default {
             };
 
             if(this.tab){
-                data.phoneNumber = [this.phoneNumber];
+                data.phoneNumber = [this.phone.split('-')[0]];
             } else {
                 data.contact = this.selectedContactId
             }
@@ -214,13 +188,7 @@ export default {
                         this.$toasted.show(response);
                     });
                 });
-        },
-        handlePhoneInputUpdate($event){
-            this.phoneNumberMetaData = $event;
-            if($event.isValid){
-                this.phone = $event.formattedNumber;
-            }
-        },
+        }
     },
     mounted(){
         if(this.contacts.length < 1) {

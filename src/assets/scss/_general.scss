@@ -110,37 +110,6 @@ input {
     // font-weight: 600;
     font-size: 1.2rem;
 }
-.vue-phone-number-input {
-    .input-country-selector {
-        display: flex;
-        flex-direction: row;
-        border-bottom: 1px solid lightgray;
-        
-        .field-input {
-            border: none !important;
-        }
-        &.is-focused {
-            border: none !important;
-            border-bottom: 1px solid lightgray !important;
-        }
-    }
-    .input-phone-number {
-       // display: flex;
-        //flex-direction: row;
-        border-bottom: 1px solid lightgray;
-
-        .field-input {
-            border: none !important;   
-        }
-        &.is-focused {
-            border: none !important;
-            border-bottom: 1px solid lightgray !important;
-        }
-    }
-    .country-list{
-        height: auto !important;
-    }
-}
 
 .stretch{
     flex: 1;

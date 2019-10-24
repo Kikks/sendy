@@ -61,19 +61,19 @@ export default new Vuex.Store({
         login({
             commit
         }, {
-            phoneNumber,
+            username,
             password,
-            email
+            type
         }) {
             return new Promise((resolve, reject) => {
                 const url = `${process.env.VUE_APP_GEN_AUTH_SVC_URL}/auth/login`;
 
                 axios
                     .post(url, {
-                        phoneNumber,
+                        username,
                         password,
+                        type,
                         app: `${process.env.VUE_APP_APP_ID}`,
-                        email: email ? `${email}` : 'danieel@gmail.com'
                     })
                     .then(response => {
                         const user = response.data.data.user;
@@ -103,16 +103,14 @@ export default new Vuex.Store({
                 axios
                     .post(url, data)
                     .then(response => {
-                        const isNotRegistered = response.data.data;
 
-                        if (!isNotRegistered) {
-                            commit('setIsRegistered', !isNotRegistered);
-                        } else {
-                            commit('setIsRegistered', !isNotRegistered);
-                        }
+                        commit('setIsRegistered', !response.data.data); 
                         resolve(response);
                     })
                     .catch(error => {
+                        if(error && error.response && error.response.data) {
+                            commit('setIsRegistered', !error.response.data.data);
+                        }
                         reject(error);
                     });
             });

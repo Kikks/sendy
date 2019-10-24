@@ -1,0 +1,131 @@
+<template>
+    <div>
+        <vue-phone-number-input
+            :valid-color="validColor"
+            :translations="phoneNumberInputOptions"
+            :default-country-code="defaultCountryCode"
+            v-model="rawPhone"
+            :size="size"
+            :required="required"
+            :error="error"
+            :countries-height="countriesHeight"
+            :only-countries="allowSelectCountries ? countriesCode : null"
+            class="mt-5"
+            @update="handlePhoneInputUpdate"
+            :class="`${hasError ? 'error-state' : 'success-state'}`"
+            :ref="`phone-input-${uniqueName}`"
+        />
+    </div>
+</template>
+<script>
+import country_code from '../../country_code.json';
+export default {
+    props: {
+        validColor: {
+            type: String,
+            default: "006FFF"
+        },
+        defaultCountryCode: {
+            type: String,
+            default: "NG"
+        },
+        size: {
+            type: String,
+            default: "lg"
+        },
+        required: {
+            type: Boolean,
+            default: true
+        },
+        error: {
+            type: Boolean,
+            default: true
+        },
+        countriesHeight: {
+            type: Number,
+            default: 25
+        },
+        allowSelectCountries: {
+            type: Boolean,
+            default: true
+        },
+        uniqueName: {
+            type: String,
+            default: Math.random().toString(),
+            required: true
+        },
+        value: {
+            type: String
+        }
+    },
+    data() {
+        return {
+            phone: this.value,
+            hasError: false,
+            rawPhone: "",
+            phoneNumberInputOptions: {
+                countrySelectorLabel: "Code",
+                countrySelectorError: "Select a valid code",
+                phoneNumberLabel: "Phone",
+                example: ""
+            },
+            countriesCode: country_code
+        }
+    },
+    methods: {
+        handlePhoneInputUpdate($event){
+            if(this.$refs[`phone-input-${this.uniqueName}`].isValid) {
+                this.hasError = false;
+            } else {
+                this.hasError = true;
+            }
+            if($event.isValid){
+                this.$emit('input', `${$event.formattedNumber}-${$event.countryCode}`);
+            } else {
+                this.$emit('input', '');
+            }
+        }
+    }
+}
+</script>
+<style lang="scss">
+.vue-phone-number-input {
+    .input-country-selector {
+        display: flex;
+        flex-direction: row;
+        border-bottom: 1px solid lightgray;
+        
+        .field-input {
+            border: none !important;
+        }
+        &.is-focused {
+            border: none !important;
+            border-bottom: 1px solid lightgray !important;
+        }
+    }
+    .input-phone-number {
+       // display: flex;
+        //flex-direction: row;
+        border-bottom: 1px solid lightgray;
+
+        .field-input {
+            border: none !important;   
+        }
+        &.is-focused {
+            border: none !important;
+            border-bottom: 1px solid lightgray !important;
+        }
+    }
+    .country-list{
+        height: auto !important;
+    }
+
+    .success-state .field.vue-input-ui .lm-text-danger{
+        color: green !important;
+    }
+
+    .error-state .field.vue-input-ui .lm-text-danger{
+        color: red !important;
+    }
+}
+</style>

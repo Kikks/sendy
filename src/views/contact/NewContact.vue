@@ -12,19 +12,7 @@
             </p>
 
             <tl-input class="mt-5" placeholder="Name" v-model="name"/>
-            <vue-phone-number-input
-                valid-color="#006FFF"
-                :translations="phoneNumberInputOptions"
-                default-country-code="NG"
-                v-model="rawPhone"
-                size="lg"
-                required
-                error
-                :countries-height="25"
-                :only-countries="countriesCode"
-                class="mt-5"
-                @update="handlePhoneInputUpdate"
-            />
+            <phone-input v-model="phone" uniqueName="err" />
             <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="airtime_amount" />
             <div class="row mt-4 mb-5">
                 <div class="col-6">
@@ -86,16 +74,14 @@
 import axios from 'axios';
 import moment from 'moment';
 import Helpers from '../../utils/Helpers';
-import countries_code from "../../country_code.json";
 
 export default {
      data(){
         return{
-            ticked:"daily",
             name: "",
-            phone: "",
-            rawPhone: "",
+            ticked:"daily",
             airtime_amount: "",
+            phone: "",
             start_date: "",
             end_date: "",
             isLoading: false,
@@ -104,15 +90,6 @@ export default {
                 checked: "#4CD964",
                 unchecked: "#FC001F"
             },
-            phoneNumberInputOptions: {
-                countrySelectorLabel: "Code",
-                countrySelectorError: "Select a valid code",
-                phoneNumberLabel: "Phone",
-                example: ""
-            },
-            countriesCode: countries_code,
-            phoneNumberMetaData: {}
-
         }
     },
     computed: {
@@ -121,8 +98,7 @@ export default {
                 this.phone.length < 1 || 
                 this.airtime_amount.length < 1 || 
                 this.start_date.length < 1 || 
-                this.end_date.length < 1 || 
-                !this.phoneNumberMetaData.isValid
+                this.end_date.length < 1
             ) {
                 return true;
             }
@@ -136,11 +112,10 @@ export default {
 
             const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact`;
 
-            const currencyCode = Helpers.assignCurrencyCode(this.phoneNumberMetaData.countryCode);
-
+            const currencyCode = Helpers.assignCurrencyCode(this.phone.split('-')[1]);
             const data = {
                 name: this.name,
-                phoneNumber: this.phone,
+                phoneNumber: this.phone.split('-')[0],
                 currencyCode,
                 airtimeAmount: Number(this.airtime_amount),
                 startDate: moment(this.start_date).format('YYYY-MM-DD'),
@@ -149,7 +124,6 @@ export default {
                 type: "individual",
                 status: this.status ? "active" : "inactive"
             };
-            
             axios
                 .post(url, data)
                 .then(response => {
@@ -164,12 +138,6 @@ export default {
                         this.$toasted.show(response);
                     });
                 });
-        },
-        handlePhoneInputUpdate($event){
-            this.phoneNumberMetaData = $event;
-            if($event.isValid){
-                this.phone = $event.formattedNumber;
-            }
         },
         changeIcon(data){
             this.ticked = data;
@@ -212,8 +180,12 @@ export default {
             }
         }
 
-        .field.vue-input-ui .lm-text-danger{
+        .success-state .field.vue-input-ui .lm-text-danger{
             color: green !important;
+        }
+
+        .error-state .field.vue-input-ui .lm-text-danger{
+            color: red !important;
         }
 
     }

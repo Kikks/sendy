@@ -15,6 +15,9 @@
                 </div>
                 <div class="row">
                     <div class="col-12">
+                        <div v-if="cards.length < 1" class="py-2">
+                            You currently don't have any saved card.
+                        </div>
                         <div class="recurring-card" v-for="card in cards" :key="card.id" @click="showCardTopupModal(card)">
                             <span class="font-weight-bold">**** **** **** ****</span> {{card.last4}}
                         </div>
