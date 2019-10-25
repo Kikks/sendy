@@ -10,9 +10,9 @@
             :error="error"
             :countries-height="countriesHeight"
             :only-countries="allowSelectCountries ? onlyCountries : null"
-            class="mt-5"
+            :style="style"
             @update="handlePhoneInputUpdate"
-            :class="`${hasError ? 'error-state' : 'success-state'}`"
+            :class="`${hasError ? 'error-state' : 'success-state'} mt-5`"
             :ref="`phone-input-${uniqueName}`"
         />
     </div>
@@ -61,6 +61,9 @@ export default {
             required: true
         },
         value: {
+            type: String
+        },
+        style: {
             type: String
         }
     },

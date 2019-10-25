@@ -13,9 +13,11 @@
       "type": "image/png"
     }
   ],
-  "start_url": "./index.html",
+  "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#006FFF",
   "theme_color": "#006FFF",
-  "orientation": "portrait"
+  "orientation": "portrait-primary",
+  "categories": ["payment", "airtime"],
+  "description": "Automate airtime for your loved ones and members of staff in a recurring manner"
 }

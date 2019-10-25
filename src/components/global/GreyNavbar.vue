@@ -48,6 +48,7 @@ export default {
         position: fixed;
         width: 100%;
         max-width: $full-width;
+        z-index: 100;
 
         .title{
             text-align: center;

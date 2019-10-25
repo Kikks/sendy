@@ -8,7 +8,7 @@
             <p class="text-center">Enter group name, phone numbers and airtime frequency</p>
 
             <tl-input class="mt-5" placeholder="Group Name" v-model="groupName" />
-            <div class="row align-center mt-4" v-for="(phone, index) in phones" :key="phone.id">
+            <div class="row align-items-center mt-4" v-for="(phone, index) in phones" :key="phone.id">
                 <div class="col-1 text-center">
                     <icon
                         name="delete"
@@ -17,19 +17,26 @@
                         v-if="phones.length > 1"
                     />
                 </div>
-                <div class="col-10">
+                <div class="col-11">
                     <phone-input 
                         v-model="phone.value" 
                         :uniqueName="`group-contact-${phone.id}`"
                         :defaultCountryCode="defaultCode"
                         :onlyCountries="onlyCountryCodes" 
+                        style="margin-top: 0.25rem !important"
                     />
                 </div>
-                <div class="col-1 text-center" v-if="index == 0">
+                <!-- <div class="col-1 text-center" v-if="index == 0">
                     <icon name="plus" color="green" @click.native="createNewPhoneNumber()" />
+                </div> -->
+            </div>
+            <div class="row pt-3 justify-content-end">
+                <div class="col-3">
+                    <button class="btn small" @click="createNewPhoneNumber()" style="padding: 0 1px 0 1px;">
+                        <icon name="plus" />
+                    </button>
                 </div>
             </div>
-
             <tl-input
                 class="mt-5"
                 placeholder="Airtime Amount"
@@ -202,7 +209,6 @@ export default {
                 });
         },
         deleteNumber(index) {
-            this.formattedPhones.splice(index, 1);
             this.phones.splice(index, 1);
         }
     }

@@ -23,9 +23,13 @@ export default {
       }
   },
   mounted(){
-      if(this.$store.state.isLoggedIn){
+      const userData = JSON.parse(window.localStorage.getItem("tinylabs-sendy-user"))
+      if(userData){
           this.$router.push({ name: 'home'});
       }
+    //   if(this.$store.state.isLoggedIn){
+    //       this.$router.push({ name: 'home'});
+    //   }
   }
 }
 </script>
