@@ -5,12 +5,11 @@
             :translations="phoneNumberInputOptions"
             :default-country-code="defaultCountryCode"
             v-model="rawPhone"
-            :size="size"
+            :style="customStyle"
             :required="required"
             :error="error"
             :countries-height="countriesHeight"
             :only-countries="allowSelectCountries ? onlyCountries : null"
-            :style="style"
             @update="handlePhoneInputUpdate"
             :class="`${hasError ? 'error-state' : 'success-state'} mt-5`"
             :ref="`phone-input-${uniqueName}`"
@@ -63,7 +62,7 @@ export default {
         value: {
             type: String
         },
-        style: {
+        customStyle: {
             type: String
         }
     },

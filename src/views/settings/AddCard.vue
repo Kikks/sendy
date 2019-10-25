@@ -24,11 +24,13 @@ export default {
         }
     },
     computed: {
-
+        user(){
+            return this.$store.getters.getUser;
+        }
     },
     methods: {
         addCard(){
-            new Pay({ amount: this.amount, email: 'daniel@gmail.com'}).initiatePayment(this.referencePayment);
+            new Pay({ amount: this.amount, email: this.user.email}).initiatePayment(this.referencePayment);
         },
         referencePayment(response) {
             this.isLoading = true;
@@ -42,6 +44,7 @@ export default {
                     this.amount = "";
                     
                     this.$store.dispatch('getActivities');
+                    this.$store.dispatch('getCards');
 
                     if(response.data && 
                         response.data.authorization && 

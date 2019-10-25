@@ -13,7 +13,8 @@ export default new Vuex.Store({
         userInfo: {},
         currentPhoneNumber: "",
         contacts: [],
-        activities: []
+        activities: [],
+        cards: []
     },
     getters: {
         getIsRegistered(state) {
@@ -33,6 +34,9 @@ export default new Vuex.Store({
         },
         getActivities(state){
             return state.activities;
+        },
+        getCards(state) {
+            return state.cards;
         }
 
     },
@@ -56,6 +60,13 @@ export default new Vuex.Store({
         setActivities(state, payload) {
             state.activities = payload
         },
+        logout(state) {
+            state.user = {};
+            state.isLoggedIn = false;
+        },
+        setCards(state, payload){
+            state.cards = payload;
+        }
     },
     actions: {
         login({
@@ -93,6 +104,18 @@ export default new Vuex.Store({
                         reject(error);
                     });
 
+            });
+        },
+        logout({ commit }){
+            return new Promise((resolve, reject) => {
+                try{
+                    localStorage.removeItem("tinylabs-sendy-user");
+                    delete axios.defaults.headers.common['Authorization'];
+                    commit('logout');
+                    resolve();
+                } catch(error) {
+                    reject(error);
+                }
             });
         },
         checkIsRegistered({
@@ -178,6 +201,20 @@ export default new Vuex.Store({
                             window.localStorage.setItem("tinylabs-sendy-user", JSON.stringify(updatedUserData));
                         }
 
+                        resolve(response);
+                    })
+                    .catch(error => {
+                        reject(error);
+                    });
+                });
+        },
+        getCards({ commit }) {
+            return new Promise((resolve, reject) => {
+                const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/card`;
+                axios
+                    .get(url)
+                    .then(response => {
+                        commit('setCards', response.data.data);
                         resolve(response);
                     })
                     .catch(error => {

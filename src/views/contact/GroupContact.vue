@@ -1,7 +1,7 @@
 <template>
     <div>
         <GreyNavbar title="Add New Contact">
-            <button class="p-0" slot="trailing">Delete</button>
+            <!-- <button class="p-0" slot="trailing">Delete</button> -->
         </GreyNavbar>
 
         <div class="new-contact">
@@ -23,16 +23,13 @@
                         :uniqueName="`group-contact-${phone.id}`"
                         :defaultCountryCode="defaultCode"
                         :onlyCountries="onlyCountryCodes" 
-                        style="margin-top: 0.25rem !important"
+                        customStyle="margin-top: 0.25rem !important"
                     />
                 </div>
-                <!-- <div class="col-1 text-center" v-if="index == 0">
-                    <icon name="plus" color="green" @click.native="createNewPhoneNumber()" />
-                </div> -->
             </div>
             <div class="row pt-3 justify-content-end">
                 <div class="col-3">
-                    <button class="btn small" @click="createNewPhoneNumber()" style="padding: 0 1px 0 1px;">
+                    <button class="btn small" :disabled="!phones[phones.length - 1].value"  @click="createNewPhoneNumber()" style="padding: 0 1px 0 1px;">
                         <icon name="plus" />
                     </button>
                 </div>

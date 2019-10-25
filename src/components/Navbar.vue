@@ -25,6 +25,9 @@
                     <router-link :to="{name: 'about'}" tag="div" class="nav-item">
                         About
                     </router-link>
+                    <div class="nav-item" @click="logout">
+                        Logout
+                    </div>
                 </div>
             </div>
 
@@ -53,6 +56,16 @@ export default {
     data(){
         return{
             sideToggle: false,
+        }
+    },
+    methods: {
+        logout(){
+            this.$store
+                .dispatch('logout')
+                .then(() => {
+                    this.$router.push({ name: 'onboard' });
+                    this.$toasted.show('Logout successful');
+                });
         }
     }
 }
@@ -132,6 +145,7 @@ nav.navbar{
             margin-top: 30px;
             .nav-item{
                 padding: 15px 0px; 
+                cursor: pointer;
             }
         }
         .bottom{

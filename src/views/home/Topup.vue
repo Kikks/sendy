@@ -62,14 +62,17 @@ export default {
             amount: "",
             isLoading: false,
             isPayLoading: false,
-            cards: [],
             cardTopupModalName: 'card-top-up-modal',
-            currentCard: {}
+            currentCard: {},
+            errorMessage: ""
         };
     },
     computed: {
         user() {
             return this.$store.getters.getUser;
+        },
+        cards(){
+            return this.$store.getters.getCards;
         },
         canSubmit() {
             if (this.amount) return false;
@@ -78,18 +81,17 @@ export default {
     methods: {
         getCards(){
             this.isLoading = true;
-            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/card`;
-            axios
-                .get(url)
+
+            this.$store
+                .dispatch('getCards')
                 .then(response => {
                     this.isLoading = false;
-                    this.cards = response.data.data;
                 })
                 .catch(error => {
                     Helpers.errorResponse(error, response => {
                         this.isLoading = false;
                         this.errorMessage = response;
-                    })
+                    });
                 });
         },
         showCardTopupModal(card){
@@ -130,7 +132,9 @@ export default {
         }
     },
     mounted(){
-        this.getCards();
+        if(this.$store.getters.getCards.length < 1){
+            this.getCards();
+        }
     }
 };
 </script>

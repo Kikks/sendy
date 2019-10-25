@@ -1,9 +1,9 @@
 <template>
     <div>
         <GreyNavbar title="Add New Contact">
-            <button class="p-0" slot="trailing">
+            <!-- <button class="p-0" slot="trailing">
                 Delete
-            </button>
+            </button> -->
         </GreyNavbar>
 
         <div class="new-contact">

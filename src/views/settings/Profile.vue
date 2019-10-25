@@ -13,22 +13,8 @@
                 </div> -->
                 <tl-input class="mb-5" placeholder="First Name" v-model="first_name" />
                 <tl-input class="mb-5" placeholder="Last Name" v-model="last_name"  />
-                <!-- <tl-input type="tel" class="mb-5" placeholder="Phone" v-model="phone" /> -->
                 <phone-input v-model="phone" />
-                <!-- <vue-phone-number-input
-                    valid-color="#006FFF"
-                    :translations="phoneNumberInputOptions"
-                    default-country-code="NG"
-                    v-model="rawPhone"
-                    size="lg"
-                    required
-                    error
-                    :countries-height="25"
-                    :only-countries="countriesCode"
-                    class="mt-4 mb-5"
-                    @update="handlePhoneInputUpdate"
-                /> -->
-                <tl-input type="email" class="mb-5" placeholder="Email" v-model="email" />
+                <tl-input type="email" class="mt-5" placeholder="Email" v-model="email" />
             </div>
 
             <button 
@@ -58,7 +44,6 @@ export default {
             isLoading: false,
         }
     },
-    //+23480609170253 danieel@gmail.com
     computed: {
         canSubmit(){
             if(this.first_name.length < 1 || 
