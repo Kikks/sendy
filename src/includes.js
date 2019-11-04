@@ -6,8 +6,10 @@ import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
 import VuePhoneNumberInput from 'vue-phone-number-input';
 import VModal from 'vue-js-modal';
+import LoadScript from 'vue-plugin-load-script';
 import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
+Vue.use(LoadScript);
 Vue.component('vue-phone-number-input', VuePhoneNumberInput);
 Vue.component('date-picker', DatePicker);
 Vue.use(VModal, { dialog: true });

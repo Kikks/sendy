@@ -40,7 +40,7 @@
                             <button @click="$router.go(-1)">Back</button>
                         </div>
                         <div class="col-6 text-right">
-                            <button class="round-btn" @click="step = 2" type="button" :disabled="canMoveToNextView">
+                            <button class="round-btn" @click="verifyEmail" type="button" :disabled="canMoveToNextView">
                                 <icon name="arrow-right"/>
                             </button>
                         </div>
@@ -80,6 +80,7 @@
 <script>
 import axios from "axios";
 import Helpers from "../../utils/Helpers.js";
+import { init, login } from '../../utils/AccountKit.js';
 
 export default {
     name: "registername",
@@ -120,6 +121,9 @@ export default {
             return this.$store.getters.getCurrentPhoneNumber;
         }
     },
+    mounted(){
+        init();
+    },
     methods: {
         gotoNext() {
             if (this.isLoading) return;
@@ -131,6 +135,8 @@ export default {
                 }
 
                 this.isLoading = true;
+                //this.verifyEmail();
+
                 this.register();
                 return;
             }
@@ -154,6 +160,21 @@ export default {
                         this.$toasted.show(response);
                     });
                 });
+        },
+        verifyEmail(){
+            login("EMAIL", { email: this.email }, this.callback);
+        },
+        callback(response){
+            if(response.status === "PARTIALLY_AUTHENTICATED"){
+                const url = `${process.env.VUE_APP_GEN_AUTH_SVC_URL}/auth/verify`;
+
+                axios
+                    .post(url,  { code: response.code })
+                    .then(response => {
+                        console.log(response.data);
+                        this.step = 2;
+                    });
+            }
         },
         register() {
             const url = `${process.env.VUE_APP_GEN_AUTH_SVC_URL}/auth/register`;

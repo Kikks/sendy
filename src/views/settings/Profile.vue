@@ -13,7 +13,7 @@
                 </div> -->
                 <tl-input class="mb-5" placeholder="First Name" v-model="first_name" />
                 <tl-input class="mb-5" placeholder="Last Name" v-model="last_name"  />
-                <phone-input v-model="phone" />
+                <phone-input v-model="phone" uniqueName="profilephoneinput"/>
                 <tl-input type="email" class="mt-5" placeholder="Email" v-model="email" />
             </div>
 
