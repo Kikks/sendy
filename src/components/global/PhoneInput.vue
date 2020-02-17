@@ -64,7 +64,18 @@ export default {
         },
         customStyle: {
             type: String
-        }
+        },
+        clear: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    watch: {
+        clear(v) {
+            if(v) {
+                this.rawPhone = "";
+            }
+        },
     },
     data() {
         return {

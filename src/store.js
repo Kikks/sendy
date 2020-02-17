@@ -221,6 +221,6 @@ export default new Vuex.Store({
                         reject(error);
                     });
                 });
-        }
+        },
     }
 });

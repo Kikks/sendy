@@ -6,6 +6,8 @@ import Home from './views/Home.vue';
 import Onboard from './views/Onboard.vue';
 import Auth from './views/Auth.vue';
 import FullScreen from './views/FullScreen.vue';
+import Signup from './views/auth/Signup.vue';
+import Login from './views/auth/Login.vue';
 
 Vue.use(Router);
 
@@ -21,28 +23,42 @@ export default new Router({
             path: '/auth',
             name: 'auth',
             component: Auth,
-            children: [{
-                path: 'signup',
-                name: 'signup',
-                component: () => import( /* webpackChunkName: "auth" */ './views/auth/Signup.vue')
-            }, {
-                path: 'verify',
-                name: 'verify',
-                component: () => import( /* webpackChunkName: "auth" */ './views/auth/Verify.vue')
-            }, {
-                path: 'register-name',
-                name: 'register-name',
-                component: () => import( /* webpackChunkName: "auth" */ './views/auth/RegisterName.vue'),
-                beforeEnter: (to, from, next) => {
-                    if (from.name === 'signup') {
-                        next();
-                        return;
+            children: [
+                {
+                    path: 'signup',
+                    name: 'signup',
+                    component: Signup,
+                },
+                {
+                    path: 'login',
+                    name: 'login',
+                    component: Login,
+                }, 
+                {
+                    path: 'verify',
+                    name: 'verify',
+                    component: () => import( /* webpackChunkName: "auth" */ './views/auth/Verify.vue')
+                },
+                {
+                    path: '/verify-email',
+                    name: 'verify.email',
+                    component: () => import( /* webpackChunkName: "auth" */ './views/auth/EmailVerification.vue')
+                },
+                {
+                    path: 'register-name',
+                    name: 'register-name',
+                    component: () => import( /* webpackChunkName: "auth" */ './views/auth/RegisterName.vue'),
+                    beforeEnter: (to, from, next) => {
+                        if (from.name === 'signup') {
+                            next();
+                            return;
+                        }
+                        next({
+                            name: 'signup'
+                        });
                     }
-                    next({
-                        name: 'signup'
-                    });
-                }
-            }, ]
+                }, 
+            ]
         }, {
             path: '/home',
             component: Home,

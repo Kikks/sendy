@@ -14,4 +14,9 @@ export default class Helpers {
     static assignCurrencyCode(code){
         return currencyCode[code];
     };
+
+    static getOriginUrl() {
+        return location.origin;
+    }
+
 };

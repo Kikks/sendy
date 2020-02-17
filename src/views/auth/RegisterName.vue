@@ -12,6 +12,9 @@
                     placeholder="You most recent password"
                     v-model="password"
                 />
+                <tl-input class="mb-4" placeholder="First Name" v-model="firstName" />
+                <tl-input class="mb-4" placeholder="Last Name" v-model="lastName" />
+                <tl-input type="email" class="mb-4" placeholder="Email" v-model="email" />
                  <div class="row align-items-center mt-5">
                     <div class="col-6 text-left">
                         <button @click="$router.go(-1)">Back</button>
@@ -31,9 +34,7 @@
             <div v-else>
                 <div v-if="step === 1">
                     <div style="height: 150px;">
-                        <tl-input class="mb-4" placeholder="First Name" v-model="firstName" />
-                        <tl-input class="mb-4" placeholder="Last Name" v-model="lastName" />
-                        <tl-input type="email" class="mb-4" placeholder="Email" v-model="email" />
+                        
                     </div>
                     <div class="row align-items-center mt-5">
                         <div class="col-6 text-left">
