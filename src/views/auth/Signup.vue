@@ -15,15 +15,20 @@
       />
       <tl-input class="mb-4" type="password" placeholder="Password" v-model="password" />
       <tl-input class="mb-5" type="password" placeholder="Confirm Password" v-model="confirm_password" />
-      <div class="text-right">
-        <button 
-          class="round-btn"
-          @click="submit"
-          :disabled="isDiabled || isLoading"
-        >
-          <icon name="loading" spin v-if="isLoading" />
-          <icon name="arrow-right" v-else />
-        </button>
+      <div class="row align-items-center">
+        <div class="col-6 text-left">
+            <button @click="$router.push({ name: 'login' })">Login</button>
+        </div>
+        <div class="col-6 text-right">
+          <button 
+            class="round-btn"
+            @click="submit"
+            :disabled="isDiabled || isLoading"
+          >
+            <icon name="loading" spin v-if="isLoading" />
+            <icon name="arrow-right" v-else />
+          </button>
+        </div>
       </div>
     </div>
   </div>

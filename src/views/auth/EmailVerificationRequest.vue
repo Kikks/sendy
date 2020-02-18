@@ -2,13 +2,16 @@
 <div class="login px-2">
     <div class="card-holder elevate">
     <div class="mb-4">
-        <h1>Enter your Details</h1>
+        <h1>Check your email for verification link.</h1>
+        <h5 class="pt-2">OR</h5>
+        <h3 class="mb-5">
+            You can resend the verification link below
+        </h3>
     </div>
-    <tl-input type="email" placeholder="Email" v-model="email" />
-    <tl-input class="mb-5" type="password" placeholder="Password" v-model="password" />
+    <tl-input type="email" placeholder="Email" v-model="email" class="mb-5" />
     <div class="row align-items-center">
         <div class="col-6 text-left">
-            <button @click="$router.push({ name: 'signup' })">Signup</button>
+            <button @click="$router.push({ name: 'login' })">Login</button>
         </div>
         <div class="col-6 text-right">
             <button 
@@ -35,49 +38,43 @@ export default {
     return {
       isLoading: false,
       email: "",
-      password: "",
     };
   },
   computed: {
     isDiabled() {
-      if(this.password.length < 1){
-        return true;
-      }
-
-      if(!Helpers.isValidEmail(this.email)) {
-          return true;
-      }
+      if(!Helpers.isValidEmail(this.email)) return true;
       return false;
     }
   },
+  mounted(){
+    this.setEmail();
+  },
   methods: {
+    setEmail(){
+      if(this.$route.query.email) {
+        this.email = this.$route.query.email;
+      }
+    },
     submit(){
       this.isLoading = true;
 
-      const data = {
-          username: this.email,
-          password: this.password,
-          type: "email",
-      };
+      const url = `${process.env.VUE_APP_GEN_AUTH_SVC_URL}/auth/email-verification-request`;
 
-      this.$store
-        .dispatch('login', data)
+      axios
+        .post(url, { 
+          email: this.email,
+          uiBaseUrl: Helpers.getOriginUrl()
+        })
         .then(response => {
-            const { user } = response.data.data;
-            if(user.emailVerified){
-                this.$router.push({ name: 'home' });
-            }
-            this.isLoading = false;
+          this.$toasted.show(response.data.message);
+          this.isLoading = false;
         })
         .catch(error => {
-            Helpers.errorResponse(error, response => {
-                if(response === "Your email is not verified.") {
-                    this.$router.replace({ name: 'email-verify-request', query: { email: this.email } });
-                }
-                this.$toasted.show(response);
-                this.isLoading = false;
-            });
-        });      
+          Helpers.errorResponse(error, response => {
+              this.$toasted.show(response);
+              this.isLoading = false;
+          });
+        }); 
     },
   }
 };

@@ -14,7 +14,8 @@ Vue.use(Router);
 export default new Router({
     mode: 'history',
     base: process.env.BASE_URL,
-    routes: [{
+    routes: [
+        {
             path: '/',
             name: 'onboard',
             component: Onboard
@@ -43,6 +44,11 @@ export default new Router({
                     path: '/verify-email',
                     name: 'verify.email',
                     component: () => import( /* webpackChunkName: "auth" */ './views/auth/EmailVerification.vue')
+                },
+                {
+                    path: 'email-verify-request',
+                    name: 'email-verify-request',
+                    component: () => import( /* webpackChunkName: "auth" */ './views/auth/EmailVerificationRequest.vue')
                 },
                 {
                     path: 'register-name',
