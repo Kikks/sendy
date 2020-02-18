@@ -31,6 +31,9 @@
             >
                 {{errorMessage}}
             </div>
+            <div class="text-center" v-if="!isLoading && filteredContacts.length < 1">
+                <span>You currently have no {{ tab ? 'individual' : 'group' }} contacts</span>
+            </div>
              <div v-for="(contact) in filteredContacts" :key="contact.id" class="activityRow">
                 <div class="row firstRow">
                     <div class="col-6 blue">

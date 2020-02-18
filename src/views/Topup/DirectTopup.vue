@@ -38,8 +38,15 @@ export default {
     },
     methods: {
         pay() {
-            new Pay({ email: this.user.email, amount: this.amount })
-                .initiatePayment(this.referencePayment);
+
+            this.$loadScript("https://js.paystack.co/v1/inline.js")
+                .then(() => {
+                    new Pay({ email: this.user.email, amount: this.amount }).initiatePayment(this.referencePayment);
+                })
+                .catch(() => {
+                    this.$toasted.show("Payment service not available currently.");
+                });
+                return;
         },
         referencePayment(response) {
             

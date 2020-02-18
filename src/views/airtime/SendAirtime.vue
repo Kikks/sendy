@@ -21,7 +21,7 @@
                     v-model="airtimeAmount"
                 />
             </div>
-            <div v-else>
+            <div v-else style="position: relative;">
                 <tl-input
                     class="mt-5"
                     v-model="searchTerm"
@@ -32,12 +32,17 @@
                 />
                 <div class="search" v-if="shouldShowSearchBox">
                     <div class="searchbox px-3 pb-3" v-on-clickaway="away">
-                        <div class="row pt-3" v-if="contacts.length < 1">
+                        <div class="row pt-3" v-if="!isLoading && searchContactResult.length < 1">
                             <div class="col-12">
                                 Not found
                             </div>
                         </div>
-                        <div class="searchitem pt-3" v-for="(contact) in contacts" :key="contact.id" @click="selectContact(contact)">
+                        <div class="row pt-3" v-if="isLoading">
+                            <div class="col-12">
+                               Searching...
+                            </div>
+                        </div>
+                        <div class="searchitem pt-3" v-for="(contact) in searchContactResult" :key="contact.id" @click="selectContact(contact)">
                             <div class="row">
                                 <div class="col-6">{{contact.name}}</div>
                                 <div class="col-6 text-right">{{contact.currencyCode}}{{contact.airtimeAmount}}</div>
@@ -74,7 +79,7 @@ export default {
     },
     data() {
         return {
-            tab: true,
+            tab: false,
             searchTerm: "",
             name: "",
             airtimeAmount: "",
@@ -85,43 +90,16 @@ export default {
             status_color_options: {
                 checked: "#4CD964",
                 unchecked: "#FC001F"
-            }
+            },
+            searchContactResult: [],
         };
-    },
-    watch: {
-        contacts(newValue) {
-            if(newValue.length < 1) {
-                this.selectedContactId = "";
-            }
-        },
-        searchTerm(v){
-            if(v.length > 1){
-                this.showSearch = true;
-            }
-        }
     },
     computed: {
         shouldShowSearchBox(){
             if(this.showSearch && this.searchTerm.length > 0){
                 return true;
             }
-
             return false;
-        },
-        contacts(){
-            return this.$store.getters.getContacts
-                        .filter(contact => {
-                            if(contact.type === 'individual') {
-                                return true;
-                            }
-                        })
-                        .filter(contact => {
-                            if(!this.searchTerm) {
-                                return true;
-                            }
-                             return (typeof contact.name === "string" && contact.name.toLowerCase().indexOf(this.searchTerm.toLowerCase()) !== -1) ||
-                                    (typeof contact.phoneNumber === "string" && contact.phoneNumber.toLowerCase().indexOf(this.searchTerm.toLowerCase()) !== -1);
-                        });
         },
         canSubmit() {
             if (
@@ -142,7 +120,34 @@ export default {
             return false;
         }
     },
+    watch: {
+        searchContactResult(newValue) {
+            if(newValue.length < 1) {
+                this.selectedContactId = "";
+            }
+        },
+        searchTerm(v){
+            if(v.length > 0){
+                this.search(v);
+                this.showSearch = true;
+            }
+        }
+    },
     methods: {
+        search(query){
+            this.isLoading = true;
+            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact/search`;
+
+            axios
+                .post(url, { query })
+                .then(response => {
+                    this.searchContactResult = response.data.data;
+                    this.isLoading = false;
+                })
+                .catch(error => {
+                    this.isLoading = false;
+                });
+        },
         away(){
             this.searchTerm = "";
             this.showSearch = false;
@@ -190,11 +195,6 @@ export default {
                 });
         }
     },
-    mounted(){
-        if(this.contacts.length < 1) {
-            this.$store.dispatch('getContacts');
-        }
-    }
 };
 </script>
 
@@ -230,7 +230,7 @@ export default {
     }
     .search {
         position: absolute;
-        width: 90%;
+        width: 100%;
         // max-width: calc($full-width - 10px);
         max-width: $full-width;
         z-index: 1;
