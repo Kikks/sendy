@@ -51,6 +51,16 @@ export default new Router({
                     component: () => import( /* webpackChunkName: "auth" */ './views/auth/EmailVerificationRequest.vue')
                 },
                 {
+                    path: 'password-reset-request',
+                    name: 'password-reset-request',
+                    component: () => import( /* webpackChunkName: "auth" */ './views/auth/PasswordResetRequest.vue')
+                },
+                {
+                    path: '/reset-password',
+                    name: 'password-reset',
+                    component: () => import( /* webpackChunkName: "auth" */ './views/auth/PasswordReset.vue')
+                },
+                {
                     path: 'register-name',
                     name: 'register-name',
                     component: () => import( /* webpackChunkName: "auth" */ './views/auth/RegisterName.vue'),

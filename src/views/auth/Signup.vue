@@ -17,7 +17,9 @@
       <tl-input class="mb-5" type="password" placeholder="Confirm Password" v-model="confirm_password" />
       <div class="row align-items-center">
         <div class="col-6 text-left">
-            <button @click="$router.push({ name: 'login' })">Login</button>
+          <router-link :to="{name: 'login'}">
+            Login
+          </router-link>
         </div>
         <div class="col-6 text-right">
           <button 
@@ -50,6 +52,7 @@ export default {
       email: "",
       password: "",
       confirm_password: "",
+      clearPhoneInput: false,
     };
   },
   computed: {

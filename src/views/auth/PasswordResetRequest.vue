@@ -2,16 +2,17 @@
 <div class="login px-2">
     <div class="card-holder elevate">
     <div class="mb-4">
-        <h1>Check your email for verification link.</h1>
-        <h5 class="pt-2">OR</h5>
-        <h3 class="mb-3">
-            You can resend the verification link below
+        <h1>Reset</h1>
+        <h3 class="pt-2">
+           Fill in your email.
         </h3>
     </div>
     <tl-input type="email" placeholder="Email" v-model="email" class="mb-5" />
     <div class="row align-items-center">
         <div class="col-6 text-left">
-            <button @click="$router.push({ name: 'login' })">Login</button>
+            <router-link :to="{name: 'login'}">
+                Back to Login
+            </router-link>
         </div>
         <div class="col-6 text-right">
             <button 
@@ -46,19 +47,11 @@ export default {
       return false;
     }
   },
-  mounted(){
-    this.setEmail();
-  },
   methods: {
-    setEmail(){
-      if(this.$route.query.email) {
-        this.email = this.$route.query.email;
-      }
-    },
     submit(){
       this.isLoading = true;
 
-      const url = `${process.env.VUE_APP_GEN_AUTH_SVC_URL}/auth/email-verification-request`;
+      const url = `${process.env.VUE_APP_GEN_AUTH_SVC_URL}/auth/password-reset-request`;
 
       axios
         .post(url, { 
@@ -67,6 +60,7 @@ export default {
         })
         .then(response => {
           this.$toasted.show(response.data.message);
+          this.email = "";
           this.isLoading = false;
         })
         .catch(error => {

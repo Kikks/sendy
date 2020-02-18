@@ -2,19 +2,18 @@
 <div class="login px-2">
     <div class="card-holder elevate">
     <div class="mb-4">
-        <h1>Enter your Details</h1>
-        <h3 class="mt-2">
-            Don't have an account?
-            <router-link :to="{name: 'signup'}">Sign up</router-link>
+        <h1>Reset</h1>
+        <h3 class="pt-2">
+           Fill in your new password.
         </h3>
         
     </div>
-    <tl-input type="email" placeholder="Email" v-model="email" />
-    <tl-input class="mb-5" type="password" placeholder="Password" v-model="password" />
+    <tl-input class="" type="password" placeholder="New Password" v-model="newPassword" />
+    <tl-input class="mb-5" type="password" placeholder="Confirm Password" v-model="confirmPassword" />
     <div class="row align-items-center">
         <div class="col-6 text-left">
-            <router-link :to="{name: 'password-reset-request'}">
-                Forgot Password?
+            <router-link :to="{name: 'login'}">
+                Login
             </router-link>
         </div>
         <div class="col-6 text-right">
@@ -41,50 +40,47 @@ export default {
   data() {
     return {
       isLoading: false,
-      email: "",
-      password: "",
+      newPassword: "",
+      confirmPassword: "",
     };
   },
   computed: {
     isDisabled() {
-      if(this.password.length < 1){
-        return true;
-      }
+        if(this.newPassword.length < 1 || 
+            this.confirmPassword.length < 1){
+                return true;
+        }
+        if(this.newPassword !== this.confirmPassword) return true;
 
-      if(!Helpers.isValidEmail(this.email)) {
-          return true;
-      }
       return false;
     }
   },
   methods: {
     submit(){
       this.isLoading = true;
+      const url = `${process.env.VUE_APP_GEN_AUTH_SVC_URL}/auth/update-password`;
 
       const data = {
-          username: this.email,
-          password: this.password,
-          type: "email",
+          token: this.$route.query.token || '',
+          password: this.newPassword,
+          confirm_password: this.confirmPassword,
       };
 
-      this.$store
-        .dispatch('login', data)
+      axios
+        .patch(url, data)
         .then(response => {
-            const { user } = response.data.data;
-            if(user.emailVerified){
-                this.$router.push({ name: 'home' });
-            }
             this.isLoading = false;
+            this.$toasted.show(response.data.message);
+            setTimeout(() => {
+                this.$router.push({ name: "login" });
+            }, 2000);
         })
         .catch(error => {
             Helpers.errorResponse(error, response => {
-                if(response === "Your email is not verified.") {
-                    this.$router.replace({ name: 'email-verify-request', query: { email: this.email } });
-                }
-                this.$toasted.show(response);
                 this.isLoading = false;
-            });
-        });      
+                this.$toasted.show(response);
+            })
+        });
     },
   }
 };
