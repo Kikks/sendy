@@ -46,7 +46,6 @@ export default {
                 .catch(() => {
                     this.$toasted.show("Payment service not available currently.");
                 });
-                return;
         },
         referencePayment(response) {
             

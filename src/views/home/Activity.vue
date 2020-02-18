@@ -23,6 +23,14 @@
                 style="height: 50vh"
                 v-if="errorMessage"
             >{{errorMessage}}</div>
+            <div
+                class="d-flex justify-content-center align-items-center"
+                style="height: 50vh"
+                v-if="!isLoading && refinedActivities.length < 1"
+            >
+                You don't have any recent actions
+            </div>
+            
             <div v-for="(activity, i) in refinedActivities" :key="i" class="activityRow">
                 <div class="row firstRow">
                     <div class="col-6 blue">{{activity.description}}</div>
