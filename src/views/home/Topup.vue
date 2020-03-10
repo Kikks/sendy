@@ -15,7 +15,10 @@
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <div v-if="cards.length < 1" class="py-2">
+                        <div v-if="errorMessage" class="py-2">
+                            {{errorMessage}}
+                        </div>
+                        <div v-if="!isLoading && !errorMessage && cards.length < 1" class="py-2">
                             You currently don't have any saved card.
                         </div>
                         <div class="recurring-card" v-for="card in cards" :key="card.id" @click="showCardTopupModal(card)">
@@ -81,7 +84,7 @@ export default {
     methods: {
         getCards(){
             this.isLoading = true;
-
+            this.errorMessage = "";
             this.$store
                 .dispatch('getCards')
                 .then(response => {

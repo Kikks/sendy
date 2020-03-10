@@ -31,43 +31,70 @@
             >
                 {{errorMessage}}
             </div>
-            <div class="text-center" v-if="!isLoading && filteredContacts.length < 1">
+            <div class="text-center" v-if="!isLoading && !errorMessage && filteredContacts.length < 1">
                 <span>You currently have no {{ tab ? 'individual' : 'group' }} contacts</span>
             </div>
              <div v-for="(contact) in filteredContacts" :key="contact.id" class="activityRow">
-                <div class="row firstRow">
-                    <div class="col-6 blue">
-                       {{contact.name}}
+                <div class="row">
+                    <div class="col">
+                        <div class="row firstRow">
+                            <div class="col-6 blue">
+                                {{contact.name}}
+                            </div>
+                            <!-- <div class="col-6 text-right" :class="{red: !activity.add, green: activity.add}"> -->
+                            <div class="col-6 text-right">
+                                {{ contact.currencyCode }}{{contact.airtimeAmount}}
+                            </div>
+                        </div>
+                        <div class="row secondRow">
+                            <div class="col-6 blue">
+                                <span v-if="tab">{{contact.phoneNumber[0]}}</span>
+                                <span v-else>{{ contact.phoneNumber.length }} Recipients</span>
+                            </div>
+                            <div class="col-6 text-right">
+                                {{contact.frequency}}
+                            </div>
+                        </div>
                     </div>
-                    <!-- <div class="col-6 text-right" :class="{red: !activity.add, green: activity.add}"> -->
-                    <div class="col-6 text-right">
-                        {{ contact.currencyCode }}{{contact.airtimeAmount}}
-                    </div>
-                </div>
-                <div class="row secondRow">
-                    <div class="col-6 blue">
-                        <span v-if="tab">{{contact.phoneNumber[0]}}</span>
-                        <span v-else>{{ contact.phoneNumber.length }} Recipients</span>
-                    </div>
-                    <div class="col-6 text-right">
-                        {{contact.frequency}}
+                    <div class="col-1 text-right">
+                        <!-- <div class="contactOption">
+                            <div @click="showContactOption">
+                                <icon name="dots-vertical" />
+                            </div>
+                            <div class="contactOptionDropdown">
+                                ss
+                            </div>
+                        </div> -->
+                        <div class="dropdown">
+                            <div>
+                                <icon name="dots-vertical" />
+                            </div>
+                            <div class="dropdown-menu">
+                                <div class="dropdown-item" @click="editContact(contact)">
+                                    <span>Edit</span>
+                                </div>
+                                <div class="dropdown-item" @click="deleteContact(contact)">
+                                    <span>Delete</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
         </div>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import dropdown from 'vue-dropdowns';
 import Helpers from '../../utils/Helpers';
 export default {
     data(){
         return{
             tab: true,
             isLoading: false,
-            errorMessage: ""
+            errorMessage: "",
         }
     },
     computed: {
@@ -102,6 +129,16 @@ export default {
             }else{
                 this.$router.push({name: 'new-group-contact'});
             }
+        },
+        editContact(contact){
+            if(this.tab) {
+                this.$router.push({ name: 'edit.contact', params: { id: contact.id } });
+            } else {
+                 this.$router.push({ name: 'edit.group.contact', params: { id: contact.id } });
+            }
+        },
+        deleteContact(contact){
+            console.log(contact);
         }
     },
     mounted(){
@@ -147,6 +184,7 @@ export default {
             }
         }
         .activityRow{
+            position: relative;
             padding: 20px 0;
             border-bottom: 0.5px solid #E6EDFF;
             .blue{
@@ -160,6 +198,41 @@ export default {
 
             &:last-child {
                 margin-bottom: 72px;
+            }
+
+            .contactOption {
+                //position: relative;
+
+                .contactOptionDropdown {
+                    position: absolute;
+                    background-color: white;
+                    border: 1px solid red;
+                    height: 400px;
+                    z-index: 340;
+                    width: 200px;
+                    right: 12px;
+                }
+            }
+
+            .dropdown {
+                &:hover {
+                     .dropdown-menu {
+                         display: block;
+                      }
+                }
+            }
+            .dropdown-menu {
+                right: -6px;
+                left: initial;
+                top: initial;
+                float: initial;
+                min-width: 120px;
+
+                // &:hover {
+                //     .dropdown-menu {
+                //         display: block;
+                //     }
+                // }
             }
         }
         

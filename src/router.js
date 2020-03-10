@@ -114,7 +114,18 @@ export default new Router({
                 path: 'contact/new-group',
                 name: 'new-group-contact',
                 component: () => import( /* webpackChunkName: "home" */ './views/contact/GroupContact.vue')
-            }, {
+            }, 
+            {
+                path: 'contact/:id/edit',
+                name: 'edit.contact',
+                component: () => import( /* webpackChunkName: "home" */ './views/contact/EditContact.vue')
+            },
+            {
+                path: 'contact/group/:id/edit',
+                name: 'edit.group.contact',
+                component: () => import( /* webpackChunkName: "home" */ './views/contact/EditGroupContact.vue')
+            },
+            {
                 path: 'send-airtime',
                 name: 'send-airtime',
                 component: () => import( /* webpackChunkName: "home" */ './views/airtime/SendAirtime.vue')

@@ -26,7 +26,7 @@
             <div
                 class="d-flex justify-content-center align-items-center"
                 style="height: 50vh"
-                v-if="!isLoading && refinedActivities.length < 1"
+                v-if="!isLoading && !errorMessage && refinedActivities.length < 1"
             >
                 You don't have any recent actions
             </div>

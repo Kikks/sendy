@@ -32,12 +32,17 @@
                 />
                 <div class="search" v-if="shouldShowSearchBox">
                     <div class="searchbox px-3 pb-3" v-on-clickaway="away">
-                        <div class="row pt-3" v-if="!isLoading && searchContactResult.length < 1">
+                        <div class="row pt-3" v-if="!isSearchLoading && !searchErrorMessage && searchContactResult.length < 1">
                             <div class="col-12">
                                 Not found
                             </div>
                         </div>
-                        <div class="row pt-3" v-if="isLoading">
+                        <div class="row pt-3" v-if="searchErrorMessage">
+                            <div class="col-12">
+                               {{ searchErrorMessage }}
+                            </div>
+                        </div>
+                        <div class="row pt-3" v-if="isSearchLoading">
                             <div class="col-12">
                                Searching...
                             </div>
@@ -84,6 +89,7 @@ export default {
             name: "",
             airtimeAmount: "",
             isLoading: false,
+            isSearchLoading: false,
             selectedContactId: "",
             showSearch: false,
             phone: "",
@@ -92,6 +98,7 @@ export default {
                 unchecked: "#FC001F"
             },
             searchContactResult: [],
+            searchErrorMessage: "",
         };
     },
     computed: {
@@ -135,17 +142,22 @@ export default {
     },
     methods: {
         search(query){
-            this.isLoading = true;
+            this.isSearchLoading = true;
+            this.searchErrorMessage = "";
+
             const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact/search`;
 
             axios
                 .post(url, { query })
                 .then(response => {
                     this.searchContactResult = response.data.data;
-                    this.isLoading = false;
+                    this.isSearchLoading = false;
                 })
                 .catch(error => {
-                    this.isLoading = false;
+                    Helpers.errorResponse(error, response => {
+                        this.isSearchLoading = false;
+                        this.searchErrorMessage = response;
+                    });
                 });
         },
         away(){
