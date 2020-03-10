@@ -20,7 +20,7 @@
             <div 
                 class="d-flex justify-content-center align-items-center" 
                 style="height: 50vh"
-                v-if="isLoading"
+                v-if="isFetchingContacts"
             >
                 <icon name="loading" spin primary />
             </div>
@@ -31,7 +31,7 @@
             >
                 {{errorMessage}}
             </div>
-            <div class="text-center" v-if="!isLoading && !errorMessage && filteredContacts.length < 1">
+            <div class="text-center" v-if="!isFetchingContacts && !errorMessage && filteredContacts.length < 1">
                 <span>You currently have no {{ tab ? 'individual' : 'group' }} contacts</span>
             </div>
              <div v-for="(contact) in filteredContacts" :key="contact.id" class="activityRow">
@@ -57,14 +57,6 @@
                         </div>
                     </div>
                     <div class="col-1 text-right">
-                        <!-- <div class="contactOption">
-                            <div @click="showContactOption">
-                                <icon name="dots-vertical" />
-                            </div>
-                            <div class="contactOptionDropdown">
-                                ss
-                            </div>
-                        </div> -->
                         <div class="dropdown">
                             <div>
                                 <icon name="dots-vertical" />
@@ -73,7 +65,7 @@
                                 <div class="dropdown-item" @click="editContact(contact)">
                                     <span>Edit</span>
                                 </div>
-                                <div class="dropdown-item" @click="deleteContact(contact)">
+                                <div class="dropdown-item" @click="showDeleteContactModal(contact)">
                                     <span>Delete</span>
                                 </div>
                             </div>
@@ -82,6 +74,32 @@
                 </div>
             </div>
         </div>
+        <tl-modal :name="deleteContactModal">
+            <div class="row justify-content-center">
+                <div class="col-11">
+                    <h2>Delete contact</h2>
+                    <span>Are you sure you want to delete <b>{{contact.name}}</b></span>
+                    <div class="row my-2">
+                        <div class="col">
+                            <button 
+                                class="btn small accent" 
+                                @click="hideDeleteContactModal"
+                            >  No</button>
+                        </div>
+                        <div class="col">
+                            <button 
+                                class="btn small block" 
+                                @click="deleteContact"
+                                :disabled="isLoading"
+                            >   
+                                <icon name="loading" spin size="0.7" v-if="isLoading" /> 
+                                Yes, delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </tl-modal>
     </div>
 </template>
 
@@ -93,8 +111,11 @@ export default {
     data(){
         return{
             tab: true,
+            isFetchingContacts: false,
             isLoading: false,
             errorMessage: "",
+            deleteContactModal: "delete-contact-modal",
+            contact: {},
         }
     },
     computed: {
@@ -110,15 +131,15 @@ export default {
     },
     methods: {
         getContacts(){
-            this.isLoading = true;
+            this.isFetchingContacts = true;
             this.$store
                     .dispatch('getContacts')
                     .then(response => {
-                        this.isLoading = false;
+                        this.isFetchingContacts = false;
                     })
                     .catch(error => {
                          Helpers.errorResponse(error, response => {
-                            this.isLoading = false;
+                            this.isFetchingContacts = false;
                             this.errorMessage = response;
                         });
                     });
@@ -137,8 +158,33 @@ export default {
                  this.$router.push({ name: 'edit.group.contact', params: { id: contact.id } });
             }
         },
-        deleteContact(contact){
-            console.log(contact);
+        showDeleteContactModal(contact){
+            this.$modal.show(this.deleteContactModal);
+            this.contact = contact;
+        },
+        hideDeleteContactModal(){
+            this.$modal.hide(this.deleteContactModal);
+        },
+        deleteContact(){
+            this.isLoading = true;
+
+            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact/${this.contact.id}`;
+
+            axios
+                .patch(url, { status: "inactive" })
+                .then(response => {
+                    this.isLoading = false;
+                    this.$toasted.show(response.data.message);
+                    this.hideDeleteContactModal();
+                    this.$store.dispatch('getContacts');
+                    
+                })
+                .catch(error => {
+                    Helpers.errorResponse(error, response => {
+                        this.isLoading = false;
+                        this.$toasted.show(response);
+                    });
+                });
         }
     },
     mounted(){
