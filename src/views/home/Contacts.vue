@@ -178,11 +178,9 @@ export default {
         },
         deleteContact(){
             this.isLoading = true;
-
             const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact/${this.contact.id}`;
-
             axios
-                .patch(url, { status: "inactive" })
+                .delete(url)
                 .then(response => {
                     this.isLoading = false;
                     this.$toasted.show(response.data.message);
