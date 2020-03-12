@@ -188,6 +188,7 @@ export default {
 
             if(this.tab){
                 data.phoneNumber = [this.phone.split('-')[0]];
+                data.name  = this.name;
             } else {
                 data.contact = this.selectedContactId
             }

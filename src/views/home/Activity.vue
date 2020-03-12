@@ -4,7 +4,7 @@
             <h3 class="mb-3">Wallet Balance</h3>
             <h1
                 class="mb-4"
-            >{{ userInfo.defaultCurrency }} {{ userInfo.wallet ? userInfo.wallet : '0.00' }}</h1>
+            >{{ userInfo.defaultCurrency }} {{ userInfo.wallet ? Number.parseFloat(userInfo.wallet).toFixed(2) : '0.00' }}</h1>
             <div class="px-5">
                 <button class="btn outline" @click="gotoAirtime()">Send Airtime</button>
             </div>
@@ -66,6 +66,7 @@ export default {
             this.$store.getters.getActivities.forEach(activity => {
                 refinedArray.push({
                     ...activity,
+                    amount: Number.parseFloat(activity.amount).toFixed(2),
                     date: moment(activity.createdAt).format("MMM Do YY")
                 });
             });

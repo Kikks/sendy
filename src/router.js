@@ -170,3 +170,18 @@ const isLoggedIn = (next) => {
     }
     next();
 };
+
+let __isRetryRequest = false;
+axios.interceptors.response.use(response => response, error => {
+    if(error && error.response) {
+        if(error.response.status === 401 && error.response.data.message === "Token revoked." && !__isRetryRequest) {
+            __isRetryRequest = true;
+            store
+                .dispatch('logout')
+                .then(() => {
+                    router.push({ name: 'login' });
+                });
+        }
+    }
+    return Promise.reject(error);
+});

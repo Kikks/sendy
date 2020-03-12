@@ -21,7 +21,7 @@ export default class Pay {
     };    
 }
 
-const charge = amount => {
+export const charge = amount => {
     let total;
 
     if(amount >= 2500){

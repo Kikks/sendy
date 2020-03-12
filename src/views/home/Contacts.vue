@@ -34,7 +34,11 @@
             <div class="text-center" v-if="!isFetchingContacts && !errorMessage && filteredContacts.length < 1">
                 <span>You currently have no {{ tab ? 'individual' : 'group' }} contacts</span>
             </div>
-             <div v-for="(contact) in filteredContacts" :key="contact.id" class="activityRow">
+             <div
+                v-for="(contact) in filteredContacts" 
+                :key="contact.id" 
+                class="activityRow"
+            >
                 <div class="row">
                     <div class="col">
                         <div class="row firstRow">
@@ -56,12 +60,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-1 text-right">
-                        <div class="dropdown">
+                    <div class="col-2 ss">
+                        <div class="dropdown" @click="show(contact)">
                             <div>
                                 <icon name="dots-vertical" />
                             </div>
-                            <div class="dropdown-menu">
+                            <div class="dropdown-menu" :ref="`dropdown-menu-${contact.id}`">
                                 <div class="dropdown-item" @click="editContact(contact)">
                                     <span>Edit</span>
                                 </div>
@@ -107,6 +111,7 @@
 import axios from 'axios';
 import dropdown from 'vue-dropdowns';
 import Helpers from '../../utils/Helpers';
+
 export default {
     data(){
         return{
@@ -130,6 +135,12 @@ export default {
         }
     },
     methods: {
+        show(contact){
+            const elem = this.$refs[`dropdown-menu-${contact.id}`];
+            if(elem[0]) {
+                 elem[0].classList.toggle('show');
+            }
+        },
         getContacts(){
             this.isFetchingContacts = true;
             this.$store
@@ -260,25 +271,18 @@ export default {
                 }
             }
 
-            .dropdown {
-                &:hover {
-                     .dropdown-menu {
-                         display: block;
-                      }
-                }
-            }
+        .dropdown {
+            .show{
+                display: block;
+            }            
+        }
             .dropdown-menu {
                 right: -6px;
                 left: initial;
                 top: initial;
                 float: initial;
                 min-width: 120px;
-
-                // &:hover {
-                //     .dropdown-menu {
-                //         display: block;
-                //     }
-                // }
+                z-index: 7;
             }
         }
         
