@@ -343,6 +343,7 @@ export default {
         background: #E6EDFF;
         border-radius: 4px;
         text-align: center;
+        cursor: pointer;
         
         span {
             font-size: 12px;
