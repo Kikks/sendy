@@ -179,7 +179,7 @@ axios.interceptors.response.use(response => response, error => {
             store
                 .dispatch('logout')
                 .then(() => {
-                    router.push({ name: 'login' });
+                    Router.push({ name: 'login' });
                 });
         }
     }
