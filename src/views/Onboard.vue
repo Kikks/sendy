@@ -19,7 +19,7 @@ export default {
   name: 'home',
   methods: {
       gotoNext(){
-          this.$router.push({name: 'signup'});
+          this.$router.push({name: 'login'});
       }
   },
   mounted(){
@@ -27,9 +27,6 @@ export default {
       if(userData){
           this.$router.push({ name: 'home'});
       }
-    //   if(this.$store.state.isLoggedIn){
-    //       this.$router.push({ name: 'home'});
-    //   }
   }
 }
 </script>

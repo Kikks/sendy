@@ -15,7 +15,10 @@
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <div v-if="cards.length < 1" class="py-2">
+                        <div v-if="errorMessage" class="py-2">
+                            {{errorMessage}}
+                        </div>
+                        <div v-if="!isLoading && !errorMessage && cards.length < 1" class="py-2">
                             You currently don't have any saved card.
                         </div>
                         <div class="recurring-card" v-for="card in cards" :key="card.id" @click="showCardTopupModal(card)">
@@ -44,7 +47,11 @@
             <div class="row justify-content-center">
                 <div class="col-10">
                     <h2>Topup your wallet</h2>
-                    <tl-input class="amount" placeholder="Enter Amount" v-model="amount" />
+                    <tl-input class="amount" type="number" placeholder="Enter Amount" v-model="amount" />
+                    <span>
+                        &nbsp; <br />
+                        <small  v-if="amount.length > 0"><b>{{amountWithCharge}}</b> will be deducted because of charges.</small>
+                    </span>
                     <button class="btn mt-5" @click="pay" :disabled="amount.length < 2 || isPayLoading">
                         <icon name="loading" spin size="0.9" class="mr-1" v-if="isPayLoading" />Continue
                     </button>
@@ -56,6 +63,8 @@
 <script>
 import axios from "axios";
 import Helpers from "../../utils/Helpers";
+import { charge } from "../../utils/Payment";
+
 export default {
     data() {
         return {
@@ -76,12 +85,15 @@ export default {
         },
         canSubmit() {
             if (this.amount) return false;
-        }
+        },
+        amountWithCharge(){
+            return charge(Number(this.amount));
+        },
     },
     methods: {
         getCards(){
             this.isLoading = true;
-
+            this.errorMessage = "";
             this.$store
                 .dispatch('getCards')
                 .then(response => {
@@ -106,7 +118,7 @@ export default {
 
             const data = {
                 card: this.currentCard.id,
-                amount: this.amount
+                amount: charge(Number(this.amount)),
             };
 
             axios

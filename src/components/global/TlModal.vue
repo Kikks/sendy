@@ -1,5 +1,8 @@
 <template>
-    <modal height="auto" scrollable :name="name" 
+    <modal 
+        height="auto" 
+        scrollable 
+        :name="name"
         @closed="closed()" @before-close="beforeClose()" 
         @opened="opened()" @before-open="beforeOpen()"
         :width="width"
@@ -54,7 +57,9 @@ export default {
 </script>
 
 <style lang="scss">
-
+.v--modal-overlay {
+    z-index: 99933333;
+}
 .main-modal{
     padding: $basePx $basePx;
     padding-bottom: $basePx*4;

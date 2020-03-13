@@ -30,7 +30,13 @@ export default {
     },
     methods: {
         addCard(){
-            new Pay({ amount: this.amount, email: this.user.email}).initiatePayment(this.referencePayment);
+             this.$loadScript("https://js.paystack.co/v1/inline.js")
+                .then(() => {
+                    new Pay({ amount: this.amount, email: this.user.email}).initiatePayment(this.referencePayment);
+                })
+                .catch(() => {
+                    this.$toasted.show("Payment service not available currently.");
+                });
         },
         referencePayment(response) {
             this.isLoading = true;

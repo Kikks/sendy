@@ -13,8 +13,8 @@
                 </div> -->
                 <tl-input class="mb-5" placeholder="First Name" v-model="first_name" />
                 <tl-input class="mb-5" placeholder="Last Name" v-model="last_name"  />
-                <phone-input v-model="phone" uniqueName="profilephoneinput"/>
-                <tl-input type="email" class="mt-5" placeholder="Email" v-model="email" />
+                <!-- <phone-input v-model="phone" uniqueName="profilephoneinput"/> -->
+                <!-- <tl-input type="email" class="mt-5" placeholder="Email" v-model="email" /> -->
             </div>
 
             <button 
@@ -47,14 +47,14 @@ export default {
     computed: {
         canSubmit(){
             if(this.first_name.length < 1 || 
-                this.last_name.length < 1 || 
-                this.phone.length < 1
+                this.last_name.length < 1
+                // this.phone.length < 1
             ){
                 return true;
             }
-            if(!Helpers.isValidEmail(this.email)) {
-                return true;
-            }
+            // if(!Helpers.isValidEmail(this.email)) {
+            //     return true;
+            // }
             return false;
         },
         user(){

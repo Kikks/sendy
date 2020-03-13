@@ -13,7 +13,7 @@ const init = () => {
                 version: `${process.env.VUE_APP_ACCOUNT_KIT_APP_VERSION}`,
                 fbAppEventsEnabled: true,
                 debug: true,
-                display: "modal"
+                display: "popup"
             });
         };
     })
