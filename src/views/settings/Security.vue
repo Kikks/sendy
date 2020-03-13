@@ -5,7 +5,7 @@
         <div class="security">
             <div>
                 <p class="text-center mt-1 mb-5">
-                   Enter reciepient's name, phone number and airtime frequency
+                   Security
                 </p>
 
                 <tl-input type="password" class="mb-5" placeholder="Enter Password" v-model="password" />

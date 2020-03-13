@@ -13,6 +13,7 @@
             @update="handlePhoneInputUpdate"
             :class="`${hasError ? 'error-state' : 'success-state'} mt-5`"
             :ref="`phone-input-${uniqueName}`"
+            :id="`VuePhoneNumberInput-${uniqueName}`"
         />
     </div>
 </template>
@@ -64,13 +65,24 @@ export default {
         },
         customStyle: {
             type: String
-        }
+        },
+        clear: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    watch: {
+        clear(v) {
+            if(v) {
+                this.rawPhone = "";
+            }
+        },
     },
     data() {
         return {
             phone: this.value,
             hasError: false,
-            rawPhone: "",
+            rawPhone: this.value,
             phoneNumberInputOptions: {
                 countrySelectorLabel: "Code",
                 countrySelectorError: "Select a valid code",

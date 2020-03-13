@@ -190,13 +190,15 @@ export default new Vuex.Store({
                     .then(response => {
                         if(type === 'update_info'){
                             const userData = JSON.parse(window.localStorage.getItem("tinylabs-sendy-user"));
+
+                            const { firstName, lastName } = response.data.data;
+
                             const updatedUserData = {
                                 ...userData,
-                                firstName: data.firstName && data.firstName,
-                                lastName: data.lastName && data.lastName,
-                                phoneNumber: data.phoneNumber && data.phoneNumber,
-                                email: data.email && data.email
+                                firstName,
+                                lastName,
                             };
+
                             commit('setUser', updatedUserData);
                             window.localStorage.setItem("tinylabs-sendy-user", JSON.stringify(updatedUserData));
                         }
@@ -221,6 +223,6 @@ export default new Vuex.Store({
                         reject(error);
                     });
                 });
-        }
+        },
     }
 });

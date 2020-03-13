@@ -27,7 +27,25 @@
                     />
                 </div>
             </div>
-            <div class="row pt-3 justify-content-end">
+            <div class="row pt-3 justify-content-end align-items-center">
+                <div class="col-4" v-if="phones.length <= 1">
+                    <div class="upload-csv-section"  @click="$refs.CSVFileUpload.click()">
+                        <span class="">
+                            {{ uploadedFileNameTextFormat ? uploadedFileNameTextFormat : '+ Upload CSV' }}
+                            <icon 
+                                v-if="isUploadingCSV"
+                                name="loading" 
+                                spin 
+                                size="0.7" 
+                            />
+                        </span>
+                        <input 
+                            type="file"
+                            ref="CSVFileUpload"
+                            @change="handlePhoneCSVUpload"
+                        >
+                    </div>
+                </div>
                 <div class="col-3">
                     <button class="btn small" :disabled="!phones[phones.length - 1].value"  @click="createNewPhoneNumber()" style="padding: 0 1px 0 1px;">
                         <icon name="plus" />
@@ -123,7 +141,9 @@ export default {
             },
             countriesCode: countries_code,
             isLoading: false,
+            isUploadingCSV: false,
             defaultCode: "NG",
+            currentFileUploadName: "",
         };
     },
     computed: {
@@ -153,9 +173,70 @@ export default {
                 return true;
             }
             return false;
+        },
+        uploadedFileNameTextFormat(){
+            if(!this.currentFileUploadName) {
+                return '';
+            }
+           return this.currentFileUploadName.substring(0, 5) + '...' + this.currentFileUploadName.substring(this.currentFileUploadName.length - 4);
         }
     },
     methods: {
+        handlePhoneCSVUpload(e){
+            let fileElement = e.target;
+            
+            let fileObject = fileElement.files[0];
+
+            this.currentFileUploadName = fileObject.name;
+
+            if(fileObject.size > 1097152){
+                this.$toasted.show('Profile picture size is too large.');
+                this.currentFileUploadName = '';
+                fileElement.value = '';
+                return;
+                
+            }
+
+            const fileExtenstionSplit = fileObject.name.split('.');
+            const fileExtenstion = fileExtenstionSplit[fileExtenstionSplit.length - 1];
+            
+            if(fileExtenstion !== 'csv') {
+                this.$toasted.show('You can only upload a CSV file.');
+                this.currentFileUploadName = '';
+                fileElement.value = '';
+                return;
+            }
+           
+           this.uploadPhoneCsv(fileObject);
+        },
+        uploadPhoneCsv(fileObject){
+            this.isUploadingCSV = true;
+            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact/csv`;
+
+            let uploadCSVFormData = new FormData();
+            uploadCSVFormData.append('csv', fileObject);
+            axios
+                .post(url, uploadCSVFormData, { headers: { 'Content-Type': 'multipart/form-data' } })
+                .then(response => {
+                    this.setPhoneNumbers(response.data.data);
+                    this.isUploadingCSV = false;
+                })
+                .catch(error => {
+                    Helpers.errorResponse(error, response => {
+                        this.isUploadingCSV = false;
+                        this.$toasted.show(response);
+                    })
+                });
+        },
+        setPhoneNumbers(phones){
+            const numbers = [];
+            phones.forEach(phone => {
+                for(let key in phone) {
+                    numbers.push({ id: Math.random(), value: phone[key] });
+                }
+            });
+            this.phones = numbers;
+        },
         changeIcon(data) {
             this.ticked = data;
         },
@@ -256,6 +337,22 @@ export default {
     }
     .add-phone-number-icon {
         cursor: pointer;
+    }
+
+    .upload-csv-section {
+        background: #E6EDFF;
+        border-radius: 4px;
+        text-align: center;
+        cursor: pointer;
+        
+        span {
+            font-size: 12px;
+            color: $text-color;
+        }
+
+        input[type="file"] {
+           display: none;
+        }
     }
 }
 </style>

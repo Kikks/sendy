@@ -10,8 +10,14 @@ export default class Helpers {
             action(error.response.data.message);
             return;
         }
+        return action(error.message);
     };
     static assignCurrencyCode(code){
         return currencyCode[code];
     };
+
+    static getOriginUrl() {
+        return location.origin;
+    }
+
 };

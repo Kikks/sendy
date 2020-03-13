@@ -20,7 +20,7 @@
             <div 
                 class="d-flex justify-content-center align-items-center" 
                 style="height: 50vh"
-                v-if="isLoading"
+                v-if="isFetchingContacts"
             >
                 <icon name="loading" spin primary />
             </div>
@@ -31,40 +31,96 @@
             >
                 {{errorMessage}}
             </div>
-             <div v-for="(contact) in filteredContacts" :key="contact.id" class="activityRow">
-                <div class="row firstRow">
-                    <div class="col-6 blue">
-                       {{contact.name}}
+            <div class="text-center" v-if="!isFetchingContacts && !errorMessage && filteredContacts.length < 1">
+                <span>You currently have no {{ tab ? 'individual' : 'group' }} contacts</span>
+            </div>
+             <div
+                v-for="(contact) in filteredContacts" 
+                :key="contact.id" 
+                class="activityRow"
+            >
+                <div class="row">
+                    <div class="col">
+                        <div class="row firstRow">
+                            <div class="col-6 blue">
+                                {{contact.name}}
+                            </div>
+                            <!-- <div class="col-6 text-right" :class="{red: !activity.add, green: activity.add}"> -->
+                            <div class="col-6 text-right">
+                                {{ contact.currencyCode }}{{contact.airtimeAmount}}
+                            </div>
+                        </div>
+                        <div class="row secondRow">
+                            <div class="col-6 blue">
+                                <span v-if="tab">{{contact.phoneNumber[0]}}</span>
+                                <span v-else>{{ contact.phoneNumber.length }} Recipients</span>
+                            </div>
+                            <div class="col-6 text-right">
+                                {{contact.frequency}}
+                            </div>
+                        </div>
                     </div>
-                    <!-- <div class="col-6 text-right" :class="{red: !activity.add, green: activity.add}"> -->
-                    <div class="col-6 text-right">
-                        {{ contact.currencyCode }}{{contact.airtimeAmount}}
-                    </div>
-                </div>
-                <div class="row secondRow">
-                    <div class="col-6 blue">
-                        <span v-if="tab">{{contact.phoneNumber[0]}}</span>
-                        <span v-else>{{ contact.phoneNumber.length }} Recipients</span>
-                    </div>
-                    <div class="col-6 text-right">
-                        {{contact.frequency}}
+                    <div class="col-2 ss">
+                        <div class="dropdown" @click="show(contact)">
+                            <div>
+                                <icon name="dots-vertical" />
+                            </div>
+                            <div class="dropdown-menu" :ref="`dropdown-menu-${contact.id}`">
+                                <div class="dropdown-item" @click="editContact(contact)">
+                                    <span>Edit</span>
+                                </div>
+                                <div class="dropdown-item" @click="showDeleteContactModal(contact)">
+                                    <span>Delete</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
         </div>
+        <tl-modal :name="deleteContactModal">
+            <div class="row justify-content-center">
+                <div class="col-11">
+                    <h2>Delete contact</h2>
+                    <span>Are you sure you want to delete <b>{{contact.name}}</b></span>
+                    <div class="row my-2">
+                        <div class="col">
+                            <button 
+                                class="btn small accent" 
+                                @click="hideDeleteContactModal"
+                            >  No</button>
+                        </div>
+                        <div class="col">
+                            <button 
+                                class="btn small block" 
+                                @click="deleteContact"
+                                :disabled="isLoading"
+                            >   
+                                <icon name="loading" spin size="0.7" v-if="isLoading" /> 
+                                Yes, delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </tl-modal>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import dropdown from 'vue-dropdowns';
 import Helpers from '../../utils/Helpers';
+
 export default {
     data(){
         return{
             tab: true,
+            isFetchingContacts: false,
             isLoading: false,
-            errorMessage: ""
+            errorMessage: "",
+            deleteContactModal: "delete-contact-modal",
+            contact: {},
         }
     },
     computed: {
@@ -79,16 +135,22 @@ export default {
         }
     },
     methods: {
+        show(contact){
+            const elem = this.$refs[`dropdown-menu-${contact.id}`];
+            if(elem[0]) {
+                 elem[0].classList.toggle('show');
+            }
+        },
         getContacts(){
-            this.isLoading = true;
+            this.isFetchingContacts = true;
             this.$store
                     .dispatch('getContacts')
                     .then(response => {
-                        this.isLoading = false;
+                        this.isFetchingContacts = false;
                     })
                     .catch(error => {
                          Helpers.errorResponse(error, response => {
-                            this.isLoading = false;
+                            this.isFetchingContacts = false;
                             this.errorMessage = response;
                         });
                     });
@@ -99,6 +161,39 @@ export default {
             }else{
                 this.$router.push({name: 'new-group-contact'});
             }
+        },
+        editContact(contact){
+            if(this.tab) {
+                this.$router.push({ name: 'edit.contact', params: { id: contact.id } });
+            } else {
+                 this.$router.push({ name: 'edit.group.contact', params: { id: contact.id } });
+            }
+        },
+        showDeleteContactModal(contact){
+            this.$modal.show(this.deleteContactModal);
+            this.contact = contact;
+        },
+        hideDeleteContactModal(){
+            this.$modal.hide(this.deleteContactModal);
+        },
+        deleteContact(){
+            this.isLoading = true;
+            const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact/${this.contact.id}`;
+            axios
+                .delete(url)
+                .then(response => {
+                    this.isLoading = false;
+                    this.$toasted.show(response.data.message);
+                    this.hideDeleteContactModal();
+                    this.$store.dispatch('getContacts');
+                    
+                })
+                .catch(error => {
+                    Helpers.errorResponse(error, response => {
+                        this.isLoading = false;
+                        this.$toasted.show(response);
+                    });
+                });
         }
     },
     mounted(){
@@ -144,6 +239,7 @@ export default {
             }
         }
         .activityRow{
+            position: relative;
             padding: 20px 0;
             border-bottom: 0.5px solid #E6EDFF;
             .blue{
@@ -157,6 +253,34 @@ export default {
 
             &:last-child {
                 margin-bottom: 72px;
+            }
+
+            .contactOption {
+                //position: relative;
+
+                .contactOptionDropdown {
+                    position: absolute;
+                    background-color: white;
+                    border: 1px solid red;
+                    height: 400px;
+                    z-index: 340;
+                    width: 200px;
+                    right: 12px;
+                }
+            }
+
+        .dropdown {
+            .show{
+                display: block;
+            }            
+        }
+            .dropdown-menu {
+                right: -6px;
+                left: initial;
+                top: initial;
+                float: initial;
+                min-width: 120px;
+                z-index: 7;
             }
         }
         
