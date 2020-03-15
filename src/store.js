@@ -109,6 +109,9 @@ export default new Vuex.Store({
         logout({ commit }){
             return new Promise((resolve, reject) => {
                 try{
+                    const url = `${process.env.VUE_APP_GEN_AUTH_SVC_URL}/auth/logout`;
+                    axios.get(url);
+                        
                     localStorage.removeItem("tinylabs-sendy-user");
                     delete axios.defaults.headers.common['Authorization'];
                     commit('logout');
