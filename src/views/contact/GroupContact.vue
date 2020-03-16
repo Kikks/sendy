@@ -29,6 +29,16 @@
             </div>
             <div class="row pt-3 justify-content-end align-items-center">
                 <div class="col-4" v-if="phones.length <= 1">
+                    <a 
+                        href="https://docs.google.com/spreadsheets/d/156CT5kfJRuTgPCuyuJv8TNTDR7bAUl21H6tpPAunhBw/edit#gid=0"
+                        download
+                        class="btn small link" 
+                        style="padding: 0 1px 0 1px;"
+                    >
+                        <small>Download CSV format.</small>
+                    </a>
+                </div>
+                <div class="col-4" v-if="phones.length <= 1">
                     <div class="upload-csv-section"  @click="$refs.CSVFileUpload.click()">
                         <span class="">
                             {{ uploadedFileNameTextFormat ? uploadedFileNameTextFormat : '+ Upload CSV' }}

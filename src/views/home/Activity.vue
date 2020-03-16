@@ -10,7 +10,19 @@
             </div>
         </div>
         <div class="recent-activity">
-            <h2 class="mb-4">Recent Actions</h2>
+            <div class="d-flex flex-row mb-4 justify-content-between align-items-center">
+                <div>
+                    <h2 class="">Recent Actions</h2>
+                </div>
+                <div>
+                    <pagination
+                        :page="paginationMetaData.page || 0"
+        	            :pageCount="paginationMetaData.pageCount || 0"
+                        @nextData="nextData"
+                        @prevData="prevData" 
+                    />
+                </div>
+            </div>
             <div
                 class="d-flex justify-content-center align-items-center"
                 style="height: 50vh"
@@ -57,7 +69,7 @@ export default {
         return {
             activities: [],
             isLoading: false,
-            errorMessage: ""
+            errorMessage: "",
         };
     },
     computed: {
@@ -74,17 +86,33 @@ export default {
         },
         userInfo(){
             return this.$store.getters.getUserInfo;
+        },
+        paginationMetaData(){
+            return this.$store.getters.getPaginationMetaData;
         }
     },
     methods: {
+        nextData(){
+            if (this.paginationMetaData.nextPage) {
+                this.$store.commit('setActivities', []);
+                this.getActivities(this.paginationMetaData.nextPage);
+            }
+        },
+        prevData(){
+            if (this.paginationMetaData.previousPage) {
+                this.$store.commit('setActivities', []);
+                this.getActivities(this.paginationMetaData.previousPage);
+            }
+        },
         getUserInfo() {
             
         },
-        getActivities() {
+        getActivities(page = 1) {
             this.isLoading = true;
-            this.$store.dispatch('getActivities')
+            this.$store.dispatch('getActivities', page)
                 .then(response => {
                     this.isLoading = false;
+                    this.$store.commit('setPaginationMetaData', response.data.meta);
                 })
                 .catch(error => {
                     Helpers.errorResponse(error, response => {
