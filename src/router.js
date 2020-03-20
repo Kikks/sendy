@@ -11,7 +11,7 @@ import Login from './views/auth/Login.vue';
 
 Vue.use(Router);
 
-export default new Router({
+const router =  new Router({
     mode: 'history',
     base: process.env.BASE_URL,
     routes: [
@@ -185,3 +185,5 @@ axios.interceptors.response.use(response => response, error => {
     }
     return Promise.reject(error);
 });
+
+export default router;

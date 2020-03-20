@@ -14,7 +14,8 @@ export default new Vuex.Store({
         currentPhoneNumber: "",
         contacts: [],
         activities: [],
-        cards: []
+        cards: [],
+        paginationMetaData: {},
     },
     getters: {
         getIsRegistered(state) {
@@ -37,7 +38,10 @@ export default new Vuex.Store({
         },
         getCards(state) {
             return state.cards;
-        }
+        },
+        getPaginationMetaData(state){
+            return state.paginationMetaData;
+        },
 
     },
     mutations: {
@@ -66,7 +70,10 @@ export default new Vuex.Store({
         },
         setCards(state, payload){
             state.cards = payload;
-        }
+        },
+        setPaginationMetaData(state, payload){
+            state.paginationMetaData = payload;
+        },
     },
     actions: {
         login({
@@ -109,6 +116,9 @@ export default new Vuex.Store({
         logout({ commit }){
             return new Promise((resolve, reject) => {
                 try{
+                    const url = `${process.env.VUE_APP_GEN_AUTH_SVC_URL}/auth/logout`;
+                    axios.get(url);
+                        
                     localStorage.removeItem("tinylabs-sendy-user");
                     delete axios.defaults.headers.common['Authorization'];
                     commit('logout');
@@ -168,9 +178,9 @@ export default new Vuex.Store({
                 });
             });
         },
-        getActivities({ commit }){
+        getActivities({ commit }, page = 1){
             return new Promise((resolve, reject) => {
-                const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/transaction`;
+                const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/transaction?page=${page}`;
                 axios
                     .get(url)
                     .then(response => {
