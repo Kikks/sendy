@@ -33,10 +33,10 @@
 
             <div class="bottom">
                 <span class="social-icon">
-                    <icon name="facebook" />
+                    <icon name="email" />
                 </span>
                 <span class="social-icon">
-                    <a href="https://instagram.com/tinylabsapp"><icon name="instagram" /></a>
+                    <icon name="instagram" />
                 </span>
                 <span class="social-icon">
                     <icon name="twitter" />
