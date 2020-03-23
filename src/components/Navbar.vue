@@ -36,7 +36,7 @@
                     <icon name="facebook" />
                 </span>
                 <span class="social-icon">
-                    <icon name="instagram" />
+                    <a href="https://instagram.com/tinylabsapp"><icon name="instagram" /></a>
                 </span>
                 <span class="social-icon">
                     <icon name="twitter" />
