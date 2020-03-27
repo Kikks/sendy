@@ -50,7 +50,7 @@
                     <tl-input class="amount" type="number" placeholder="Enter Amount" v-model="amount" />
                     <span>
                         &nbsp; <br />
-                        <small  v-if="amount.length > 0"><b>{{amountWithCharge}}</b> will be deducted because of charges.</small>
+                        <small  v-if="amount.length > 0"><b>{{amountWithCharge}}</b> will be deducted because of paystack charges.</small>
                     </span>
                     <button class="btn mt-5" @click="pay" :disabled="amount.length < 2 || isPayLoading">
                         <icon name="loading" spin size="0.9" class="mr-1" v-if="isPayLoading" />Continue
