@@ -138,9 +138,9 @@ const router =  new Router({
                 name: 'security',
                 component: () => import( /* webpackChunkName: "home" */ './views/settings/Security.vue')
             }, {
-                path: 'about',
-                name: 'about',
-                component: () => import( /* webpackChunkName: "home" */ './views/settings/About.vue')
+                path: 'alert',
+                name: 'alert',
+                component: () => import( /* webpackChunkName: "home" */ './views/settings/Alert.vue')
             }, {
                 path: 'addcard',
                 name: 'addcard',
