@@ -201,12 +201,14 @@ export default new Vuex.Store({
                         if(type === 'update_info'){
                             const userData = JSON.parse(window.localStorage.getItem("tinylabs-sendy-user"));
 
-                            const { firstName, lastName } = response.data.data;
+                            const { firstName, lastName, notification, threshold } = response.data.data;
 
                             const updatedUserData = {
                                 ...userData,
                                 firstName,
                                 lastName,
+                                notification,
+                                threshold
                             };
 
                             commit('setUser', updatedUserData);
