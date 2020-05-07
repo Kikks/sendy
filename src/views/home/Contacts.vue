@@ -46,7 +46,7 @@
               </div>
               <div class="col-6 text-right">{{contact.frequency}}</div>
             </div>
-            <div class="row thirdRow">
+            <div class="row thirdRow" v-if="contact.isDuplicate">
               <div class="col-6 red">
                 <span @click="showDeleteContactModal(contact)">Possible Duplicate (Delete)</span>
               </div>

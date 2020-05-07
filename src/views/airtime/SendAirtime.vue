@@ -14,7 +14,15 @@
       <div v-if="tab">
         <tl-input class="mt-5" placeholder="Name" v-model="name" />
         <phone-input v-model="phone" uniqueName="sendairtime" />
+
         <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="airtimeAmount" />
+        <span v-if="airtimeAmount > maxAirtime">
+          &nbsp;
+          <small>
+            Airtime will be send in multiples of
+            <b>{{airtimeMultiples}}.</b>
+          </small>
+        </span>
         <br />
         <br />
         <div class="row justify-content-space-between">
@@ -122,6 +130,13 @@
           </div>
         </div>
         <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="airtimeAmount" />
+        <span v-if="airtimeAmount > maxAirtime">
+          &nbsp;
+          <small>
+            Airtime will be send in multiples of
+            <b>{{airtimeMultiples}}.</b>
+          </small>
+        </span>
       </div>
 
       <button
@@ -148,6 +163,7 @@ export default {
     return {
       tab: true,
       searchTerm: "",
+      maxAirtime: 20000,
       name: "",
       ticked: "daily",
       airtimeAmount: "",
@@ -174,6 +190,9 @@ export default {
         return true;
       }
       return false;
+    },
+    airtimeMultiples() {
+      return Helpers.multiples(Number(this.airtimeAmount));
     },
     canSubmit() {
       if (this.saveContact) {
@@ -314,7 +333,7 @@ export default {
           this.$toasted.show(response.data.message);
           if (response.data.data) {
             setTimeout(this.$toasted.clear(), 10000);
-            return this.transfer()
+            return this.transfer();
           }
         })
         .catch(error => {

@@ -42,13 +42,14 @@
       >You don't have any recent actions</div>
 
       <div v-for="(activity, i) in refinedActivities" :key="i" class="activityRow">
-        <div class="row firstRow">
+       
+        <div class="row firstRow" v-if="activity.failedPhoneNumber && activity.failedPhoneNumber.length > 0 && !activity.resendFailedAirtime">
           <div class="col-5 blue">{{activity.description}}</div>
           <div
             class="col-5 text-right"
             :class="activity.type  === 'credit' ? 'green' : 'red'"
           >{{ activity.currency }}{{ activity.amount }}</div>
-          <div class="col-2 ss">
+          <div class="col-2 ss" v-if="activity.failedPhoneNumber && activity.failedPhoneNumber.length > 0 && !activity.resendFailedAirtime">
             <div class="dropdown" @click="show(activity)">
               <div>
                 <icon name="dots-vertical" />
@@ -61,6 +62,14 @@
             </div>
           </div>
         </div>
+        <div class="row firstRow" v-else>
+          <div class="col-5 blue">{{activity.description}}</div>
+          <div
+            class="col-5 text-right"
+            :class="activity.type  === 'credit' ? 'green' : 'red'"
+          >{{ activity.currency }}{{ activity.amount }}</div>
+        </div>
+       
         <div class="row secondRow">
           <div class="col-5 blue">{{activity.date}}</div>
           <div class="col-5 text-right">{{ activity.title ? activity.title : '----' }}</div>
@@ -72,17 +81,17 @@
         <div class="col-11">
           <h2>Resend Airtime</h2>
           <span>
-            Are you sure you want to resend airtime
+            Do you want to edit the phone number(s) before resending? 
             <!-- <b>{{activity.name}}</b> -->
           </span>
           <div class="row my-2">
             <div class="col">
-              <button class="btn small accent" @click="hideResendAirtimeModal">No</button>
+              <button class="btn small block" @click="resendAirtime" :disabled="isLoading">
+                <icon name="loading" spin size="0.7" v-if="isLoading" />No, resend
+              </button>
             </div>
             <div class="col">
-              <button class="btn small block" @click="resendAirtime" :disabled="isLoading">
-                <icon name="loading" spin size="0.7" v-if="isLoading" />Yes, delete
-              </button>
+              <button class="btn small block" @click="editPhoneNumber">Yes, Edit</button>
             </div>
           </div>
         </div>
@@ -101,6 +110,7 @@ export default {
     return {
       activities: [],
       isLoading: false,
+      selectedTransactionId: "",
       resendAirtimeModal: "resend-airtime-modal",
       errorMessage: ""
     };
@@ -131,12 +141,19 @@ export default {
         elem[0].classList.toggle("show");
       }
     },
-    showResendAirtimeModal(contact) {
+    showResendAirtimeModal(activity) {
       this.$modal.show(this.resendAirtimeModal);
-      this.contact = contact;
+      this.activity = activity;
     },
     hideResendAirtimeModal() {
       this.$modal.hide(this.resendAirtimeModal);
+    },
+    editPhoneNumber() {
+      this.$router.push({
+        name: "edit.resend-airtime",
+        params: { id: this.activity.id }
+      });
+      
     },
     nextData() {
       if (this.paginationMetaData.nextPage) {
@@ -163,6 +180,32 @@ export default {
           Helpers.errorResponse(error, response => {
             this.isLoading = false;
             this.errorMessage = response;
+          });
+        });
+    },
+    resendAirtime() {
+      if (this.isLoading) return;
+
+      const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/airtime`;
+
+      this.isLoading = true;
+
+      const data = {
+        transaction: this.activity.id,
+        category: "resendFailedAirtime",
+      };
+      axios
+        .post(url, data)
+        .then(response => {
+          this.isLoading = false;
+          this.$toasted.show(response.data.message);
+          this.hideResendAirtimeModal();
+          this.$store.dispatch("getActivities");
+        })
+        .catch(error => {
+          Helpers.errorResponse(error, response => {
+            this.isLoading = false;
+            this.$toasted.show(response);
           });
         });
     },

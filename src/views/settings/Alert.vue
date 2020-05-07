@@ -113,8 +113,8 @@ export default {
         });
     },
     setDefaultFormValues(user) {
-      this.threshold = user.threshold.toString() || "0";
-      this.notification = user.notification || false;
+      this.threshold = user.threshold ? user.threshold.toString() : "0";
+      this.notification = user.notification ? user.notification : false;
     }
   },
   mounted() {
