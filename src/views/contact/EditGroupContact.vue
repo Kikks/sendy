@@ -98,7 +98,7 @@
             <p> Airtime will be sent in multiples of
             <b>{{splitAirtimeResult.split.join(", ")}}.</b> </p>
           </small>
-           <small v-if="splitAirtimeResult.convert && !splitErrorMessage">
+           <small v-if="splitAirtimeResult.convert && Object.keys(splitAirtimeResult.convert).length !== 0 && !splitErrorMessage">
              <p><b>Sendy's Exchange Rate</b></p>
             <p>1{{splitAirtimeResult.convert.sourceCurrency}} = {{splitAirtimeResult.convert.rate}}{{splitAirtimeResult.convert.userCurrency}}</p>
             <p>{{amount}}{{splitAirtimeResult.convert.sourceCurrency}} = {{splitAirtimeResult.convert.conversion}}{{splitAirtimeResult.convert.userCurrency}}</p>
@@ -361,6 +361,7 @@ export default {
       this.amount = String(contact.phoneNumber[0].amount);
       this.startDate = contact.startDate;
       this.endDate = contact.endDate;
+      this.defaultCode = contact.currencyCode.substring(0, contact.currencyCode.length - 1)
       this.status = contact.status === "active" ? true : false;
       contact.phoneNumber.forEach(phone => {
         this.phones.push({
