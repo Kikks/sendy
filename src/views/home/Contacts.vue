@@ -37,11 +37,11 @@
             <div class="row firstRow">
               <div class="col-6 blue">{{contact.name}}</div>
               <!-- <div class="col-6 text-right" :class="{red: !activity.add, green: activity.add}"> -->
-              <div class="col-6 text-right">{{ contact.currencyCode }}{{contact.airtimeAmount}}</div>
+              <div class="col-6 text-right">{{ contact.currencyCode }}{{contact.phoneNumber[0].amount}}</div>
             </div>
             <div class="row secondRow">
               <div class="col-6 blue">
-                <span v-if="tab">{{contact.phoneNumber[0]}}</span>
+                <span v-if="tab">{{contact.phoneNumber[0].phoneNumber}}</span>
                 <span v-else>{{ contact.phoneNumber.length }} Recipients</span>
               </div>
               <div class="col-6 text-right">{{contact.frequency}}</div>

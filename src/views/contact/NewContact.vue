@@ -11,12 +11,22 @@
 
       <tl-input class="mt-5" placeholder="Name" v-model="name" />
       <phone-input v-model="phone" uniqueName="newcontact" />
-      <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="airtime_amount" />
-      <span v-if="airtime_amount > maxAirtime">
+      <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="amount" />
+      <span v-if="airtimeMultiples !== false">
         &nbsp;
-        <small>
-          Airtime will be send in multiples of
-          <b>{{airtimeMultiples}}.</b>
+        <small v-if="splitErrorMessage" :style="{color: 'red'}">{{splitErrorMessage}}</small>
+        <small v-else-if="splitAirtimeResult.split && splitAirtimeResult.split.length > 1">
+          <p>
+            Airtime will be sent in multiples of
+            <b>{{splitAirtimeResult.split.join(", ")}}.</b>
+          </p>
+        </small>
+        <small v-if="splitAirtimeResult.convert && !splitErrorMessage">
+          <p>
+            <b>Sendy's Exchange Rate</b>
+          </p>
+          <p>1{{splitAirtimeResult.convert.sourceCurrency}} = {{splitAirtimeResult.convert.rate}}{{splitAirtimeResult.convert.userCurrency}}</p>
+          <p>{{amount}}{{splitAirtimeResult.convert.sourceCurrency}} = {{splitAirtimeResult.convert.conversion}}{{splitAirtimeResult.convert.userCurrency}}</p>
         </small>
       </span>
       <div class="row mt-4 mb-5">
@@ -84,37 +94,64 @@ export default {
     return {
       name: "",
       ticked: "daily",
-      airtime_amount: "",
+      amount: "",
       phone: "",
       start_date: "",
-      maxAirtime: 20000,
       end_date: "",
       isLoading: false,
       status: false,
       status_color_options: {
         checked: "#4CD964",
         unchecked: "#FC001F"
-      }
+      },
+      splitErrorMessage: "",
+      splitAirtimeResult: []
     };
   },
   computed: {
+    airtimeMultiples() {
+      if (this.amount && this.phone) {
+        const currencyCode = Helpers.assignCurrencyCode(
+          this.phone.split("-")[1]
+        );
+        if (currencyCode) {
+          this.splitAirtime();
+          return true;
+        }
+        return false;
+      }
+      return false;
+    },
     canSubmit() {
       if (
         this.name.length < 1 ||
         this.phone.length < 1 ||
-        this.airtime_amount.length < 1 ||
+        this.amount.length < 1 ||
+        this.splitErrorMessage ||
         this.start_date.length < 1 ||
         this.end_date.length < 1
       ) {
         return true;
       }
       return false;
-    },
-    airtimeMultiples() {
-      return Helpers.multiples(Number(this.airtime_amount));
     }
   },
   methods: {
+    splitAirtime() {
+      this.splitErrorMessage = "";
+      const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/airtime/split`;
+      const currencyCode = Helpers.assignCurrencyCode(this.phone.split("-")[1]);
+      axios
+        .post(url, { amount: Number(this.amount), currencyCode })
+        .then(response => {
+          this.splitAirtimeResult = response.data.data;
+        })
+        .catch(error => {
+          Helpers.errorResponse(error, response => {
+            this.splitErrorMessage = response;
+          });
+        });
+    },
     addContact() {
       if (this.isLoading) return;
       this.isLoading = true;
@@ -124,9 +161,15 @@ export default {
       const currencyCode = Helpers.assignCurrencyCode(this.phone.split("-")[1]);
       const data = {
         name: this.name,
-        phoneNumber: this.phone.split("-")[0],
+        phoneNumber: [
+          {
+            phoneNumber: this.phone.split("-")[0],
+            amount: Number(this.amount),
+            currencyCode
+          }
+        ],
         currencyCode,
-        airtimeAmount: Number(this.airtime_amount),
+        amount: Number(this.amount),
         startDate: moment(this.start_date).format("YYYY-MM-DD"),
         endDate: moment(this.end_date).format("YYYY-MM-DD"),
         frequency: this.ticked,
