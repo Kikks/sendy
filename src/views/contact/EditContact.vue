@@ -11,7 +11,7 @@
       <div v-if="!isFetchingContact">
         <p class="text-center">Enter recipient's name, phone number and airtime frequency</p>
         <tl-input class="mt-5" placeholder="Name" v-model="name" />
-        <phone-input v-model="phone" uniqueName="newcontact" />
+        <phone-input v-model="phone" :defaultCountryCode="defaultCode" uniqueName="newcontact" />
         <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="amount" />
         <span v-if="airtimeMultiples !== false">
           &nbsp;
@@ -20,7 +20,7 @@
             <p> Airtime will be sent in multiples of
             <b>{{splitAirtimeResult.split.join(", ")}}.</b> </p>
           </small>
-           <small v-if="splitAirtimeResult.convert && !splitErrorMessage">
+           <small v-if="splitAirtimeResult.convert && Object.keys(splitAirtimeResult.convert).length !== 0 && !splitErrorMessage">
              <p><b>Sendy's Exchange Rate</b></p>
             <p>1{{splitAirtimeResult.convert.sourceCurrency}} = {{splitAirtimeResult.convert.rate}}{{splitAirtimeResult.convert.userCurrency}}</p>
             <p>{{amount}}{{splitAirtimeResult.convert.sourceCurrency}} = {{splitAirtimeResult.convert.conversion}}{{splitAirtimeResult.convert.userCurrency}}</p>
@@ -105,6 +105,7 @@ export default {
       },
       contact: {},
       errorMessage: "",
+      defaultCode: "NG",
       splitErrorMessage: "",
       splitAirtimeResult: []
     };
@@ -170,12 +171,10 @@ export default {
         .post(url, { amount: Number(this.amount), currencyCode })
         .then(response => {
           this.splitAirtimeResult = response.data.data;
-          console.log(response.data.data);
         })
         .catch(error => {
           Helpers.errorResponse(error, response => {
             this.splitErrorMessage = response;
-            console.log(response);
           });
         });
     },
@@ -185,6 +184,7 @@ export default {
       this.amount = String(contact.phoneNumber[0].amount);
       this.start_date = contact.startDate;
       this.end_date = contact.endDate;
+      this.defaultCode = contact.currencyCode.substring(0, contact.currencyCode.length - 1)
       this.status = contact.status === "active" ? true : false;
       this.phone = contact.phoneNumber[0].phoneNumber;
       this.contact = contact;

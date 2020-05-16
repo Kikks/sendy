@@ -152,6 +152,7 @@ export default {
           value: phone.phoneNumber
         });
       });
+      this.defaultCode = transaction.failedPhoneNumber[0].currencyCode.substring(0, transaction.failedPhoneNumber[0].currencyCode.length - 1)
       this.amount = String(transaction.failedPhoneNumber[0].amount);
       this.transaction = transaction;
     },

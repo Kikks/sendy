@@ -21,7 +21,7 @@
             <b>{{splitAirtimeResult.split.join(", ")}}.</b>
           </p>
         </small>
-        <small v-if="splitAirtimeResult.convert && !splitErrorMessage">
+        <small v-if="splitAirtimeResult.convert && Object.keys(splitAirtimeResult.convert).length !== 0 && !splitErrorMessage">
           <p>
             <b>Sendy's Exchange Rate</b>
           </p>

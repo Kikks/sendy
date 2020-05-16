@@ -172,7 +172,6 @@ export default {
                 axios
                     .post(url,  { code: response.code })
                     .then(response => {
-                        console.log(response.data);
                         this.step = 2;
                     });
             }
