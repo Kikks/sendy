@@ -21,14 +21,6 @@ export default class Helpers {
     }
 
     static multiples(value) {
-        const maxAirtime = 20000
-        const times = Math.floor(value / maxAirtime)
-        const remainder = value % maxAirtime
-        let values = new Array(times)
-        values.fill(maxAirtime)
-        if (remainder !== 0) {
-            values.push(remainder)
-        }
         return values.join(", ");
     }
 

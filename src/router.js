@@ -4,6 +4,7 @@ import axios from "axios";
 import store from "./store.js";
 import Home from "./views/Home.vue";
 import Onboard from "./views/Onboard.vue";
+import Help from "./views/Help.vue";
 import Auth from "./views/Auth.vue";
 import FullScreen from "./views/FullScreen.vue";
 import Signup from "./views/auth/Signup.vue";
@@ -19,6 +20,11 @@ const router = new Router({
       path: "/",
       name: "onboard",
       component: Onboard,
+    },
+    {
+      path: "/help",
+      name: "help",
+      component: Help,
     },
     {
       path: "/auth",

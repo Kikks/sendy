@@ -91,12 +91,22 @@
         </div>
       </div>
 
-      <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="airtimeAmount" />
-      <span v-if="airtimeAmount > maxAirtime">
+      <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="amount" />
+      <span v-if="airtimeMultiples !== false">
         &nbsp;
-        <small>
-          Airtime will be send in multiples of
-          <b>{{airtimeMultiples}}.</b>
+        <small v-if="splitErrorMessage" :style="{color: 'red'}">{{splitErrorMessage}}</small>
+        <small v-else-if="splitAirtimeResult.split && splitAirtimeResult.split.length > 1">
+          <p>
+            Airtime will be sent in multiples of
+            <b>{{splitAirtimeResult.split.join(", ")}}.</b>
+          </p>
+        </small>
+        <small v-if="splitAirtimeResult.convert && !splitErrorMessage">
+          <p>
+            <b>Sendy's Exchange Rate</b>
+          </p>
+          <p>1{{splitAirtimeResult.convert.sourceCurrency}} = {{splitAirtimeResult.convert.rate}}{{splitAirtimeResult.convert.userCurrency}}</p>
+          <p>{{amount}}{{splitAirtimeResult.convert.sourceCurrency}} = {{splitAirtimeResult.convert.conversion}}{{splitAirtimeResult.convert.userCurrency}}</p>
         </small>
       </span>
       <div class="row mt-4 mb-5">
@@ -168,7 +178,7 @@ export default {
       ticked: "daily",
       visible: 1,
       phones: [{ id: 1, value: "" }],
-      airtimeAmount: "",
+      amount: "",
       maxAirtime: 20000,
       startDate: "",
       endDate: "",
@@ -182,7 +192,10 @@ export default {
       isUploadingCSV: false,
       uploadedCSV: false,
       defaultCode: "NG",
-      currentFileUploadName: ""
+      currencyCode: "",
+      currentFileUploadName: "",
+      splitAirtimeResult: [],
+      splitErrorMessage: ""
     };
   },
   computed: {
@@ -191,6 +204,19 @@ export default {
         return this.countriesCode;
       }
       return this.countriesCode.filter(cc => cc == this.defaultCode);
+    },
+    airtimeMultiples() {
+      if (this.amount && this.phones[this.phones.length - 1].value) {
+        this.currencyCode = this.phones[this.phones.length - 1].value.split(
+          "-"
+        )[1];
+        if (this.currencyCode) {
+          this.splitAirtime();
+          return true;
+        }
+        return false;
+      }
+      return false;
     },
     slicedPhones() {
       let slicedPhones = [];
@@ -210,13 +236,11 @@ export default {
         (phone, index) => refinedArray.indexOf(phone) === index
       );
     },
-    airtimeMultiples() {
-      return Helpers.multiples(Number(this.airtimeAmount));
-    },
     canSubmit() {
       if (
         this.groupName.length < 1 ||
-        this.airtimeAmount.length < 1 ||
+        this.amount.length < 1 ||
+        this.splitErrorMessage ||
         this.startDate.length < 1 ||
         this.endDate.length < 1 ||
         !this.phones[this.phones.length - 1].value
@@ -316,18 +340,44 @@ export default {
           ? this.visible
           : this.visible + 1;
     },
+    splitAirtime() {
+      this.splitErrorMessage = "";
+      const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/airtime/split`;
+      const currencyCode = Helpers.assignCurrencyCode(this.currencyCode);
+      axios
+        .post(url, { amount: Number(this.amount), currencyCode })
+        .then(response => {
+          this.splitAirtimeResult = response.data.data;
+        })
+        .catch(error => {
+          Helpers.errorResponse(error, response => {
+            this.splitErrorMessage = response;
+          });
+        });
+    },
     addGroupContact() {
       if (this.isLoading) return;
 
       this.isLoading = true;
       const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact`;
-
+      this.defaultCode = this.phones[this.phones.length - 1].value.split(
+        "-"
+      )[1];
       const currencyCode = Helpers.assignCurrencyCode(this.defaultCode);
+      const airtimeAmount = this.amount;
+      console.log(airtimeAmount);
+      const options = this.refinedPhoneNumbers.map(function(element) {
+        const newData = {};
+        newData.amount = Number(airtimeAmount);
+        newData.phoneNumber = element;
+        newData.currencyCode = currencyCode;
+        return newData;
+      });
       const data = {
         name: this.groupName,
-        phoneNumber: this.refinedPhoneNumbers,
+        phoneNumber: options,
         currencyCode,
-        airtimeAmount: Number(this.airtimeAmount),
+        amount: Number(this.amount),
         startDate: moment(this.startDate).format("YYYY-MM-DD"),
         endDate: moment(this.endDate).format("YYYY-MM-DD"),
         frequency: this.ticked,

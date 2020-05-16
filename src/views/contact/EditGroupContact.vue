@@ -11,10 +11,7 @@
       <div v-if="!isFetchingContact && !errorMessage && phones.length > 0">
         <p class="text-center">Enter recipient's name, phone number and airtime frequency</p>
         <tl-input class="mt-5" placeholder="Name" v-model="groupName" />
-        <div
-          v-for="(phone, index) in slicedPhones"
-          :key="phone.id"
-        >
+        <div v-for="(phone, index) in slicedPhones" :key="phone.id">
           <div class="row align-items-center mt-4" v-for="item in phone" :key="item.id">
             <div class="col-1 text-center">
               <icon
@@ -93,10 +90,19 @@
             </button>
           </div>
         </div>
-        <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="airtimeAmount" />
-        <span v-if="airtimeAmount > maxAirtime">
-            &nbsp; 
-            <small>Airtime will be send in multiples of <b>{{airtimeMultiples}}.</b></small>
+        <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="amount" />
+        <span v-if="airtimeMultiples !== false">
+          &nbsp;
+          <small v-if="splitErrorMessage" :style="{color: 'red'}">{{splitErrorMessage}}</small>
+          <small v-else-if="splitAirtimeResult.split && splitAirtimeResult.split.length > 1">
+            <p> Airtime will be sent in multiples of
+            <b>{{splitAirtimeResult.split.join(", ")}}.</b> </p>
+          </small>
+           <small v-if="splitAirtimeResult.convert && !splitErrorMessage">
+             <p><b>Sendy's Exchange Rate</b></p>
+            <p>1{{splitAirtimeResult.convert.sourceCurrency}} = {{splitAirtimeResult.convert.rate}}{{splitAirtimeResult.convert.userCurrency}}</p>
+            <p>{{amount}}{{splitAirtimeResult.convert.sourceCurrency}} = {{splitAirtimeResult.convert.conversion}}{{splitAirtimeResult.convert.userCurrency}}</p>
+          </small>
         </span>
         <div class="row mt-4 mb-5">
           <div class="col-6">
@@ -166,8 +172,7 @@ export default {
       groupName: "",
       ticked: "daily",
       visible: 1,
-      airtimeAmount: "",
-      maxAirtime: 20000,
+      amount: "",
       phones: [],
       startDate: "",
       endDate: "",
@@ -184,7 +189,10 @@ export default {
       errorMessage: "",
       countriesCode: countries_code,
       defaultCode: "NG",
-      currentFileUploadName: ""
+      currencyCode: "",
+      currentFileUploadName: "",
+      splitAirtimeResult: [],
+      splitErrorMessage: ""
     };
   },
   computed: {
@@ -195,7 +203,17 @@ export default {
       return this.countriesCode.filter(cc => cc == this.defaultCode);
     },
     airtimeMultiples() {
-      return Helpers.multiples(Number(this.airtimeAmount));
+      if (this.amount && this.phones[this.phones.length - 1].value) {
+        this.currencyCode = this.phones[this.phones.length - 1].value.split(
+          "-"
+        )[1];
+        if (this.currencyCode) {
+          this.splitAirtime();
+          return true;
+        }
+        return false;
+      }
+      return false;
     },
     slicedPhones() {
       let slicedPhones = [];
@@ -217,7 +235,8 @@ export default {
     canSubmit() {
       if (
         this.groupName.length < 1 ||
-        this.airtimeAmount.length < 1 ||
+        this.amount.length < 1 ||
+        this.splitErrorMessage ||
         this.startDate.length < 1 ||
         this.endDate.length < 1 ||
         !this.phones[this.phones.length - 1].value
@@ -321,17 +340,32 @@ export default {
           });
         });
     },
+    splitAirtime() {
+      this.splitErrorMessage = "";
+      const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/airtime/split`;
+      const currencyCode = Helpers.assignCurrencyCode(this.currencyCode);
+      axios
+        .post(url, { amount: Number(this.amount), currencyCode })
+        .then(response => {
+          this.splitAirtimeResult = response.data.data;
+        })
+        .catch(error => {
+          Helpers.errorResponse(error, response => {
+            this.splitErrorMessage = response;
+          });
+        });
+    },
     setContact(contact) {
       this.groupName = contact.name;
       this.ticked = contact.frequency;
-      this.airtimeAmount = contact.airtimeAmount;
+      this.amount = String(contact.phoneNumber[0].amount);
       this.startDate = contact.startDate;
       this.endDate = contact.endDate;
       this.status = contact.status === "active" ? true : false;
       contact.phoneNumber.forEach(phone => {
         this.phones.push({
           id: Math.random(),
-          value: phone
+          value: phone.phoneNumber
         });
       });
       this.contact = contact;
@@ -343,12 +377,19 @@ export default {
       const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact/${this.contact.id}`;
 
       const currencyCode = Helpers.assignCurrencyCode(this.defaultCode);
-
+      const airtimeAmount = this.amount;
+      const options = this.refinedPhoneNumbers.map(function(element) {
+        const newData = {};
+        newData.amount = Number(airtimeAmount);
+        newData.phoneNumber = element;
+        newData.currencyCode = currencyCode;
+        return newData;
+      });
       const data = {
         name: this.groupName,
-        phoneNumber: this.refinedPhoneNumbers,
+        phoneNumber: options,
         currencyCode,
-        airtimeAmount: Number(this.airtimeAmount),
+        amount: Number(this.amount),
         startDate: moment(this.startDate).format("YYYY-MM-DD"),
         endDate: moment(this.endDate).format("YYYY-MM-DD"),
         frequency: this.ticked,

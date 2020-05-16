@@ -78,6 +78,7 @@ export default {
   data() {
     return {
       visible: 1,
+      amount: "",
       phones: [],
       isLoading: false,
       isFetchingTransaction: false,
@@ -148,9 +149,10 @@ export default {
       transaction.failedPhoneNumber.forEach(phone => {
         this.phones.push({
           id: Math.random(),
-          value: phone
+          value: phone.phoneNumber
         });
       });
+      this.amount = String(transaction.failedPhoneNumber[0].amount);
       this.transaction = transaction;
     },
     resendAirtime() {
@@ -158,10 +160,18 @@ export default {
       this.isLoading = true;
 
       const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/airtime`;
-
+      const currencyCode = Helpers.assignCurrencyCode(this.defaultCode);
+      const airtimeAmount = this.amount;
+      const options = this.refinedPhoneNumbers.map(function(element) {
+        const newData = {};
+        newData.amount = Number(airtimeAmount);
+        newData.phoneNumber = element;
+        newData.currencyCode = currencyCode;
+        return newData;
+      });
       const data = {
         transaction: this.transaction.id,
-        failedPhoneNumber: this.refinedPhoneNumbers || [],
+        failedPhoneNumber: options || [],
         category: "resendFailedAirtime",
       };
 

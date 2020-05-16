@@ -12,12 +12,8 @@
     <tl-input type="email" placeholder="Email" v-model="email" />
     <tl-input class="mb-5" type="password" placeholder="Password" v-model="password" />
     <div class="row align-items-center">
-        <div class="col-6 text-left">
-            <router-link :to="{name: 'password-reset-request'}">
-                Forgot Password?
-            </router-link>
-        </div>
-        <div class="col-6 text-right">
+        
+        <div class="col-12 text-right">
             <button 
                 class="round-btn"
                 @click="submit"
@@ -26,6 +22,20 @@
                 <icon name="loading" spin v-if="isLoading" />
                 <icon name="arrow-right" v-else />
             </button>
+        </div>
+    </div>
+    <div class="row align-items-center mt-4">
+        <div class="col-12 text-center">
+            <router-link :to="{name: 'password-reset-request'}">
+                Forgot Password?
+            </router-link>
+        </div>
+    </div>
+    <div class="row align-items-center mt-4">
+        <div class="col-12 text-center">
+            <router-link :to="{name: 'help'}">
+                Get in touch
+            </router-link>
         </div>
     </div>
     </div>
