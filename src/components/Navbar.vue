@@ -27,7 +27,7 @@
         </div>
 
         <div class="bottom">
-          <a :href="`mailto:hello@foodjaar.com`" target="_blank">
+          <a :href="`mailto:hello@tinylabs.app`" target="_blank">
             <span class="social-icon">
               <icon name="email" />
             </span>

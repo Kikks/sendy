@@ -217,7 +217,7 @@
                 <div class="col-6 text-right">{{contact.currencyCode}}{{contact.amount}}</div>
               </div>
               <div class="row searchrow">
-                <div class="col-6">{{contact.phoneNumber[0]}}</div>
+                <div class="col-6">{{contact.phoneNumber[0].phoneNumber}}</div>
                 <div class="col-6 text-right">{{contact.frequency}}</div>
               </div>
             </div>
