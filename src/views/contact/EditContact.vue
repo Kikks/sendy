@@ -13,8 +13,9 @@
         <tl-input class="mt-5" placeholder="Name" v-model="name" />
         <phone-input v-model="phone" :defaultCountryCode="defaultCode" uniqueName="newcontact" />
         <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="amount" />
+         
         <span v-if="airtimeMultiples !== false">
-          &nbsp;
+          <icon name="loading" spin class="mr-1" size="0.9" v-if="isSplitLoading" />
           <small v-if="splitErrorMessage" :style="{color: 'red'}">{{splitErrorMessage}}</small>
           <small v-else-if="splitAirtimeResult.split && splitAirtimeResult.split.length > 1">
             <p> Airtime will be sent in multiples of
@@ -97,6 +98,7 @@ export default {
       start_date: "",
       end_date: "",
       isLoading: false,
+      isSplitLoading: false,
       isFetchingContact: false,
       status: false,
       status_color_options: {
@@ -164,16 +166,20 @@ export default {
         });
     },
     splitAirtime() {
+      this.isSplitLoading = true;
       this.splitErrorMessage = "";
       const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/airtime/split`;
       const currencyCode = Helpers.assignCurrencyCode(this.phone.split("-")[1]);
       axios
         .post(url, { amount: Number(this.amount), currencyCode })
         .then(response => {
+          this.isSplitLoading = false;
+          this.splitErrorMessage = '';
           this.splitAirtimeResult = response.data.data;
         })
         .catch(error => {
           Helpers.errorResponse(error, response => {
+            this.isSplitLoading = false;
             this.splitErrorMessage = response;
           });
         });

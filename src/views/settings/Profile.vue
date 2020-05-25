@@ -68,10 +68,7 @@ export default {
             const currencyCode = Helpers.assignCurrencyCode(this.phone.split('-')[1]);
             const data = {
                 firstName: this.first_name,
-                lastName: this.last_name,
-                phoneNumber: this.phone.split('-')[0],
-                email: this.email,
-                currencyCode
+                lastName: this.last_name
             };
             this.$store.dispatch('updateUser', { data, type: 'update_info' })
                 .then(response => {
@@ -95,7 +92,6 @@ export default {
         setDefaultFormValues(){
             this.first_name = this.user.firstName;
             this.last_name = this.user.lastName;
-            this.email = this.user.email;
         }
     },
     mounted(){
