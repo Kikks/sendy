@@ -29,5 +29,5 @@ export const charge = amount => {
     }else{
         total = evaluate(`${amount} / (1 - 0.015)`);
     }
-    return total.toFixed(2);
+    return Math.round(total);
 };
