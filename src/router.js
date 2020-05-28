@@ -186,6 +186,14 @@ const router = new Router({
             ),
         },
         {
+          path: "activity-log/:id",
+          name: "activity-log",
+          component: () =>
+            import(
+              /* webpackChunkName: "home" */ "./views/airtime/Log.vue"
+            ),
+        },
+        {
           path: "profile",
           name: "profile",
           component: () =>
