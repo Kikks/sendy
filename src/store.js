@@ -155,10 +155,10 @@ export default new Vuex.Store({
                     });
             });
         },
-        getContacts({ commit }){
+        getContacts({ commit }, { type, page }){
             return new Promise((resolve, reject) => {
 
-                const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact`;
+                const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact?page=${page}${type}`;
                 axios
                 .get(url)
                 .then(response => {

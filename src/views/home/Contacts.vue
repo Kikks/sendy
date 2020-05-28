@@ -13,6 +13,19 @@
         <div @click="tab=true" class="switch" :class="tab ? 'active':''">Individuals</div>
         <div @click="tab=false" class="switch" :class="!tab ? 'active':''">Groups</div>
       </div>
+      <div class="d-flex flex-row mb-4 justify-content-between align-items-center">
+        <div>
+          
+        </div>
+        <div>
+          <pagination
+            :page="paginationMetaData.page || 0"
+            :pageCount="paginationMetaData.pageCount || 0"
+            @nextData="nextData"
+            @prevData="prevData"
+          />
+        </div>
+      </div>
       <div
         class="d-flex justify-content-center align-items-center"
         style="height: 50vh"
@@ -31,38 +44,40 @@
       >
         <span>You currently have no {{ tab ? 'individual' : 'group' }} contacts</span>
       </div>
-      <div v-for="(contact) in filteredContacts" :key="contact.id" class="activityRow">
-        <div class="row">
-          <div class="col">
-            <div class="row firstRow">
-              <div class="col-6 blue">{{contact.name}}</div>
-              <!-- <div class="col-6 text-right" :class="{red: !activity.add, green: activity.add}"> -->
-              <div class="col-6 text-right">{{ contact.currencyCode }}{{contact.phoneNumber[0].amount}}</div>
-            </div>
-            <div class="row secondRow">
-              <div class="col-6 blue">
-                <span v-if="tab">{{contact.phoneNumber[0].phoneNumber}}</span>
-                <span v-else>{{ contact.phoneNumber.length }} Recipients</span>
+      <div v-if="!isFetchingContacts && !errorMessage">
+        <div v-for="(contact) in filteredContacts" :key="contact.id" class="activityRow">
+          <div class="row">
+            <div class="col">
+              <div class="row firstRow">
+                <div class="col-6 blue">{{contact.name}}</div>
+                <!-- <div class="col-6 text-right" :class="{red: !activity.add, green: activity.add}"> -->
+                <div class="col-6 text-right">{{ contact.currencyCode }}{{contact.phoneNumber[0].amount}}</div>
               </div>
-              <div class="col-6 text-right">{{contact.frequency}}</div>
-            </div>
-            <div class="row thirdRow" v-if="contact.isDuplicate">
-              <div class="col-6 red">
-                <span @click="showDeleteContactModal(contact)">Possible Duplicate (Delete)</span>
-              </div>
-            </div>
-          </div>
-          <div class="col-2 ss">
-            <div class="dropdown" @click="show(contact)">
-              <div>
-                <icon name="dots-vertical" />
-              </div>
-              <div class="dropdown-menu" :ref="`dropdown-menu-${contact.id}`">
-                <div class="dropdown-item" @click="editContact(contact)">
-                  <span>Edit</span>
+              <div class="row secondRow">
+                <div class="col-6 blue">
+                  <span v-if="tab">{{contact.phoneNumber[0].phoneNumber}}</span>
+                  <span v-else>{{ contact.phoneNumber.length }} Recipients</span>
                 </div>
-                <div class="dropdown-item" @click="showDeleteContactModal(contact)">
-                  <span>Delete</span>
+                <div class="col-6 text-right">{{contact.frequency}}</div>
+              </div>
+              <div class="row thirdRow" v-if="contact.isDuplicate">
+                <div class="col-6 red">
+                  <span @click="showDeleteContactModal(contact)">Possible Duplicate (Delete)</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-2 ss">
+              <div class="dropdown" @click="show(contact)">
+                <div>
+                  <icon name="dots-vertical" />
+                </div>
+                <div class="dropdown-menu" :ref="`dropdown-menu-${contact.id}`">
+                  <div class="dropdown-item" @click="editContact(contact)">
+                    <span>Edit</span>
+                  </div>
+                  <div class="dropdown-item" @click="showDeleteContactModal(contact)">
+                    <span>Delete</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -112,13 +127,16 @@ export default {
   },
   computed: {
     filteredContacts() {
-      return this.$store.getters.getContacts.filter(contact => {
-        if (contact.type === "group" && !this.tab) {
-          return true;
-        } else if (contact.type === "individual" && this.tab) {
-          return true;
-        }
-      });
+      //this.getContacts();
+      return this.$store.getters.getContacts
+    },
+    paginationMetaData() {
+      return this.$store.getters.getPaginationMetaData;
+    }
+  },
+  watch: {
+    tab(v) {
+      return this.getContacts();
     }
   },
   methods: {
@@ -128,12 +146,26 @@ export default {
         elem[0].classList.toggle("show");
       }
     },
-    getContacts() {
+    nextData() {
+      if (this.paginationMetaData.nextPage) {
+        this.$store.commit("setContacts", []);
+        this.getContacts(this.paginationMetaData.nextPage);
+      }
+    },
+    prevData() {
+      if (this.paginationMetaData.previousPage) {
+        this.$store.commit("setContacts", []);
+        this.getContacts(this.paginationMetaData.previousPage);
+      }
+    },
+    getContacts(page = 1) {
       this.isFetchingContacts = true;
+      const type = this.tab ? "&type=individual" : "&type=group";
       this.$store
-        .dispatch("getContacts")
+        .dispatch("getContacts", { type, page })
         .then(response => {
           this.isFetchingContacts = false;
+          this.$store.commit("setPaginationMetaData", response.data.meta);
         })
         .catch(error => {
           Helpers.errorResponse(error, response => {

@@ -134,7 +134,7 @@ export default {
         refinedArray.push({
           ...activity,
           amount: Number.parseFloat(activity.amount).toFixed(2),
-          date: moment(activity.createdAt).format("MMM Do YY")
+          date: moment(activity.createdAt).format("MMM Do YYYY HH:mm A z")
         });
       });
       return refinedArray;
