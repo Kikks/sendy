@@ -11,8 +11,7 @@
             name    = "export.csv">
             <icon name="loading" spin class="mr-1" size="0.9" v-if="isLoading" />
             Export CSV
-        
-        </download-csv>
+          </download-csv>
           <!-- <button class="btn small"  @click="``">
             <icon name="loading" spin class="mr-1" size="0.9" v-if="isLoading" />Export CSV
           </button> -->
