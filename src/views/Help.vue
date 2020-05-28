@@ -10,12 +10,12 @@
 
     <div class="row">
       <div class="col-12">
-        <a :href="`tel:+2348135949184`">
+        <a :href="`tel:+2348120789740`">
           <button class="btn">Call Us</button>
         </a>
         <br />
         <br />
-        <a :href="`mailto:hello@foodjaar.com`" target="_blank">
+        <a :href="`mailto:hello@tinylabs.app`" target="_blank">
           <button class="btn">Email Us</button>
         </a>
       </div>

@@ -6,7 +6,10 @@
             </div>
             <h2 class="mt-3">Fund Sendy Wallet</h2>
                 <tl-input class="amount" placeholder="Enter Amount" v-model="amount" />
-
+                <span>
+                    &nbsp; <br />
+                    <small  v-if="amount.length > 0"><b>{{amountWithCharge}}</b> will be deducted because of paystack charges.</small>
+                </span>
                 <button class="btn mt-5" @click="pay" :disabled="amount.length < 2 || isLoading">
                     <icon name="loading" spin size="0.9" class="mr-1" v-if="isLoading" />Continue
                 </button>
@@ -19,7 +22,7 @@
 <script>
 import axios from "axios";
 import Helpers from "../../utils/Helpers";
-import Pay from '../../utils/Payment.js';
+import Pay, { charge } from "../../utils/Payment";
 
 export default {
     data() {
@@ -34,7 +37,10 @@ export default {
         },
         canSubmit() {
             if (this.amount) return false;
-        }
+        },
+        amountWithCharge(){
+            return charge(Number(this.amount));
+        },
     },
     methods: {
         pay() {

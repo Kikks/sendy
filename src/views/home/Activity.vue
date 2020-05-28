@@ -49,7 +49,7 @@
             class="col-5 text-right"
             :class="activity.type  === 'credit' ? 'green' : 'red'"
           >{{ activity.currency }}{{ activity.amount }}</div>
-          <div class="col-2 ss" v-if="activity.failedPhoneNumber && activity.failedPhoneNumber.length > 0 && !activity.resendFailedAirtime">
+          <div class="col-2 ss" v-if="activity.failedPhoneNumber && activity.failedPhoneNumber.length > 0 && !activity.resendFailedAirtime && activity.type === 'credit'">
             <div class="dropdown" @click="show(activity)">
               <div>
                 <icon name="dots-vertical" />
@@ -68,6 +68,18 @@
             class="col-5 text-right"
             :class="activity.type  === 'credit' ? 'green' : 'red'"
           >{{ activity.currency }}{{ activity.amount }}</div>
+          <div class="col-2 ss" v-if="activity.airtime > 0 && activity.type === 'debit'">
+            <div class="dropdown" @click="show(activity)">
+              <div>
+                <icon name="dots-vertical" />
+              </div>
+              <div class="dropdown-menu" :ref="`dropdown-menu-${activity.id}`">
+                <div class="dropdown-item">
+                  <span @click="log(activity)">Log</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
        
         <div class="row secondRow">
@@ -152,6 +164,13 @@ export default {
       this.$router.push({
         name: "edit.resend-airtime",
         params: { id: this.activity.id }
+      });
+      
+    },
+    log(activity) {
+      this.$router.push({
+        name: "activity-log",
+        params: { id: activity.id }
       });
       
     },
