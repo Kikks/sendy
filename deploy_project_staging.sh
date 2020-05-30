@@ -3,6 +3,7 @@ rm yarn.lock
 git fetch --all
 git reset --hard origin/staging
 nvm use 12.13.0
+yarn config set ignore-engines true
 yarn install
 yarn build
 cd dist

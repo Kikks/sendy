@@ -14,6 +14,7 @@ export default new Vuex.Store({
         currentPhoneNumber: "",
         contacts: [],
         activities: [],
+        transactions: [],
         cards: [],
         paginationMetaData: {},
     },
@@ -35,6 +36,9 @@ export default new Vuex.Store({
         },
         getActivities(state){
             return state.activities;
+        },
+        getTransactions(state){
+            return state.transactions;
         },
         getCards(state) {
             return state.cards;
@@ -63,6 +67,9 @@ export default new Vuex.Store({
         },
         setActivities(state, payload) {
             state.activities = payload
+        },
+        setTransactions(state, payload) {
+            state.transactions = payload
         },
         logout(state) {
             state.user = {};
@@ -148,10 +155,10 @@ export default new Vuex.Store({
                     });
             });
         },
-        getContacts({ commit }){
+        getContacts({ commit }, { type, page }){
             return new Promise((resolve, reject) => {
 
-                const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact`;
+                const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact?page=${page}${type}`;
                 axios
                 .get(url)
                 .then(response => {
@@ -192,6 +199,20 @@ export default new Vuex.Store({
                     });
                 });
         },
+        getTransactions({ commit }, {transactionId, page = 1}){
+            return new Promise((resolve, reject) => {
+                const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/transaction/airtime/${transactionId}?page=${page}`;
+                axios
+                    .get(url)
+                    .then(response => {
+                        commit('setTransactions', response.data.data);
+                        resolve(response);
+                    })
+                    .catch(error => {
+                      reject(error);
+                    });
+                });
+        },
         updateUser({ commit }, { data, type }){
             return new Promise((resolve, reject) => {
                 const url = `${process.env.VUE_APP_GEN_AUTH_SVC_URL}/auth/user`;
@@ -201,13 +222,14 @@ export default new Vuex.Store({
                         if(type === 'update_info'){
                             const userData = JSON.parse(window.localStorage.getItem("tinylabs-sendy-user"));
 
-                            const { firstName, lastName, notification, threshold } = response.data.data;
+                            const { firstName, lastName, notification, report, threshold } = response.data.data;
 
                             const updatedUserData = {
                                 ...userData,
                                 firstName,
                                 lastName,
                                 notification,
+                                report,
                                 threshold
                             };
 

@@ -14,7 +14,7 @@
           <p
             class="text-center mt-1 mb-5"
           >An email would be sent to you weekly whenever your sendy balance goes below the specified threshold.</p>
-          <div class="row justify-content-space-between">
+         <div class="row justify-content-space-between">
             <div class="col">{{ notification ? 'Disable' : 'Enable' }} Notification</div>
             <div class="col-6 text-right">
               <toggle-button
@@ -27,6 +27,23 @@
             </div>
           </div>
           <tl-input class="mb-5" placeholder="Threshold (in NGN)" v-model="threshold" />
+
+           <p
+            class="text-center mt-1 mb-5"
+          >A report would also be sent to your email inbox whenever airtime is sent.</p>
+          
+          <div class="row justify-content-space-between">
+            <div class="col">{{ report ? 'Disable' : 'Enable' }} Report</div>
+            <div class="col-6 text-right">
+              <toggle-button
+                v-model="report"
+                :height="30"
+                :width="60"
+                class="ml-2"
+                :color="status_color_options"
+              />
+            </div>
+          </div>
         </div>
 
         <button class="btn mt-5" :disabled="canSubmit || isLoading" @click="updateAlert">
@@ -45,6 +62,7 @@ export default {
   data() {
     return {
       notification: false,
+      report: false,
       threshold: "0",
       isFetchingAlertInfo: false,
       status_color_options: {
@@ -76,6 +94,7 @@ export default {
       const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/user`;
       const data = {
         notification: this.notification,
+        report: this.report,
         threshold: Number(this.threshold)
       };
       axios
