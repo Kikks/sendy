@@ -185,8 +185,10 @@ export default {
         .post(url, data)
         .then(response => {
           this.isLoading = false;
+          const type = "&type=individual";
+          const page = 1;
           this.$toasted.show(response.data.message);
-          this.$store.dispatch("getContacts");
+          this.$store.dispatch("getContacts", { type, page });
           this.$router.push({ name: "contacts" });
         })
         .catch(error => {
