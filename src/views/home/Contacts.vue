@@ -198,7 +198,7 @@ export default {
     hideDeleteContactModal() {
       this.$modal.hide(this.deleteContactModal);
     },
-    deleteContact() {
+    deleteContact(page = 1) {
       this.isLoading = true;
       const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact/${this.contact.id}`;
       axios
@@ -207,7 +207,8 @@ export default {
           this.isLoading = false;
           this.$toasted.show(response.data.message);
           this.hideDeleteContactModal();
-          this.$store.dispatch("getContacts");
+          const type = this.tab ? "&type=individual" : "&type=group";
+          this.$store.dispatch("getContacts", { type, page });
         })
         .catch(error => {
           Helpers.errorResponse(error, response => {
