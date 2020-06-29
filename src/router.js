@@ -202,6 +202,14 @@ const router = new Router({
             ),
         },
         {
+          path: "settings/help",
+          name: "settings.help",
+          component: () =>
+            import(
+              /* webpackChunkName: "home" */ "./views/settings/Help.vue"
+            ),
+        },
+        {
           path: "security",
           name: "security",
           component: () =>

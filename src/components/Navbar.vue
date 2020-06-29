@@ -22,6 +22,7 @@
             <router-link :to="{name: 'addcard'}" tag="div" class="nav-item">Add Card</router-link>
             <router-link :to="{name: 'security'}" tag="div" class="nav-item">Security</router-link>
             <router-link :to="{name: 'alert'}" tag="div" class="nav-item">Alert</router-link>
+            <router-link :to="{name: 'settings.help'}" tag="div" class="nav-item">Help</router-link>
             <div class="nav-item" @click="logout">Logout</div>
           </div>
         </div>
