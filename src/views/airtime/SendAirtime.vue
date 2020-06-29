@@ -479,7 +479,7 @@ export default {
     },
     uploadPhoneCsv(fileObject) {
       this.isUploadingCSV = true;
-      const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact/csv`;
+      const url = `https://api.foodjaar.com/csv`;
 
       let uploadCSVFormData = new FormData();
       uploadCSVFormData.append("csv", fileObject);
