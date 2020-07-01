@@ -5,9 +5,9 @@
       <div class="d-flex flex-row mb-4 justify-content-between align-items-center">
         <div>
           <download-csv
-            :disabled="filteredTransactions.length < 1 || isFetchingTransaction"
+            :disabled="filteredAllTransactions.length < 1 || isFetchingAllTransaction"
             class   = "btn small"
-            :data   = "log"
+            :data   = "allLogs"
             name    = "export.csv">
             <icon name="loading" spin class="mr-1" size="0.9" v-if="isLoading" />
             Export CSV
@@ -107,11 +107,13 @@ export default {
       isLoading: false,
       searchTerm: "",
       log: [],
+      allLogs: [],
       showSearch: false,
       isSearchLoading: false,
       searchTransactionResult: [],
       searchErrorMessage: "",
       isFetchingTransaction: false,
+      isFetchingAllTransaction: false,
       errorMessage: "",
     };
   },
@@ -126,8 +128,20 @@ export default {
           status: data.status
         });
       });
-      console.log(refinedArray)
       this.log = refinedArray;
+      return refinedArray;
+    },
+    filteredAllTransactions() {
+      let refinedArray = [];
+      this.allLogs.forEach(data => {
+        refinedArray.push({
+          phoneNumber: data.phoneNumber,
+          currencyCode: data.currencyCode,
+          amount: data.amount,
+          status: data.status
+        });
+      });
+      this.allLogs = refinedArray;
       return refinedArray;
     },
     shouldShowSearchBox() {
@@ -196,6 +210,22 @@ export default {
           });
         });
     },
+    getAllTransaction() {
+      this.isFetchingAllTransaction = true;
+      const transactionId = this.$route.params.id;
+      const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/transaction/airtime/${transactionId}?per_page=-1`;
+      axios
+        .get(url)
+        .then(response => {
+          this.allLogs = response.data.data;
+          this.isFetchingAllTransaction = false;
+        })
+        .catch(error => {
+          Helpers.errorResponse(error, response => {
+            this.isFetchingAllTransaction = false;
+          });
+        });
+    },
     away() {
       this.searchTerm = "";
       this.showSearch = false;
@@ -210,6 +240,7 @@ export default {
   mounted() {
     //if (this.$store.getters.getTransactions.length < 1) {
       this.getTransactions();
+      this.getAllTransaction();
    // }
     
   }
