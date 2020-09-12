@@ -32,7 +32,7 @@ export default {
         addCard(){
              this.$loadScript("https://js.paystack.co/v1/inline.js")
                 .then(() => {
-                    new Pay({ amount: this.amount, email: this.user.email}).initiatePayment(this.referencePayment);
+                    new Pay({ amount: this.amount, email: this.user.email, user: this.user.id }).initiatePayment(this.referencePayment);
                 })
                 .catch(() => {
                     this.$toasted.show("Payment service not available currently.");

@@ -44,10 +44,9 @@ export default {
     },
     methods: {
         pay() {
-
             this.$loadScript("https://js.paystack.co/v1/inline.js")
                 .then(() => {
-                    new Pay({ email: this.user.email, amount: this.amount }).initiatePayment(this.referencePayment);
+                    new Pay({ email: this.user.email, amount: this.amount, user: this.user.id }).initiatePayment(this.referencePayment);
                 })
                 .catch(() => {
                     this.$toasted.show("Payment service not available currently.");
