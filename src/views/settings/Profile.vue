@@ -1,126 +1,189 @@
 <template>
-    <div>
-        <GreyNavbar title="Profile" />
+  <div class="main">
+    <SideNav />
 
-        <div class="profile">
-            <div>
-                
-                <!-- <div class="profilepic">
-                    <div class="cameraicon">
-                        <icon name="camera"></icon>
-                    </div>
+    <div class="content">
+      <GreyNavbar title="Profile" />
 
-                </div> -->
-                <tl-input class="mb-5" placeholder="First Name" v-model="first_name" />
-                <tl-input class="mb-5" placeholder="Last Name" v-model="last_name"  />
-                <!-- <phone-input v-model="phone" uniqueName="profilephoneinput"/> -->
-                <!-- <tl-input type="email" class="mt-5" placeholder="Email" v-model="email" /> -->
-            </div>
+      <div class="profile">
+        <div>
+          <label class="profilepic" for="profile-picture">
+            <icon v-if="!filePreview && !image" name="camera"></icon>
+            <figure v-if="filePreview || image" class="figure">
+              <img :src="filePreview || image" />
+            </figure>
 
-            <button 
-                class="btn mt-5" 
-                :disabled="canSubmit || isLoading" 
-                @click="updateProfile"
-            >  
-                <icon name="loading" spin size="0.9" v-if="isLoading" class="mr-1" /> Save Changes
-            </button>
+            <input
+              @change="handleFileChange"
+              type="file"
+              id="profile-picture"
+              class="file-input"
+              accept="image/*"
+            />
+          </label>
+          <tl-input
+            label="First Name"
+            placeholder="First Name"
+            v-model="first_name"
+          />
+          <tl-input
+            label="Last Name"
+            placeholder="Last Name"
+            v-model="last_name"
+          />
         </div>
 
+        <button
+          class="btn"
+          :disabled="canSubmit || isLoading"
+          @click="updateProfile"
+        >
+          <icon name="loading" spin size="0.9" v-if="isLoading" class="mr-1" />
+          Save Changes
+        </button>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
 import Helpers from '../../utils/Helpers';
-import countries_code from "../../country_code.json";
+import SideNav from '../../components/SideNav.vue';
 
-export default {  
-    data(){
-        return {
-            first_name: "",
-            last_name: "",
-            phone: "",
-            phone: "",
-            email: "",
-            isLoading: false,
-        }
+export default {
+  data() {
+    return {
+      first_name: '',
+      last_name: '',
+      image: null,
+      file: null,
+      isLoading: false,
+    };
+  },
+  mounted() {
+    this.setDefaultFormValues();
+  },
+  computed: {
+    canSubmit() {
+      if (this.first_name.length < 1 || this.last_name.length < 1) {
+        return true;
+      }
+      return false;
     },
-    computed: {
-        canSubmit(){
-            if(this.first_name.length < 1 || 
-                this.last_name.length < 1
-                // this.phone.length < 1
-            ){
-                return true;
-            }
-            // if(!Helpers.isValidEmail(this.email)) {
-            //     return true;
-            // }
-            return false;
-        },
-        user(){
-            return this.$store.getters.getUser;
-        },
+    user() {
+      return this.$store.getters.getUser;
     },
-    methods: {
-        updateProfile(){
-            this.isLoading = true;
+    filePreview() {
+      return this.file ? URL.createObjectURL(this.file) : null;
+    },
+  },
+  methods: {
+    setDefaultFormValues() {
+      this.first_name = this.user.first_name;
+      this.last_name = this.user.last_name;
+      this.image = this.user.image || null;
+    },
+    handleFileChange(event) {
+      const files = event.target.files;
 
-            const currencyCode = Helpers.assignCurrencyCode(this.phone.split('-')[1]);
-            const data = {
-                firstName: this.first_name,
-                lastName: this.last_name
-            };
-            this.$store.dispatch('updateUser', { data, type: 'update_info' })
-                .then(response => {
-                    this.isLoading = false;
-                    this.$toasted.show(response.data.message);
-                    this.$router.push({name: 'home'});
-                })
-                .catch(error => {
-                    Helpers.errorResponse(error, response => {
-                        this.isLoading = false;
-                        this.$toasted.show(response);
-                    });
-                });
-        },
-        handlePhoneInputUpdate($event){
-            this.phoneNumberMetaData = $event;
-            if($event.isValid){
-                this.phone = $event.formattedNumber;
-            }
-        },
-        setDefaultFormValues(){
-            this.first_name = this.user.firstName;
-            this.last_name = this.user.lastName;
-        }
+      if (files && files[0]) {
+        this.file = files[0];
+      }
     },
-    mounted(){
-        this.setDefaultFormValues();
-    }
-}
+    updateProfile() {
+      this.isLoading = true;
+      const data = {
+        first_name: this.first_name,
+        last_name: this.last_name,
+        // Uncomment this if we've added file upload
+        // image: this.image
+      };
+      this.$store
+        .dispatch('updateUser', { data, type: 'update_info' })
+        .then((response) => {
+          this.isLoading = false;
+          this.$toasted.show(response.data.message);
+          this.$router.push({ name: 'home' });
+        })
+        .catch((error) => {
+          Helpers.errorResponse(error, (response) => {
+            this.isLoading = false;
+            this.$toasted.show(response);
+          });
+        });
+    },
+  },
+  components: { SideNav },
+};
 </script>
+
 <style lang="scss" scoped>
-    .profile{
-        margin-top: 55px;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-height: 80vh;
-        .profilepic{
-            width:100px;
-            height:100px;
-            border-radius:50%;
-            background-color: lightgray;
-            margin:50px auto;
-            display: flex;
-            align-items: flex-end;
-            text-align: center;
-            .cameraicon{
-                width:100%;
-                height:40px;
-                background-color: transparent;
-            }
-        }
+.profile {
+  margin-top: 55px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 80vh;
+  max-width: 700px;
+  margin: 55px auto;
+
+  .profilepic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #eee;
+    margin: 0 auto;
+    margin-top: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    cursor: pointer;
+
+    .cameraicon {
+      width: 100%;
+      height: 40px;
+      background-color: transparent;
     }
+  }
+}
+
+.main {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+
+  @media (min-width: 1024px) {
+    height: 100vh;
+    display: flex;
+    overflow-y: hidden;
+  }
+}
+
+.content {
+  @media (min-width: 1024px) {
+    min-height: 100vh;
+    flex: 1;
+    overflow-y: auto;
+  }
+}
+
+.file-input {
+  display: none;
+}
+
+.figure {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0;
+
+  & img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+}
 </style>

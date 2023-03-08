@@ -1,179 +1,193 @@
 <template>
-  <div>
-    <GreyNavbar title="Send Airtime" />
+  <div class="main">
+    <SideNav />
 
-    <div class="send-airtime">
-      <h3>
-        <b>Select Categories</b>
-      </h3>
+    <div class="content">
+      <GreyNavbar title="Send Airtime" />
 
-      <div class="switcher mt-3">
-        <div @click="tab=true" class="switch" :class="tab && 'active'">New Recipient</div>
-        <div @click="tab=false" class="switch" :class="!tab && 'active'">Saved Recipients</div>
-      </div>
-      <div v-if="tab">
-        <tl-input class="mt-5" placeholder="Name" v-model="name" />
+      <div class="send-airtime">
+        <h3>
+          <b>Select Category</b>
+        </h3>
 
-        <div v-for="(phone, index) in slicedPhones" :key="phone.id">
-          <div class="row align-items-center mt-4" v-for="item in phone" :key="item.id">
-            <div class="col-1 text-center">
-              <icon
-                name="delete"
-                color="red"
-                @click.native="deleteNumber(index)"
-                v-if="phones.length > 1"
-              />
-            </div>
-            <div class="col-11">
-              <phone-input
-                v-model="item.value"
-                :uniqueName="`group-contact-${item.id}`"
-                :defaultCountryCode="defaultCode"
-                :onlyCountries="onlyCountryCodes"
-                customStyle="margin-top: 0.25rem !important"
-              />
-            </div>
+        <div class="switcher mt-3">
+          <div class="switch" :class="tab && 'active'" @click="tab = true">
+            New Recipient
+          </div>
+          <div class="switch" :class="!tab && 'active'" @click="tab = false">
+            Saved Recipients
           </div>
         </div>
-        <div class="row pt-3 align-items-center" v-if="uploadedCSV">
-          <div
-            class="col"
-            @click="visible = visible > 1 ? visible - 1 : visible"
-            v-if="!(visible < 2)"
-          >
-            <center>
-              <small>Show Less.</small>
-            </center>
-          </div>
-          <div
-            class="col"
-            @click="visible = visible * 5 >= phones.length ? visible : visible + 1"
-            v-if="!(visible * 5 >= phones.length)"
-          >
-            <center>
-              <small>Show More.</small>
-            </center>
-          </div>
-        </div>
-        <div class="row pt-3 align-items-center" v-if="uploadedCSV">
-          <div class="col">
-            <center>
-              <small>{{slicedPhones.reduce((acc,element) => acc + element.length, 0)}} of {{phones.length}}</small>
-            </center>
-          </div>
-        </div>
-        <div class="row pt-3 justify-content-end align-items-center">
-          <div class="col-4" v-if="phones.length <= 1">
-            <a
-              href="https://docs.google.com/spreadsheets/d/156CT5kfJRuTgPCuyuJv8TNTDR7bAUl21H6tpPAunhBw/edit#gid=0"
-              download
-              class="btn small link"
-              style="padding: 0 1px 0 1px;"
+
+        <div v-if="tab">
+          <tl-input v-model="name" class="mt-5" placeholder="Name" />
+
+          <div v-for="(phone, index) in slicedPhones" :key="phone.id">
+            <div
+              v-for="item in phone"
+              :key="item.id"
+              class="row align-items-center mt-4"
             >
-              <small>Download CSV format.</small>
-            </a>
-          </div>
-          <div class="col-4" v-if="phones.length <= 1">
-            <div class="upload-csv-section" @click="$refs.CSVFileUpload.click()">
-              <span class>
-                {{ uploadedFileNameTextFormat ? uploadedFileNameTextFormat : '+ Upload CSV' }}
-                <icon v-if="isUploadingCSV" name="loading" spin size="0.7" />
-              </span>
-              <input type="file" ref="CSVFileUpload" @change="handlePhoneCSVUpload" />
+              <div class="col-1 text-center">
+                <icon
+                  v-if="phones.length > 1"
+                  name="delete"
+                  color="red"
+                  @click.native="deleteNumber(index)"
+                />
+              </div>
+              <div class="col-11">
+                <phone-input
+                  v-model="item.value"
+                  :unique-name="`group-contact-${item.id}`"
+                  :default-country-code="defaultCode"
+                  :only-countries="onlyCountryCodes"
+                  custom-style="margin-top: 0.25rem !important"
+                />
+              </div>
             </div>
           </div>
+          <div v-if="uploadedCSV" class="row pt-3 align-items-center">
+            <div
+              v-if="!(visible < 2)"
+              class="col"
+              @click="visible = visible > 1 ? visible - 1 : visible"
+            >
+              <center>
+                <small>Show Less.</small>
+              </center>
+            </div>
+            <div
+              v-if="!(visible * 5 >= phones.length)"
+              class="col"
+              @click="
+                visible = visible * 5 >= phones.length ? visible : visible + 1
+              "
+            >
+              <center>
+                <small>Show More.</small>
+              </center>
+            </div>
+          </div>
+          <div v-if="uploadedCSV" class="row pt-3 align-items-center">
+            <div class="col">
+              <center>
+                <small
+                  >{{
+                    slicedPhones.reduce(
+                      (acc, element) => acc + element.length,
+                      0
+                    )
+                  }}
+                  of {{ phones.length }}</small
+                >
+              </center>
+            </div>
+          </div>
+          <div class="row pt-3 justify-content-end align-items-center">
+            <div v-if="phones.length <= 1" class="col-4">
+              <a
+                href="https://docs.google.com/spreadsheets/d/156CT5kfJRuTgPCuyuJv8TNTDR7bAUl21H6tpPAunhBw/edit#gid=0"
+                download
+                class="btn small link"
+                style="padding: 0 1px 0 1px"
+              >
+                <small>Download CSV format.</small>
+              </a>
+            </div>
+            <div v-if="phones.length <= 1" class="col-4">
+              <div
+                class="upload-csv-section"
+                @click="$refs.CSVFileUpload.click()"
+              >
+                <span class>
+                  {{
+                    uploadedFileNameTextFormat
+                      ? uploadedFileNameTextFormat
+                      : '+ Upload CSV'
+                  }}
+                  <icon v-if="isUploadingCSV" name="loading" spin size="0.7" />
+                </span>
+                <input
+                  ref="CSVFileUpload"
+                  type="file"
+                  @change="handlePhoneCSVUpload"
+                />
+              </div>
+            </div>
 
-          <!-- <p class="text-center">Show More</p>
+            <!-- <p class="text-center">Show More</p>
           <p class="text-center">Show Less</p>-->
-          <div class="col-3">
-            <button
-              class="btn small"
-              :disabled="!phones[phones.length - 1].value"
-              @click="createNewPhoneNumber()"
-              style="padding: 0 1px 0 1px;"
-            >
-              <icon name="plus" />
-            </button>
+            <div class="col-3">
+              <button
+                class="btn small"
+                :disabled="!phones[phones.length - 1].value"
+                style="padding: 0 1px 0 1px"
+                @click="createNewPhoneNumber()"
+              >
+                <icon name="plus" />
+              </button>
+            </div>
           </div>
-        </div>
 
-        <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="amount" />
+          <tl-input
+            v-model="amount"
+            class="mt-5"
+            placeholder="Airtime Amount"
+            type="number"
+          />
 
-        <span v-if="airtimeMultiples !== false">
-          <icon name="loading" spin class="mr-1" size="0.9" v-if="isSplitLoading" />
-          <small v-if="splitErrorMessage" :style="{color: 'red'}">{{splitErrorMessage}}</small>
-          <small v-else-if="splitAirtimeResult.split && splitAirtimeResult.split.length > 1">
-            <p>
-              Airtime will be sent in multiples of
-              <b>{{splitAirtimeResult.split.join(", ")}}.</b>
-            </p>
-          </small>
-          <small v-if="splitAirtimeResult.convert && Object.keys(splitAirtimeResult.convert).length !== 0 && !splitErrorMessage">
-            <p>
-              <b>Sendy's Exchange Rate</b>
-            </p>
-            <p>1{{splitAirtimeResult.convert.sourceCurrency}} = {{splitAirtimeResult.convert.rate}}{{splitAirtimeResult.convert.userCurrency}}</p>
-            <p>{{amount}}{{splitAirtimeResult.convert.sourceCurrency}} = {{splitAirtimeResult.convert.conversion}}{{splitAirtimeResult.convert.userCurrency}}</p>
-          </small>
-        </span>
-
-        <br />
-        <br />
-        <div class="row justify-content-space-between">
-          <div class="col">Save Contact</div>
-          <div class="col-6 text-right">
-            <toggle-button
-              v-model="saveContact"
-              :height="30"
-              :width="60"
-              class="ml-2"
-              :color="status_color_options"
+          <span v-if="airtimeMultiples !== false">
+            <icon
+              v-if="isSplitLoading"
+              name="loading"
+              spin
+              class="mr-1"
+              size="0.9"
             />
-          </div>
-        </div>
-        <div v-if="saveContact">
-          <div class="row mt-4 mb-5">
-            <div class="col-6">
-              <date-picker
-                placeholder="Start Date"
-                input-class="date-picker"
-                v-model="start_date"
-                calendar-class="calendar-area"
-                format="yyyy-MM-dd"
-              ></date-picker>
-            </div>
-            <div class="col-6">
-              <date-picker
-                placeholder="End Date"
-                input-class="date-picker"
-                v-model="end_date"
-                calendar-class="calendar-area right"
-                format="yyyy-MM-dd"
-                :disabled-dates="{to: new Date(start_date)}"
-                :disabled="!start_date && true"
-              ></date-picker>
-            </div>
-          </div>
-          <div class="frequency mb-5">
-            <div>Frequency</div>
-            <div @click="changeIcon('daily')" class="freq">
-              <div>Daily</div>
-              <icon v-if="ticked =='daily'" name="check"></icon>
-            </div>
-            <div @click="changeIcon('weekly')" class="freq">
-              <div>Weekly</div>
-              <icon v-if="ticked =='weekly'" name="check"></icon>
-            </div>
-            <div @click="changeIcon('monthly')" class="freq">
-              <div>Monthly</div>
-              <icon v-if="ticked =='monthly'" name="check"></icon>
-            </div>
-          </div>
+            <small v-if="splitErrorMessage" :style="{ color: 'red' }">{{
+              splitErrorMessage
+            }}</small>
+            <small
+              v-else-if="
+                splitAirtimeResult.split && splitAirtimeResult.split.length > 1
+              "
+            >
+              <p>
+                Airtime will be sent in multiples of
+                <b>{{ splitAirtimeResult.split.join(', ') }}.</b>
+              </p>
+            </small>
+            <small
+              v-if="
+                splitAirtimeResult.convert &&
+                Object.keys(splitAirtimeResult.convert).length !== 0 &&
+                !splitErrorMessage
+              "
+            >
+              <p>
+                <b>Sendy's Exchange Rate</b>
+              </p>
+              <p>
+                1{{ splitAirtimeResult.convert.sourceCurrency }} =
+                {{ splitAirtimeResult.convert.rate
+                }}{{ splitAirtimeResult.convert.userCurrency }}
+              </p>
+              <p>
+                {{ amount }}{{ splitAirtimeResult.convert.sourceCurrency }} =
+                {{ splitAirtimeResult.convert.conversion
+                }}{{ splitAirtimeResult.convert.userCurrency }}
+              </p>
+            </small>
+          </span>
+
+          <br />
+          <br />
           <div class="row justify-content-space-between">
-            <div class="col">Status {{ status ? '(Active)' : '(Inactive)' }}</div>
+            <div class="col">Save Contact</div>
             <div class="col-6 text-right">
               <toggle-button
-                v-model="status"
+                v-model="saveContact"
                 :height="30"
                 :width="60"
                 class="ml-2"
@@ -181,121 +195,224 @@
               />
             </div>
           </div>
-        </div>
-      </div>
-      <div v-else style="position: relative;">
-        <tl-input
-          class="mt-5"
-          v-model="searchTerm"
-          placeholder="Search Recipient"
-          icon="magnify"
-          type="text"
-          key="searchTerm"
-        />
-        <div class="search" v-if="shouldShowSearchBox">
-          <div class="searchbox px-3 pb-3" v-on-clickaway="away">
-            <div
-              class="row pt-3"
-              v-if="!isSearchLoading && !searchErrorMessage && searchContactResult.length < 1"
-            >
-              <div class="col-12">Not found</div>
-            </div>
-            <div class="row pt-3" v-if="searchErrorMessage">
-              <div class="col-12">{{ searchErrorMessage }}</div>
-            </div>
-            <div class="row pt-3" v-if="isSearchLoading">
-              <div class="col-12">Searching...</div>
-            </div>
-            <div
-              class="searchitem pt-3"
-              v-for="(contact) in searchContactResult"
-              :key="contact.id"
-              @click="selectContact(contact)"
-            >
-              <div class="row">
-                <div class="col-6">{{contact.name}}</div>
-                <div class="col-6 text-right">{{contact.currencyCode}}{{contact.amount}}</div>
+          <div v-if="saveContact">
+            <div class="row mt-4 mb-5">
+              <div class="col-6">
+                <date-picker
+                  v-model="start_date"
+                  placeholder="Start Date"
+                  input-class="date-picker"
+                  calendar-class="calendar-area"
+                  format="yyyy-MM-dd"
+                ></date-picker>
               </div>
-              <div class="row searchrow">
-                <div class="col-6">{{contact.phoneNumber[0].phoneNumber}}</div>
-                <div class="col-6 text-right">{{contact.frequency}}</div>
+              <div class="col-6">
+                <date-picker
+                  v-model="end_date"
+                  placeholder="End Date"
+                  input-class="date-picker"
+                  calendar-class="calendar-area right"
+                  format="yyyy-MM-dd"
+                  :disabled-dates="{ to: new Date(start_date) }"
+                  :disabled="!start_date && true"
+                ></date-picker>
+              </div>
+            </div>
+            <div class="frequency mb-5">
+              <div>Frequency</div>
+              <div class="freq" @click="changeIcon('daily')">
+                <div>Daily</div>
+                <icon v-if="ticked == 'daily'" name="check"></icon>
+              </div>
+              <div class="freq" @click="changeIcon('weekly')">
+                <div>Weekly</div>
+                <icon v-if="ticked == 'weekly'" name="check"></icon>
+              </div>
+              <div class="freq" @click="changeIcon('monthly')">
+                <div>Monthly</div>
+                <icon v-if="ticked == 'monthly'" name="check"></icon>
+              </div>
+            </div>
+            <div class="row justify-content-space-between">
+              <div class="col">
+                Status {{ status ? '(Active)' : '(Inactive)' }}
+              </div>
+              <div class="col-6 text-right">
+                <toggle-button
+                  v-model="status"
+                  :height="30"
+                  :width="60"
+                  class="ml-2"
+                  :color="status_color_options"
+                />
               </div>
             </div>
           </div>
         </div>
-        <tl-input class="mt-5" placeholder="Airtime Amount" type="number" v-model="amount" />
-        <span v-if="airtimeMultiples !== false">
-          <icon name="loading" spin class="mr-1" size="0.9" v-if="isSplitLoading" />
-          <small v-if="splitErrorMessage" :style="{color: 'red'}">{{splitErrorMessage}}</small>
-          <small v-else-if="splitAirtimeResult.split && splitAirtimeResult.split.length > 1">
-            <p>
-              Airtime will be sent in multiples of
-              <b>{{splitAirtimeResult.split.join(", ")}}.</b>
-            </p>
-          </small>
-          <small v-if="splitAirtimeResult.convert && Object.keys(splitAirtimeResult.convert).length !== 0 && !splitErrorMessage">
-            <p>
-              <b>Sendy's Exchange Rate</b>
-            </p>
-            <p>1{{splitAirtimeResult.convert.sourceCurrency}} = {{splitAirtimeResult.convert.rate}}{{splitAirtimeResult.convert.userCurrency}}</p>
-            <p>{{amount}}{{splitAirtimeResult.convert.sourceCurrency}} = {{splitAirtimeResult.convert.conversion}}{{splitAirtimeResult.convert.userCurrency}}</p>
-          </small>
-        </span>
-      </div>
 
-      <button
-        class="btn mt-5"
-        :disabled="canSubmit || isLoading"
-        @click="saveContact ? addContact() : transfer()"
-      >
-        <icon name="loading" spin size="0.9" class="mr-1" v-if="isLoading" />Transfer
-      </button>
+        <div v-else style="position: relative">
+          <tl-input
+            key="searchTerm"
+            v-model="searchTerm"
+            class="mt-5"
+            placeholder="Search Recipient"
+            icon="magnify"
+            type="text"
+          />
+          <div v-if="shouldShowSearchBox" class="search">
+            <div v-on-clickaway="away" class="searchbox px-3 pb-3">
+              <div
+                v-if="
+                  !isSearchLoading &&
+                  !searchErrorMessage &&
+                  searchContactResult.length < 1
+                "
+                class="row pt-3"
+              >
+                <div class="col-12">Not found</div>
+              </div>
+              <div v-if="searchErrorMessage" class="row pt-3">
+                <div class="col-12">{{ searchErrorMessage }}</div>
+              </div>
+              <div v-if="isSearchLoading" class="row pt-3">
+                <div class="col-12">Searching...</div>
+              </div>
+              <div
+                v-for="contact in searchContactResult"
+                :key="contact.id"
+                class="searchitem pt-3"
+                @click="selectContact(contact)"
+              >
+                <div class="row">
+                  <div class="col-6">{{ contact.name }}</div>
+                  <div class="col-6 text-right">
+                    {{ contact.currencyCode }}{{ contact.amount }}
+                  </div>
+                </div>
+                <div class="row searchrow">
+                  <div class="col-6">
+                    {{ contact.phoneNumber[0].phoneNumber }}
+                  </div>
+                  <div class="col-6 text-right">{{ contact.frequency }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <tl-input
+            v-model="amount"
+            class="mt-5"
+            label="Airtime Amount"
+            placeholder="Enter Airtime Amount"
+            type="number"
+          />
+          <span v-if="airtimeMultiples !== false">
+            <icon
+              v-if="isSplitLoading"
+              name="loading"
+              spin
+              class="mr-1"
+              size="0.9"
+            />
+            <small v-if="splitErrorMessage" :style="{ color: 'red' }">{{
+              splitErrorMessage
+            }}</small>
+            <small
+              v-else-if="
+                splitAirtimeResult.split && splitAirtimeResult.split.length > 1
+              "
+            >
+              <p>
+                Airtime will be sent in multiples of
+                <b>{{ splitAirtimeResult.split.join(', ') }}.</b>
+              </p>
+            </small>
+            <small
+              v-if="
+                splitAirtimeResult.convert &&
+                Object.keys(splitAirtimeResult.convert).length !== 0 &&
+                !splitErrorMessage
+              "
+            >
+              <p>
+                <b>Sendy's Exchange Rate</b>
+              </p>
+              <p>
+                1{{ splitAirtimeResult.convert.sourceCurrency }} =
+                {{ splitAirtimeResult.convert.rate
+                }}{{ splitAirtimeResult.convert.userCurrency }}
+              </p>
+              <p>
+                {{ amount }}{{ splitAirtimeResult.convert.sourceCurrency }} =
+                {{ splitAirtimeResult.convert.conversion
+                }}{{ splitAirtimeResult.convert.userCurrency }}
+              </p>
+            </small>
+          </span>
+        </div>
+
+        <button
+          class="btn mt-5"
+          :disabled="canSubmit || isLoading"
+          @click="saveContact ? addContact() : transfer()"
+        >
+          <icon
+            v-if="isLoading"
+            name="loading"
+            spin
+            size="0.9"
+            class="mr-1"
+          />Transfer
+        </button>
+      </div>
     </div>
   </div>
 </template>
 <script>
-import axios from "axios";
-import moment from "moment";
-import { directive as onClickaway } from "vue-clickaway";
-import Helpers from "../../utils/Helpers.js";
-import countries_code from "../../country_code.json";
+import axios from 'axios';
+import moment from 'moment';
+import { directive as onClickaway } from 'vue-clickaway';
+import Helpers from '../../utils/Helpers.js';
+import countries_code from '../../country_code.json';
+import SideNav from '../../components/SideNav.vue';
 
 export default {
   directives: {
-    onClickaway: onClickaway
+    onClickaway,
   },
+  components: { SideNav },
   data() {
     return {
       tab: true,
-      searchTerm: "",
-      name: "",
-      ticked: "daily",
-      amount: "",
-      start_date: "",
-      end_date: "",
+      searchTerm: '',
+      name: '',
+      ticked: 'daily',
+      amount: '',
+      start_date: '',
+      end_date: '',
       isLoading: false,
       isSplitLoading: false,
       isSearchLoading: false,
-      selectedContactId: "",
+      selectedContactId: '',
       showSearch: false,
       visible: 1,
-      phones: [{ id: 1, value: "" }],
+      phones: [{ id: 1, value: '' }],
       status: false,
       saveContact: false,
       status_color_options: {
-        checked: "#4CD964",
-        unchecked: "#FC001F"
+        checked: '#4CD964',
+        unchecked: '#FC001F',
       },
       searchContactResult: [],
       splitAirtimeResult: [],
-      searchErrorMessage: "",
-      splitErrorMessage: "",
+      searchErrorMessage: '',
+      splitErrorMessage: '',
       isUploadingCSV: false,
       uploadedCSV: false,
-      defaultCode: "NG",
-      currencyCode: "",
-      currentFileUploadName: "",
-      countriesCode: countries_code
+      defaultCode: 'NG',
+      currencyCode: '',
+      currentFileUploadName: '',
+      countriesCode: countries_code,
     };
   },
   computed: {
@@ -303,10 +420,10 @@ export default {
       if (this.phones.length < 2) {
         return this.countriesCode;
       }
-      return this.countriesCode.filter(cc => cc == this.defaultCode);
+      return this.countriesCode.filter((cc) => cc == this.defaultCode);
     },
     slicedPhones() {
-      let slicedPhones = [];
+      const slicedPhones = [];
       for (let i = 0; i < this.visible; i++) {
         slicedPhones.push(this.phones.slice(i * 5, i * 5 + 5));
       }
@@ -314,10 +431,9 @@ export default {
       return slicedPhones;
     },
     refinedPhoneNumbers() {
-      let refinedArray = [];
-
-      this.phones.forEach(phone => {
-        refinedArray.push(phone.value.split("-")[0]);
+      const refinedArray = [];
+      this.phones.forEach((phone) => {
+        refinedArray.push(phone.value.split('-')[0]);
       });
       return refinedArray.filter(
         (phone, index) => refinedArray.indexOf(phone) === index
@@ -332,9 +448,8 @@ export default {
     airtimeMultiples() {
       if (this.amount) {
         if (this.tab && this.phones[this.phones.length - 1].value) {
-          this.currencyCode = this.phones[this.phones.length - 1].value.split(
-            "-"
-          )[1];
+          this.currencyCode =
+            this.phones[this.phones.length - 1].value.split('-')[1];
           this.splitAirtime();
           return true;
         }
@@ -363,38 +478,33 @@ export default {
       if (this.tab && this.name.length < 1) {
         return true;
       }
-
       if (this.tab && !this.phones[this.phones.length - 1].value) {
         return true;
       }
-
       if (!this.tab && this.selectedContactId.length < 1) {
         return true;
       }
-
       if (this.amount < 1 || this.splitErrorMessage) {
         return true;
       }
-
       return false;
     },
     uploadedFileNameTextFormat() {
       if (!this.currentFileUploadName) {
-        return "";
+        return '';
       }
-      return (
-        this.currentFileUploadName.substring(0, 5) +
-        "..." +
-        this.currentFileUploadName.substring(
-          this.currentFileUploadName.length - 4
-        )
-      );
-    }
+      return `${this.currentFileUploadName.substring(
+        0,
+        5
+      )}...${this.currentFileUploadName.substring(
+        this.currentFileUploadName.length - 4
+      )}`;
+    },
   },
   watch: {
     searchContactResult(newValue) {
       if (newValue.length < 1) {
-        this.selectedContactId = "";
+        this.selectedContactId = '';
       }
     },
     searchTerm(v) {
@@ -402,23 +512,21 @@ export default {
         this.search(v);
         this.showSearch = true;
       }
-    }
+    },
   },
   methods: {
     search(query) {
       this.isSearchLoading = true;
-      this.searchErrorMessage = "";
-
+      this.searchErrorMessage = '';
       const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact/search`;
-
       axios
         .post(url, { query })
-        .then(response => {
+        .then((response) => {
           this.searchContactResult = response.data.data;
           this.isSearchLoading = false;
         })
-        .catch(error => {
-          Helpers.errorResponse(error, response => {
+        .catch((error) => {
+          Helpers.errorResponse(error, (response) => {
             this.isSearchLoading = false;
             this.searchErrorMessage = response;
           });
@@ -426,73 +534,65 @@ export default {
     },
     splitAirtime() {
       this.isSplitLoading = true;
-      this.splitErrorMessage = "";
+      this.splitErrorMessage = '';
       const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/airtime/split`;
-      let data = { amount: Number(this.amount) };
+      const data = { amount: Number(this.amount) };
       if (this.tab) {
         const currencyCode = Helpers.assignCurrencyCode(this.currencyCode);
-
         data.currencyCode = currencyCode;
       } else {
         data.contact = this.selectedContactId;
       }
       axios
         .post(url, data)
-        .then(response => {
+        .then((response) => {
           this.isSplitLoading = false;
           this.splitErrorMessage = '';
           this.splitAirtimeResult = response.data.data;
         })
-        .catch(error => {
-          Helpers.errorResponse(error, response => {
+        .catch((error) => {
+          Helpers.errorResponse(error, (response) => {
             this.isSplitLoading = false;
             this.splitErrorMessage = response;
           });
         });
     },
     handlePhoneCSVUpload(e) {
-      let fileElement = e.target;
-
-      let fileObject = fileElement.files[0];
-
+      const fileElement = e.target;
+      const fileObject = fileElement.files[0];
       this.currentFileUploadName = fileObject.name;
-
       if (fileObject.size > 1097152) {
-        this.$toasted.show("CSV file size is too large.");
-        this.currentFileUploadName = "";
-        fileElement.value = "";
+        this.$toasted.show('CSV file size is too large.');
+        this.currentFileUploadName = '';
+        fileElement.value = '';
         return;
       }
-
-      const fileExtenstionSplit = fileObject.name.split(".");
+      const fileExtenstionSplit = fileObject.name.split('.');
       const fileExtenstion =
         fileExtenstionSplit[fileExtenstionSplit.length - 1];
-
-      if (fileExtenstion !== "csv") {
-        this.$toasted.show("Only CSV files allowed");
-        this.currentFileUploadName = "";
-        fileElement.value = "";
+      if (fileExtenstion !== 'csv') {
+        this.$toasted.show('Only CSV files allowed');
+        this.currentFileUploadName = '';
+        fileElement.value = '';
         return;
       }
-
       this.uploadPhoneCsv(fileObject);
     },
     uploadPhoneCsv(fileObject) {
       this.isUploadingCSV = true;
       const url = `https://api.foodjaar.com/csv`;
-
-      let uploadCSVFormData = new FormData();
-      uploadCSVFormData.append("csv", fileObject);
+      const uploadCSVFormData = new FormData();
+      uploadCSVFormData.append('csv', fileObject);
       axios
         .post(url, uploadCSVFormData, {
-          headers: { "Content-Type": "multipart/form-data" }
+          headers: { 'Content-Type': 'multipart/form-data' },
         })
-        .then(response => {
+        .then((response) => {
           this.setPhoneNumbers(response.data.data);
           this.isUploadingCSV = false;
         })
-        .catch(error => {
-          Helpers.errorResponse(error, response => {
+        .catch((error) => {
+          Helpers.errorResponse(error, (response) => {
             this.isUploadingCSV = false;
             this.$toasted.show(response);
           });
@@ -500,8 +600,8 @@ export default {
     },
     setPhoneNumbers(phones) {
       const numbers = [];
-      phones.forEach(phone => {
-        for (let key in phone) {
+      phones.forEach((phone) => {
+        for (const key in phone) {
           numbers.push({ id: Math.random(), value: phone[key] });
         }
       });
@@ -511,13 +611,11 @@ export default {
       if (!this.phones[this.phones.length - 1].value) {
         return;
       }
-
-      this.defaultCode = this.phones[this.phones.length - 1].value.split(
-        "-"
-      )[1];
+      this.defaultCode =
+        this.phones[this.phones.length - 1].value.split('-')[1];
       this.phones.push({
-        value: "",
-        id: Math.random()
+        value: '',
+        id: Math.random(),
       });
       this.visible =
         this.visible * 5 >= this.phones.length
@@ -528,7 +626,7 @@ export default {
       this.phones.splice(index, 1);
     },
     away() {
-      this.searchTerm = "";
+      this.searchTerm = '';
       this.showSearch = false;
     },
     changeIcon(data) {
@@ -543,22 +641,18 @@ export default {
     },
     transfer() {
       if (this.isLoading) return;
-
       const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/airtime`;
-
       this.isLoading = true;
-      this.defaultCode = this.phones[this.phones.length - 1].value.split(
-        "-"
-      )[1];
+      this.defaultCode =
+        this.phones[this.phones.length - 1].value.split('-')[1];
       const currencyCode = Helpers.assignCurrencyCode(this.defaultCode);
-
       const data = {
-        category: this.tab ? "newRecipient" : "savedRecipient",
+        category: this.tab ? 'newRecipient' : 'savedRecipient',
         currencyCode,
       };
       const airtimeAmount = this.amount;
       if (this.tab) {
-        data.options = this.refinedPhoneNumbers.map(function(element) {
+        data.options = this.refinedPhoneNumbers.map(function (element) {
           const newData = {};
           newData.amount = Number(airtimeAmount);
           newData.phoneNumber = element;
@@ -572,14 +666,14 @@ export default {
       }
       axios
         .post(url, data)
-        .then(response => {
+        .then((response) => {
           this.isLoading = false;
           this.$toasted.show(response.data.message);
-          this.$store.dispatch("getActivities");
-          this.$router.push({ name: "home" });
+          this.$store.dispatch('getActivities');
+          this.$router.push({ name: 'home' });
         })
-        .catch(error => {
-          Helpers.errorResponse(error, response => {
+        .catch((error) => {
+          Helpers.errorResponse(error, (response) => {
             this.isLoading = false;
             this.$toasted.show(response);
           });
@@ -588,14 +682,12 @@ export default {
     addContact() {
       if (this.isLoading) return;
       this.isLoading = true;
-
       const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact`;
-      this.defaultCode = this.phones[this.phones.length - 1].value.split(
-        "-"
-      )[1];
+      this.defaultCode =
+        this.phones[this.phones.length - 1].value.split('-')[1];
       const currencyCode = Helpers.assignCurrencyCode(this.defaultCode);
       const airtimeAmount = this.amount;
-      const options = this.refinedPhoneNumbers.map(function(element) {
+      const options = this.refinedPhoneNumbers.map(function (element) {
         const newData = {};
         newData.amount = Number(airtimeAmount);
         newData.phoneNumber = element;
@@ -607,15 +699,15 @@ export default {
         phoneNumber: options,
         currencyCode,
         amount: Number(this.amount),
-        startDate: moment(this.start_date).format("YYYY-MM-DD"),
-        endDate: moment(this.end_date).format("YYYY-MM-DD"),
+        startDate: moment(this.start_date).format('YYYY-MM-DD'),
+        endDate: moment(this.end_date).format('YYYY-MM-DD'),
         frequency: this.ticked,
-        type: options.length > 1 ? "group" : "individual",
-        status: this.status ? "active" : "inactive"
+        type: options.length > 1 ? 'group' : 'individual',
+        status: this.status ? 'active' : 'inactive',
       };
       axios
         .post(url, data)
-        .then(response => {
+        .then((response) => {
           this.isLoading = false;
           this.$toasted.show(response.data.message);
           if (response.data.data) {
@@ -623,21 +715,22 @@ export default {
             return this.transfer();
           }
         })
-        .catch(error => {
-          Helpers.errorResponse(error, response => {
+        .catch((error) => {
+          Helpers.errorResponse(error, (response) => {
             this.isLoading = false;
             this.$toasted.show(response);
           });
         });
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style lang="scss">
 .send-airtime {
-  margin-top: 55px;
   padding: 20px;
+  margin: 55px auto;
+  max-width: 700px;
 
   .date-picker {
     width: 100% !important;
@@ -711,7 +804,7 @@ export default {
       color: $text-color;
     }
 
-    input[type="file"] {
+    input[type='file'] {
       display: none;
     }
   }
@@ -735,6 +828,26 @@ export default {
       color: #d2d5db;
       font-size: 14px;
     }
+  }
+}
+
+.main {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+
+  @media (min-width: 1024px) {
+    height: 100vh;
+    display: flex;
+    overflow-y: hidden;
+  }
+}
+
+.content {
+  @media (min-width: 1024px) {
+    min-height: 100vh;
+    flex: 1;
+    overflow-y: auto;
   }
 }
 </style>

@@ -1,62 +1,80 @@
 <template>
-  <div>
-    <GreyNavbar title="Help" />
+  <div class="main">
+    <SideNav />
 
-    <div class="help">
-      <div class="options">
-        <div class="row py-3">
-          <div class="col-12">
-            <p
-              class="text-center mt-1 mb-5"
-            >Find help to some of your account issues. Fix an unresolved wallet top up transaction and contact us for further assistance</p>
+    <div class="content">
+      <GreyNavbar title="Help" />
+
+      <div class="help">
+        <div class="options">
+          <div class="row py-3">
+            <div class="col-12">
+              <p class="text-center mt-1 mb-5">
+                Find help to some of your account issues. Fix an unresolved
+                wallet top up transaction and contact us for further assistance
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-12">
-            <div class="option" @click="showFixTransactionModal()">Fix Transaction</div>
-            <div class="option" @click="email()">Email Us</div>
-            <div class="option" @click="call()">Call Us</div>
+          <div class="row">
+            <div class="col-12">
+              <div class="option" @click="showFixTransactionModal()">
+                Fix Transaction
+              </div>
+              <div class="option" @click="email()">Email Us</div>
+              <div class="option" @click="call()">Call Us</div>
+            </div>
           </div>
         </div>
       </div>
+      <tl-modal :name="fixTransactionModalName" :clickToClose="false">
+        <div class="row justify-content-center">
+          <div class="col-10">
+            <h2>Fix a Transaction</h2>
+            <p class>Enter your transaction reference from Paystack</p>
+            <tl-input
+              class="transaction"
+              type="text"
+              placeholder="Enter Reference"
+              v-model="reference"
+            />
+            <button
+              class="btn mt-5"
+              :disabled="reference.length < 1 || isLoading"
+              @click="referencePayment"
+            >
+              <icon
+                name="loading"
+                spin
+                size="0.9"
+                class="mr-1"
+                v-if="isLoading"
+              />Continue
+            </button>
+          </div>
+        </div>
+      </tl-modal>
     </div>
-    <tl-modal :name="fixTransactionModalName" :clickToClose="false">
-      <div class="row justify-content-center">
-        <div class="col-10">
-          <h2>Fix a Transaction</h2>
-          <p class>Enter your transaction reference from Paystack</p>
-          <tl-input
-            class="transaction"
-            type="text"
-            placeholder="Enter Reference"
-            v-model="reference"
-          />
-          <button class="btn mt-5" :disabled="reference.length < 1 || isLoading" @click="referencePayment">
-            <icon name="loading" spin size="0.9" class="mr-1" v-if="isLoading" />Continue
-          </button>
-        </div>
-      </div>
-    </tl-modal>
   </div>
 </template>
 
 <script>
-import axios from "axios";
-import Helpers from "../../utils/Helpers";
+import axios from 'axios';
+import SideNav from '../../components/SideNav.vue';
+import Helpers from '../../utils/Helpers';
 
 export default {
   data() {
     return {
-      reference: "",
-      fixTransactionModalName: "fix-transaction-modal",
+      reference: '',
+      fixTransactionModalName: 'fix-transaction-modal',
       isLoading: false,
-      errorMessage: ""
+      errorMessage: '',
     };
   },
   computed: {
     canSubmit() {
       if (
-        typeof this.notification === "boolean" &&
+        typeof this.notification === 'boolean' &&
         this.threshold >= 0 &&
         this.threshold
       ) {
@@ -66,7 +84,7 @@ export default {
     },
     user() {
       return this.$store.getters.getUser;
-    }
+    },
   },
   methods: {
     showFixTransactionModal() {
@@ -83,35 +101,37 @@ export default {
       const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/payment`;
       axios
         .post(url, {
-          reference: this.reference
+          reference: this.reference,
         })
-        .then(response => {
+        .then((response) => {
           this.isLoading = false;
           this.$toasted.show(response.data.message);
-          this.$store.dispatch("getActivities");
-          this.$router.push({ name: "home" });
+          this.$store.dispatch('getActivities');
+          this.$router.push({ name: 'home' });
         })
-        .catch(error => {
-          Helpers.errorResponse(error, response => {
+        .catch((error) => {
+          Helpers.errorResponse(error, (response) => {
             this.isLoading = false;
             this.$toasted.show(response);
           });
         });
-    }
+    },
   },
   mounted() {
     this.getAlertInfo();
-  }
+  },
+  components: { SideNav },
 };
 </script>
 <style lang="scss" scoped>
 .help {
-  margin-top: 55px;
   padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 80vh;
+  margin: 55px auto;
+  max-width: 700px;
 
   .option {
     justify-content: center;
@@ -128,6 +148,26 @@ export default {
     &:last-child {
       margin-bottom: 0px;
     }
+  }
+}
+
+.main {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+
+  @media (min-width: 1024px) {
+    height: 100vh;
+    display: flex;
+    overflow-y: hidden;
+  }
+}
+
+.content {
+  @media (min-width: 1024px) {
+    min-height: 100vh;
+    flex: 1;
+    overflow-y: auto;
   }
 }
 </style>

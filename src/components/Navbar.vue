@@ -4,7 +4,7 @@
       <img src="../assets/white-logo.svg" />
       <img src="../assets/images/menu.svg" @click="sideToggle = true" />
     </nav>
-    <div class="sidemenu" :class="sideToggle?'visible':''">
+    <div class="sidemenu" :class="sideToggle ? 'visible' : ''">
       <div class="backdrop" @click="sideToggle = false"></div>
       <div class="sidebar-content">
         <div>
@@ -18,31 +18,46 @@
           </div>
 
           <div class="navs">
-            <router-link :to="{name: 'profile'}" tag="div" class="nav-item">Profile</router-link>
-            <router-link :to="{name: 'addcard'}" tag="div" class="nav-item">Add Card</router-link>
-            <router-link :to="{name: 'security'}" tag="div" class="nav-item">Security</router-link>
-            <router-link :to="{name: 'alert'}" tag="div" class="nav-item">Alert</router-link>
-            <router-link :to="{name: 'settings.help'}" tag="div" class="nav-item">Help</router-link>
+            <router-link :to="{ name: 'profile' }" tag="div" class="nav-item"
+              >Profile</router-link
+            >
+            <router-link :to="{ name: 'cards' }" tag="div" class="nav-item"
+              >Cards</router-link
+            >
+            <router-link :to="{ name: 'security' }" tag="div" class="nav-item"
+              >Security</router-link
+            >
+            <!-- <router-link :to="{ name: 'alert' }" tag="div" class="nav-item"
+              >Alert</router-link
+            >
+            <router-link
+              :to="{ name: 'settings.help' }"
+              tag="div"
+              class="nav-item"
+              >Help</router-link
+            > -->
             <div class="nav-item" @click="logout">Logout</div>
           </div>
         </div>
 
         <div class="bottom">
-          <a :href="`mailto:hello@tinylabs.app`" target="_blank">
-            <span class="social-icon">
-              <icon name="email" />
-            </span>
-          </a>
-          <a :href="`https://instagram.com/tinylabsapp`" target="_blank">
-            <span class="social-icon">
-              <icon name="instagram" />
-            </span>
-          </a>
-          <a :href="`https://twitter.com/tinylabsapp`" target="_blank">
-            <span class="social-icon">
-              <icon name="twitter" />
-            </span>
-          </a>
+          <div class="links">
+            <a :href="`mailto:hello@tinylabs.app`" target="_blank">
+              <span class="social-icon">
+                <icon name="email" />
+              </span>
+            </a>
+            <a :href="`https://instagram.com/tinylabsapp`" target="_blank">
+              <span class="social-icon">
+                <icon name="instagram" />
+              </span>
+            </a>
+            <a :href="`https://twitter.com/tinylabsapp`" target="_blank">
+              <span class="social-icon">
+                <icon name="twitter" />
+              </span>
+            </a>
+          </div>
           <div class="footer">
             &copy; 2020 Tinylabs.
             <br />All rights reserved.
@@ -57,23 +72,27 @@
 export default {
   data() {
     return {
-      sideToggle: false
+      sideToggle: false,
     };
   },
   methods: {
     logout() {
-      this.$store.dispatch("logout").then(() => {
-        this.$router.push({ name: "onboard" });
-        this.$toasted.show("Logout successful");
+      this.$store.dispatch('logout').then(() => {
+        this.$router.push({ name: 'onboard' });
+        this.$toasted.show('Logout successful');
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 .nav-container {
-  max-width: $full-width;
+  // max-width: $full-width;
+
+  @media (min-width: 1024px) {
+    display: none;
+  }
 }
 nav.navbar {
   background-color: $primary;
@@ -84,7 +103,7 @@ nav.navbar {
   position: fixed;
   width: 100%;
   z-index: 10;
-  max-width: $full-width;
+  // max-width: $full-width;
 
   img {
     height: 20px;
@@ -97,7 +116,7 @@ nav.navbar {
   // left: 0;
   width: 100%;
   height: 100%;
-  max-width: $full-width;
+  // max-width: $full-width;
   z-index: 11;
   transition: visibility 260ms;
 
@@ -137,6 +156,11 @@ nav.navbar {
     flex-direction: column;
     justify-content: space-between;
 
+    @media (min-width: 768px) {
+      width: 40vw;
+      max-width: 400px;
+    }
+
     .close-icon {
       color: $primary;
     }
@@ -149,6 +173,10 @@ nav.navbar {
       }
     }
     .bottom {
+      width: 100%;
+      display: grid;
+      justify-items: center;
+
       .social-icon {
         width: 35px;
         height: 35px;

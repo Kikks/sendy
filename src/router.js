@@ -1,132 +1,151 @@
-import Vue from "vue";
-import Router from "vue-router";
-import axios from "axios";
-import store from "./store.js";
-import Home from "./views/Home.vue";
-import Onboard from "./views/Onboard.vue";
-import Help from "./views/Help.vue";
-import Auth from "./views/Auth.vue";
-import FullScreen from "./views/FullScreen.vue";
-import Signup from "./views/auth/Signup.vue";
-import Login from "./views/auth/Login.vue";
+/* eslint-disable no-underscore-dangle */
+import Vue from 'vue';
+import Router from 'vue-router';
+import axios from 'axios';
+import store from './store.js';
+import Home from './views/Home.vue';
+import Onboard from './views/Onboard.vue';
+import Help from './views/Help.vue';
+import Auth from './views/Auth.vue';
+import FullScreen from './views/FullScreen.vue';
+import Signup from './views/auth/Signup.vue';
+import Login from './views/auth/Login.vue';
 
 Vue.use(Router);
 
+const isLoggedIn = (next) => {
+  if (!store.state.isLoggedIn) {
+    const userData = JSON.parse(
+      window.localStorage.getItem('tinylabs-sendy-user')
+    );
+    if (userData) {
+      axios.defaults.headers.common.Authorization = `Bearer ${userData.token}`;
+      store.commit('setUser', userData);
+      next();
+      return;
+    }
+    next({
+      name: 'onboard',
+    });
+  }
+  next();
+};
+
 const router = new Router({
-  mode: "history",
+  mode: 'history',
   base: process.env.BASE_URL,
   routes: [
     {
-      path: "/",
-      name: "onboard",
+      path: '/',
+      name: 'onboard',
       component: Onboard,
     },
     {
-      path: "/help",
-      name: "help",
+      path: '/help',
+      name: 'help',
       component: Help,
     },
     {
-      path: "/auth",
-      name: "auth",
+      path: '/auth',
+      name: 'auth',
       component: Auth,
       children: [
         {
-          path: "signup",
-          name: "signup",
+          path: 'signup',
+          name: 'signup',
           component: Signup,
         },
         {
-          path: "login",
-          name: "login",
+          path: 'login',
+          name: 'login',
           component: Login,
         },
         {
-          path: "verify",
-          name: "verify",
+          path: 'verify',
+          name: 'verify',
           component: () =>
-            import(/* webpackChunkName: "auth" */ "./views/auth/Verify.vue"),
+            import(/* webpackChunkName: "auth" */ './views/auth/Verify.vue'),
         },
         {
-          path: "/verify-email",
-          name: "verify.email",
+          path: '/verify-email',
+          name: 'verify.email',
           component: () =>
             import(
-              /* webpackChunkName: "auth" */ "./views/auth/EmailVerification.vue"
+              /* webpackChunkName: "auth" */ './views/auth/EmailVerification.vue'
             ),
         },
         {
-          path: "email-verify-request",
-          name: "email-verify-request",
+          path: 'email-verify-request',
+          name: 'email-verify-request',
           component: () =>
             import(
-              /* webpackChunkName: "auth" */ "./views/auth/EmailVerificationRequest.vue"
+              /* webpackChunkName: "auth" */ './views/auth/EmailVerificationRequest.vue'
             ),
         },
         {
-          path: "password-reset-request",
-          name: "password-reset-request",
+          path: 'password-reset-request',
+          name: 'password-reset-request',
           component: () =>
             import(
-              /* webpackChunkName: "auth" */ "./views/auth/PasswordResetRequest.vue"
+              /* webpackChunkName: "auth" */ './views/auth/PasswordResetRequest.vue'
             ),
         },
         {
-          path: "/reset-password",
-          name: "password-reset",
+          path: '/reset-password',
+          name: 'password-reset',
           component: () =>
             import(
-              /* webpackChunkName: "auth" */ "./views/auth/PasswordReset.vue"
+              /* webpackChunkName: "auth" */ './views/auth/PasswordReset.vue'
             ),
         },
         {
-          path: "register-name",
-          name: "register-name",
+          path: 'register-name',
+          name: 'register-name',
           component: () =>
             import(
-              /* webpackChunkName: "auth" */ "./views/auth/RegisterName.vue"
+              /* webpackChunkName: "auth" */ './views/auth/RegisterName.vue'
             ),
           beforeEnter: (to, from, next) => {
-            if (from.name === "signup") {
+            if (from.name === 'signup') {
               next();
               return;
             }
             next({
-              name: "signup",
+              name: 'signup',
             });
           },
         },
       ],
     },
     {
-      path: "/home",
+      path: '/home',
       component: Home,
       children: [
         {
-          path: "",
-          name: "home",
+          path: '',
+          name: 'home',
           component: () =>
-            import(/* webpackChunkName: "home" */ "./views/home/Activity.vue"),
+            import(/* webpackChunkName: "home" */ './views/home/Activity.vue'),
         },
         {
-          path: "topup",
-          name: "topup",
+          path: 'topup',
+          name: 'topup',
           component: () =>
-            import(/* webpackChunkName: "home" */ "./views/home/Topup.vue"),
+            import(/* webpackChunkName: "home" */ './views/home/Topup.vue'),
         },
         {
-          path: "directtopup",
-          name: "directtopup",
+          path: 'directtopup',
+          name: 'directtopup',
           component: () =>
             import(
-              /* webpackChunkName: "home" */ "./views/Topup/DirectTopup.vue"
+              /* webpackChunkName: "home" */ './views/Topup/DirectTopup.vue'
             ),
         },
         {
-          path: "contacts",
-          name: "contacts",
+          path: 'contacts',
+          name: 'contacts',
           component: () =>
-            import(/* webpackChunkName: "home" */ "./views/home/Contacts.vue"),
+            import(/* webpackChunkName: "home" */ './views/home/Contacts.vue'),
         },
       ],
       beforeEnter: (to, from, next) => {
@@ -134,102 +153,104 @@ const router = new Router({
       },
     },
     {
-      path: "/",
+      path: '/',
       component: FullScreen,
       children: [
         {
-          path: "contact/new",
-          name: "new-contact",
+          path: 'contact/new',
+          name: 'new-contact',
           component: () =>
             import(
-              /* webpackChunkName: "home" */ "./views/contact/NewContact.vue"
+              /* webpackChunkName: "home" */ './views/contact/NewContact.vue'
             ),
         },
         {
-          path: "contact/new-group",
-          name: "new-group-contact",
+          path: 'contact/new-group',
+          name: 'new-group-contact',
           component: () =>
             import(
-              /* webpackChunkName: "home" */ "./views/contact/GroupContact.vue"
+              /* webpackChunkName: "home" */ './views/contact/GroupContact.vue'
             ),
         },
         {
-          path: "contact/:id/edit",
-          name: "edit.contact",
+          path: 'contact/:id/edit',
+          name: 'edit.contact',
           component: () =>
             import(
-              /* webpackChunkName: "home" */ "./views/contact/EditContact.vue"
+              /* webpackChunkName: "home" */ './views/contact/EditContact.vue'
             ),
         },
         {
-          path: "contact/group/:id/edit",
-          name: "edit.group.contact",
+          path: 'contact/group/:id/edit',
+          name: 'edit.group.contact',
           component: () =>
             import(
-              /* webpackChunkName: "home" */ "./views/contact/EditGroupContact.vue"
+              /* webpackChunkName: "home" */ './views/contact/EditGroupContact.vue'
             ),
         },
         {
-          path: "send-airtime",
-          name: "send-airtime",
+          path: 'send-airtime',
+          name: 'send-airtime',
           component: () =>
             import(
-              /* webpackChunkName: "home" */ "./views/airtime/SendAirtime.vue"
+              /* webpackChunkName: "home" */ './views/airtime/SendAirtime.vue'
             ),
         },
         {
-          path: "resend-airtime/:id/edit",
-          name: "edit.resend-airtime",
+          path: 'resend-airtime/:id/edit',
+          name: 'edit.resend-airtime',
           component: () =>
             import(
-              /* webpackChunkName: "home" */ "./views/airtime/ResendAirtime.vue"
+              /* webpackChunkName: "home" */ './views/airtime/ResendAirtime.vue'
             ),
         },
         {
-          path: "activity-log/:id",
-          name: "activity-log",
+          path: 'activity-log/:id',
+          name: 'activity-log',
+          component: () =>
+            import(/* webpackChunkName: "home" */ './views/airtime/Log.vue'),
+        },
+        {
+          path: 'profile',
+          name: 'profile',
           component: () =>
             import(
-              /* webpackChunkName: "home" */ "./views/airtime/Log.vue"
+              /* webpackChunkName: "home" */ './views/settings/Profile.vue'
             ),
         },
         {
-          path: "profile",
-          name: "profile",
+          path: 'settings/help',
+          name: 'settings.help',
+          component: () =>
+            import(/* webpackChunkName: "home" */ './views/settings/Help.vue'),
+        },
+        {
+          path: 'security',
+          name: 'security',
           component: () =>
             import(
-              /* webpackChunkName: "home" */ "./views/settings/Profile.vue"
+              /* webpackChunkName: "home" */ './views/settings/Security.vue'
             ),
         },
         {
-          path: "settings/help",
-          name: "settings.help",
+          path: 'alert',
+          name: 'alert',
+          component: () =>
+            import(/* webpackChunkName: "home" */ './views/settings/Alert.vue'),
+        },
+        {
+          path: 'addcard',
+          name: 'addcard',
           component: () =>
             import(
-              /* webpackChunkName: "home" */ "./views/settings/Help.vue"
+              /* webpackChunkName: "home" */ './views/settings/AddCard.vue'
             ),
         },
         {
-          path: "security",
-          name: "security",
+          path: 'cards',
+          name: 'cards',
           component: () =>
-            import(
-              /* webpackChunkName: "home" */ "./views/settings/Security.vue"
-            ),
-        },
-        {
-          path: "alert",
-          name: "alert",
-          component: () =>
-            import(/* webpackChunkName: "home" */ "./views/settings/Alert.vue"),
-        },
-        {
-          path: "addcard",
-          name: "addcard",
-          component: () =>
-            import(
-              /* webpackChunkName: "home" */ "./views/settings/AddCard.vue"
-            ),
+            import(/* webpackChunkName: "home" */ './views/settings/Cards.vue'),
         },
       ],
       beforeEnter(to, from, next) {
@@ -239,25 +260,6 @@ const router = new Router({
   ],
 });
 
-const isLoggedIn = (next) => {
-  if (!store.state.isLoggedIn) {
-    const userData = JSON.parse(
-      window.localStorage.getItem("tinylabs-sendy-user")
-    );
-    if (userData) {
-      axios.defaults.headers.common["Authorization"] = `jwt ${userData.token}`;
-      store.commit("setUser", userData);
-      next();
-      return;
-    } else {
-      next({
-        name: "onboard",
-      });
-    }
-  }
-  next();
-};
-
 let __isRetryRequest = false;
 axios.interceptors.response.use(
   (response) => response,
@@ -265,13 +267,13 @@ axios.interceptors.response.use(
     if (error && error.response) {
       if (
         error.response.status === 401 &&
-        error.response.data.message === "Token revoked." &&
+        error.response.data.message === 'Token revoked.' &&
         !__isRetryRequest
       ) {
         __isRetryRequest = true;
-        store.dispatch("logout").then(() => {
+        store.dispatch('logout').then(() => {
           router.push({
-            name: "login",
+            name: 'login',
           });
         });
       }

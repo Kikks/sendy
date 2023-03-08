@@ -1,81 +1,106 @@
 <template>
   <div class="activity">
     <div class="recent-activity">
-      <div class="row align-items-center justify-content-space-between my-2">
+      <div
+        class="row align-items-center justify-content-space-between my-2 title-container"
+      >
         <div class="col">
-          <h2>All Contacts</h2>
+          <h2 class="title">All Contacts</h2>
         </div>
         <div class="col text-right">
           <button class="addBtn" @click="addNewContact()">+ Add New</button>
         </div>
       </div>
-      <div class="switcher my-1">
-        <div @click="tab=true" class="switch" :class="tab ? 'active':''">Individuals</div>
-        <div @click="tab=false" class="switch" :class="!tab ? 'active':''">Groups</div>
-      </div>
-      <div class="d-flex flex-row mb-4 justify-content-between align-items-center">
-        <div>
-          
-        </div>
+
+      <div
+        class="d-flex flex-row mb-4 justify-content-between align-items-center"
+      >
+        <div></div>
         <div>
           <pagination
             :page="paginationMetaData.page || 0"
-            :pageCount="paginationMetaData.pageCount || 0"
+            :page-count="paginationMetaData.total_pages || 0"
             @nextData="nextData"
             @prevData="prevData"
           />
         </div>
       </div>
       <div
+        v-if="isFetchingContacts"
         class="d-flex justify-content-center align-items-center"
         style="height: 50vh"
-        v-if="isFetchingContacts"
       >
         <icon name="loading" spin primary />
       </div>
       <div
+        v-if="errorMessage"
         class="d-flex justify-content-center align-items-center"
         style="height: 50vh"
-        v-if="errorMessage"
-      >{{errorMessage}}</div>
-      <div
-        class="text-center"
-        v-if="!isFetchingContacts && !errorMessage && filteredContacts.length < 1"
       >
-        <span>You currently have no {{ tab ? 'individual' : 'group' }} contacts</span>
+        {{ errorMessage }}
+      </div>
+      <div
+        v-if="
+          !isFetchingContacts && !errorMessage && filteredContacts.length < 1
+        "
+        class="text-center"
+      >
+        <span>You do not have any contact yet.</span>
       </div>
       <div v-if="!isFetchingContacts && !errorMessage">
-        <div v-for="(contact) in filteredContacts" :key="contact.id" class="activityRow">
+        <div
+          v-for="item in filteredContacts"
+          :key="item.id"
+          class="activityRow"
+        >
           <div class="row">
             <div class="col">
               <div class="row firstRow">
-                <div class="col-6 blue">{{contact.name}}</div>
-                <!-- <div class="col-6 text-right" :class="{red: !activity.add, green: activity.add}"> -->
-                <div class="col-6 text-right">{{ contact.currencyCode }}{{contact.phoneNumber[0].amount}}</div>
-              </div>
-              <div class="row secondRow">
-                <div class="col-6 blue">
-                  <span v-if="tab">{{contact.phoneNumber[0].phoneNumber}}</span>
-                  <span v-else>{{ contact.phoneNumber.length }} Recipients</span>
+                <div class="col-6 blue flex-col">
+                  <span class="bold">{{ item.name }}</span>
+                  <span class="subtext">
+                    {{
+                      item.recipients.length === 1
+                        ? '1 Phone Number'
+                        : `${item.recipients.length} Phone Numbers`
+                    }}
+                  </span>
                 </div>
-                <div class="col-6 text-right">{{contact.frequency}}</div>
+                <div class="col-6 text-right flex-col">
+                  <span class="bold">
+                    {{
+                      `${
+                        item.recipients[0].currency_code
+                      } ${item.recipients[0].amount.toLocaleString()}`
+                    }}
+                  </span>
+                  <span class="subtext">
+                    {{ item.frequency }}
+                  </span>
+                </div>
               </div>
-              <div class="row thirdRow" v-if="contact.isDuplicate">
+
+              <div v-if="item.isDuplicate" class="row thirdRow">
                 <div class="col-6 red">
-                  <span @click="showDeleteContactModal(contact)">Possible Duplicate (Delete)</span>
+                  <span @click="showDeleteContactModal(item)"
+                    >Possible Duplicate (Delete)</span
+                  >
                 </div>
               </div>
             </div>
-            <div class="col-2 ss">
-              <div class="dropdown" @click="show(contact)">
+            <div class="col-1 ss">
+              <div class="dropdown" @click="show(item)">
                 <div>
                   <icon name="dots-vertical" />
                 </div>
-                <div class="dropdown-menu" :ref="`dropdown-menu-${contact.id}`">
-                  <div class="dropdown-item" @click="editContact(contact)">
+                <div :ref="`dropdown-menu-${item.id}`" class="dropdown-menu">
+                  <div class="dropdown-item" @click="editContact(item)">
                     <span>Edit</span>
                   </div>
-                  <div class="dropdown-item" @click="showDeleteContactModal(contact)">
+                  <div
+                    class="dropdown-item"
+                    @click="showDeleteContactModal(item)"
+                  >
                     <span>Delete</span>
                   </div>
                 </div>
@@ -91,15 +116,25 @@
           <h2>Delete contact</h2>
           <span>
             Are you sure you want to delete
-            <b>{{contact.name}}</b>
+            <b>{{ contact.name }}</b>
           </span>
-          <div class="row my-2">
+          <div class="row my-2 buttons">
             <div class="col">
-              <button class="btn small accent" @click="hideDeleteContactModal">No</button>
+              <button
+                class="btn small btn--cancel"
+                @click="hideDeleteContactModal"
+              >
+                No
+              </button>
             </div>
             <div class="col">
-              <button class="btn small block" @click="deleteContact" :disabled="isLoading">
-                <icon name="loading" spin size="0.7" v-if="isLoading" />Yes, delete
+              <button
+                class="btn small block btn--delete"
+                :disabled="isLoading"
+                @click="deleteContact"
+              >
+                <icon v-if="isLoading" name="loading" spin size="0.7" />Yes,
+                delete
               </button>
             </div>
           </div>
@@ -110,9 +145,8 @@
 </template>
 
 <script>
-import axios from "axios";
-import dropdown from "vue-dropdowns";
-import Helpers from "../../utils/Helpers";
+import axios from 'axios';
+import Helpers from '../../utils/Helpers';
 
 export default {
   data() {
@@ -120,74 +154,73 @@ export default {
       tab: true,
       isFetchingContacts: false,
       isLoading: false,
-      errorMessage: "",
-      deleteContactModal: "delete-contact-modal",
-      contact: {}
+      errorMessage: '',
+      deleteContactModal: 'delete-contact-modal',
+      contact: {},
     };
   },
   computed: {
     filteredContacts() {
-      //this.getContacts();
-      return this.$store.getters.getContacts
+      return this.$store.getters.getContacts;
     },
     paginationMetaData() {
       return this.$store.getters.getPaginationMetaData;
-    }
+    },
   },
   watch: {
-    tab(v) {
+    tab() {
       return this.getContacts();
-    }
+    },
+  },
+  mounted() {
+    this.getContacts();
   },
   methods: {
     show(contact) {
       const elem = this.$refs[`dropdown-menu-${contact.id}`];
       if (elem[0]) {
-        elem[0].classList.toggle("show");
+        elem[0].classList.toggle('show');
       }
     },
     nextData() {
       if (this.paginationMetaData.nextPage) {
-        this.$store.commit("setContacts", []);
+        this.$store.commit('setContacts', []);
         this.getContacts(this.paginationMetaData.nextPage);
       }
     },
     prevData() {
       if (this.paginationMetaData.previousPage) {
-        this.$store.commit("setContacts", []);
+        this.$store.commit('setContacts', []);
         this.getContacts(this.paginationMetaData.previousPage);
       }
     },
     getContacts(page = 1) {
       this.isFetchingContacts = true;
-      const type = this.tab ? "&type=individual" : "&type=group";
+      const type = this.tab ? '' : '';
       this.$store
-        .dispatch("getContacts", { type, page })
-        .then(response => {
+        .dispatch('getContacts', { type, page })
+        .then((response) => {
           this.isFetchingContacts = false;
-          this.$store.commit("setPaginationMetaData", response.data.meta);
+          this.$store.commit(
+            'setPaginationMetaData',
+            response.data.data.page_info
+          );
         })
-        .catch(error => {
-          Helpers.errorResponse(error, response => {
+        .catch((error) => {
+          Helpers.errorResponse(error, (response) => {
             this.isFetchingContacts = false;
             this.errorMessage = response;
           });
         });
     },
     addNewContact() {
-      if (this.tab) {
-        this.$router.push({ name: "new-contact" });
-      } else {
-        this.$router.push({ name: "new-group-contact" });
-      }
+      this.$router.push({ name: 'new-group-contact' });
     },
     editContact(contact) {
       if (this.tab) {
-        this.$router.push({ name: "edit.contact", params: { id: contact.id } });
-      } else {
         this.$router.push({
-          name: "edit.group.contact",
-          params: { id: contact.id }
+          name: 'edit.group.contact',
+          params: { id: contact.id },
         });
       }
     },
@@ -200,29 +233,24 @@ export default {
     },
     deleteContact(page = 1) {
       this.isLoading = true;
-      const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/contact/${this.contact.id}`;
+      const url = `${process.env.VUE_APP_SENDY_SVC_URL}/contacts/${this.contact.id}`;
       axios
         .delete(url)
-        .then(response => {
+        .then((response) => {
           this.isLoading = false;
           this.$toasted.show(response.data.message);
           this.hideDeleteContactModal();
-          const type = this.tab ? "&type=individual" : "&type=group";
-          this.$store.dispatch("getContacts", { type, page });
+          const type = this.tab ? '' : '';
+          this.$store.dispatch('getContacts', { type, page });
         })
-        .catch(error => {
-          Helpers.errorResponse(error, response => {
+        .catch((error) => {
+          Helpers.errorResponse(error, (response) => {
             this.isLoading = false;
             this.$toasted.show(response);
           });
         });
-    }
+    },
   },
-  mounted() {
-    if (this.$store.getters.getContacts.length < 1) {
-      this.getContacts();
-    }
-  }
 };
 </script>
 
@@ -302,6 +330,10 @@ export default {
       .show {
         display: block;
       }
+
+      &-item {
+        cursor: pointer;
+      }
     }
     .dropdown-menu {
       right: -6px;
@@ -311,6 +343,83 @@ export default {
       min-width: 120px;
       z-index: 7;
     }
+  }
+
+  @media (min-width: 1024px) {
+    .title {
+      margin-top: 0 !important;
+      font-size: 1.5rem;
+
+      &-container {
+        padding: 1rem 0;
+        width: 100%;
+        border-bottom: solid 1px rgba($color: #000000, $alpha: 0.1);
+        margin: 0 !important;
+      }
+    }
+
+    .switcher {
+      margin-top: 1rem !important;
+    }
+
+    .switch {
+      padding: 0.5rem !important;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .paragraph {
+      max-width: 35ch !important;
+      margin: 0 auto !important;
+    }
+
+    .recurring-cards {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      margin-top: 5rem;
+    }
+
+    .max-w {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .or {
+      margin-top: 3rem !important;
+      margin-bottom: 3rem !important;
+    }
+  }
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.subtext {
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.buttons {
+  margin-top: 3rem !important;
+}
+
+.btn {
+  &--delete {
+    background-color: red !important;
+    border: none !important;
+  }
+  &--cancel {
+    background-color: transparent !important;
+    border: none !important;
+    color: black !important;
   }
 }
 </style>

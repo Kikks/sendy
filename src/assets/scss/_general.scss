@@ -1,141 +1,148 @@
 body {
-    font-family: 'Graphik',
-    'Avenir',
-    Helvetica,
-    Arial,
-    sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    color: $text-color;
-    background-color: transparentize($color: #006FFF, $amount: 0.8);
+  font-family: 'Graphik', 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: $text-color;
+  background-color: transparentize($color: #006fff, $amount: 0.8);
 }
 
 a {
-    color: $primary;
+  color: $primary;
 }
 
 .elevate {
-    box-shadow: 0px 5px 10px $accent;
-    // border-radius: 5px;
+  box-shadow: 0px 5px 10px $accent;
+  // border-radius: 5px;
 }
 
-.round-btn{
-    border-radius: 50%;
-    height: 50px;
-    width: 50px;
-    background-color: $primary;
-    color: white !important;
-    box-shadow: 0px 4px 20px transparentize($color: $primary, $amount: 0.65);
-    outline: none;
-    border: 0px;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
+.round-btn {
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  background-color: $primary;
+  color: white !important;
+  box-shadow: 0px 4px 20px transparentize($color: $primary, $amount: 0.65);
+  outline: none;
+  border: 0px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 
-    &:focus {
-        outline: none;
-    }
-}
-button{
-    background-color: transparent;
-    border: 0px solid transparent;
-    font-weight: bold;
-}
-.btn{
-    padding: 8px 10px;
-    border-radius: 6px;
+  &:focus {
     outline: none;
-    border: 0px;
-    background-color: $primary;
-    color: white !important;
-    border: 1px solid $primary;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: #aaa;
+  }
+}
+button {
+  background-color: transparent;
+  border: 0px solid transparent;
+  font-weight: bold;
+}
+.btn {
+  padding: 8px 10px;
+  border-radius: 6px;
+  outline: none;
+  border: 0px;
+  background-color: $primary;
+  color: white !important;
+  border: 1px solid $primary;
+  width: 100%;
+  font-weight: bold;
+
+  &[disabled] {
+    opacity: 0.7;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: #aaa;
+    border: solid 1px #aaa;
+  }
+
+  &.small {
+    padding: 7px 15px;
+  }
+
+  &.block {
     width: 100%;
-    font-weight: bold;
+  }
 
-    &[disabled]{
-        opacity: 0.7;
-    }
+  &.accent {
+    background-color: $accent;
+    color: white !important;
+    border: 1px solid $accent;
 
-    &.small {
-        padding: 7px 15px;
-    }
-    
-    &.block{
-        width: 100%;
-    }
-    
-    &.accent{
-        background-color: $accent;
-        color: white !important;
-        border: 1px solid $accent;
-        
-        &.outline {
-            border-color: $accent;
-            background-color: transparent;
-            color: $accent !important;
-
-            &:hover {
-                background-color: transparentize($color: $accent, $amount: 0.9);
-            }
-        }
-    }
-
-    &:focus{
-        outline: none;
-    }
-
-    &.link {
-        border-color: transparent;
-        background-color: transparent;
-        color: $primary !important;
-        padding-right: 0px;
-        padding-left: 0px;
-
-        &:hover {
-            text-decoration: underline;
-        }
-    }
     &.outline {
-        border-color: white;
-        background-color: transparent;
-        color: white !important;
-        &:hover{
-            background-color: transparentize($color: white, $amount: 0.9);
-        }
+      border-color: $accent;
+      background-color: transparent;
+      color: $accent !important;
+
+      &:hover {
+        background-color: transparentize($color: $accent, $amount: 0.9);
+      }
     }
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &.link {
+    border-color: transparent;
+    background-color: transparent;
+    color: $primary !important;
+    padding-right: 0px;
+    padding-left: 0px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  &.outline {
+    border-color: white;
+    background-color: transparent;
+    color: white !important;
+    &:hover {
+      background-color: transparentize($color: white, $amount: 0.9);
+    }
+  }
 }
 
 input {
-    color: $text-color;
-    // font-weight: 600;
-    font-size: 1.2rem;
+  color: $text-color;
+  // font-weight: 600;
+  font-size: 1.2rem;
 }
 
-.stretch{
-    flex: 1;
+.stretch {
+  flex: 1;
 }
 
-.pointer{
-    cursor: pointer;
+.pointer {
+  cursor: pointer;
 }
 
 .primary {
-    color: $primary;
+  color: $primary;
 }
 
 .bg-primary {
-    background-color: $primary;
+  background-color: $primary;
 }
 
 .accent {
-    color: $accent;
+  color: $accent;
 }
 
 .bg-accent {
-    background-color: $accent;
+  background-color: $accent;
 }
 
-.d-flex{
-    display: flex;
-    flex-direction: column;
+.d-flex {
+  display: flex;
+  flex-direction: column;
 }

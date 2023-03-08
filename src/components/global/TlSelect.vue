@@ -1,25 +1,21 @@
 <template>
   <div class="input">
-    <input
+    <select
       v-model="myValue"
       class="input-field"
-      :class="type === 'password' ? 'input-field-padded' : ''"
       :value="value"
       required
-      :type="typeToShow"
       :placeholder="placeholder"
-    />
-    <label v-if="label" class="input-label">{{ label }}</label>
-    <button
-      v-if="type == 'password'"
-      class="input-button"
-      @click="togglePasswordVisible()"
     >
-      <icon
-        :name="!passwordVisible ? 'eye-outline' : 'eye-off-outline'"
-        size="1.2"
-      />
-    </button>
+      <option
+        v-for="(option, index) in options"
+        :key="index"
+        :value="option.value"
+      >
+        {{ option.label }}
+      </option>
+    </select>
+    <label v-if="label" class="input-label">{{ label }}</label>
   </div>
 </template>
 
@@ -38,10 +34,6 @@ export default {
       type: String,
       default: '1.2',
     },
-    type: {
-      type: String,
-      default: 'text',
-    },
     value: {
       type: String,
       default: '',
@@ -50,21 +42,15 @@ export default {
       type: String,
       default: '',
     },
+    options: {
+      type: [Array(String)],
+      default: [],
+    },
   },
   data() {
     return {
       myValue: this.value,
-      passwordVisible: false,
     };
-  },
-  computed: {
-    typeToShow() {
-      if (this.type === 'password' && this.passwordVisible) {
-        return 'text';
-      }
-
-      return this.type;
-    },
   },
   watch: {
     myValue(v) {
@@ -72,11 +58,6 @@ export default {
     },
     value(v) {
       this.myValue = v;
-    },
-  },
-  methods: {
-    togglePasswordVisible() {
-      this.passwordVisible = !this.passwordVisible;
     },
   },
 };
@@ -92,19 +73,9 @@ export default {
   position: relative;
   padding-top: 1.5rem;
   font-size: 1rem;
-  width: 100%;
 
   & + .input {
-    margin-top: 1rem;
-  }
-
-  &-content {
-    position: relative;
-    width: 100%;
-    flex: 1;
-    display: flex;
-    margin: 0;
-    padding: 0;
+    margin-top: 1.5rem;
   }
 
   &-label {
@@ -113,20 +84,10 @@ export default {
     top: 1.8rem;
     font-size: 0.8rem;
     transform: translateY(0);
-    opacity: 1;
+    // opacity: 1;
     font-weight: 700;
     transition: all 0.3s ease;
     opacity: 0;
-  }
-
-  &-button {
-    height: 2rem;
-    width: 2rem;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    transform: translate(0, 0);
-    z-index: 20;
   }
 
   &-field {
@@ -139,11 +100,6 @@ export default {
     font-size: 1rem;
     padding: 0.25rem 0;
     transition: all 0.3s ease;
-    flex: 1;
-
-    &-padded {
-      padding-right: 2rem;
-    }
 
     &:placeholder-shown {
       & + .input-label {
@@ -154,8 +110,8 @@ export default {
     &:focus,
     &:not(:placeholder-shown) {
       & + .input-label {
-        opacity: 1;
-        transform: translateY(-1.6rem);
+        opacity: 1 !important;
+        transform: translateY(-1.6rem) !important;
       }
     }
 

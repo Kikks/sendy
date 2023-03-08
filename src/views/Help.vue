@@ -6,7 +6,10 @@
     <h3>
       <b>Contact Us</b>
     </h3>
-    <p>Having issues, want to ask a question or just want to say hey? We're waiting to hear from you.</p>
+    <p>
+      Having issues, want to ask a question or just want to say hey? We're
+      waiting to hear from you.
+    </p>
 
     <div class="row">
       <div class="col-12">
@@ -27,7 +30,7 @@
 // @ is an alias to /src
 
 export default {
-  name: "help"
+  name: 'help',
 };
 </script>
 

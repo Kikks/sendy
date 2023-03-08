@@ -1,91 +1,122 @@
 <template>
-  <div>
-    <GreyNavbar title="Resend Airtime"></GreyNavbar>
-    <div class="resend-airtime">
-      <div class="text-center" v-if="isFetchingTransaction">
-        <icon name="loading" spin primary />
-      </div>
-      <div class="text-center" v-if="errorMessage">
-        <span>{{errorMessage}}</span>
-      </div>
-      <div v-if="!isFetchingTransaction && !errorMessage && phones.length > 0">
+  <div class="main">
+    <SideNav />
+
+    <div class="content">
+      <GreyNavbar title="Resend Airtime"></GreyNavbar>
+      <div class="resend-airtime">
+        <div class="text-center" v-if="isFetchingTransaction">
+          <icon name="loading" spin primary />
+        </div>
+        <div class="text-center" v-if="errorMessage">
+          <span>{{ errorMessage }}</span>
+        </div>
         <div
-          class="row align-items-center mt-4"
-          v-for="(phone, index) in slicedPhones"
-          :key="phone.id"
+          v-if="!isFetchingTransaction && !errorMessage && phones.length > 0"
         >
-          <div class="row align-items-center mt-4" v-for="item in phone" :key="item.id">
-            <div class="col-1 text-center">
-              <icon
-                name="delete"
-                color="red"
-                @click.native="deleteNumber(index)"
-                v-if="phones.length > 1"
-              />
-            </div>
-            <div class="col-11">
-              <phone-input
-                v-model="item.value"
-                :uniqueName="`group-contact-${item.id}`"
-                :defaultCountryCode="defaultCode"
-                :onlyCountries="onlyCountryCodes"
-                customStyle="margin-top: 0.25rem !important"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="row pt-3 align-items-center" v-if="uploadedCSV">
           <div
-            class="col"
-            @click="visible = visible > 1 ? visible - 1 : visible"
-            v-if="!(visible < 2)"
+            class="row align-items-center mt-4"
+            v-for="(phone, index) in slicedPhones"
+            :key="phone.id"
           >
-            <center>
-              <small>Show Less.</small>
-            </center>
+            <div
+              class="row align-items-center mt-4"
+              v-for="item in phone"
+              :key="item.id"
+            >
+              <div class="col-1 text-center">
+                <icon
+                  name="delete"
+                  color="red"
+                  @click.native="deleteNumber(index)"
+                  v-if="phones.length > 1"
+                />
+              </div>
+              <div class="col-11">
+                <phone-input
+                  v-model="item.value"
+                  :uniqueName="`group-contact-${item.id}`"
+                  :defaultCountryCode="defaultCode"
+                  :onlyCountries="onlyCountryCodes"
+                  customStyle="margin-top: 0.25rem !important"
+                />
+              </div>
+            </div>
           </div>
-          <div
-            class="col"
-            @click="visible = visible * 5 >= phones.length ? visible : visible + 1"
-            v-if="!(visible * 5 >= phones.length)"
+          <div class="row pt-3 align-items-center" v-if="uploadedCSV">
+            <div
+              class="col"
+              @click="visible = visible > 1 ? visible - 1 : visible"
+              v-if="!(visible < 2)"
+            >
+              <center>
+                <small>Show Less.</small>
+              </center>
+            </div>
+            <div
+              class="col"
+              @click="
+                visible = visible * 5 >= phones.length ? visible : visible + 1
+              "
+              v-if="!(visible * 5 >= phones.length)"
+            >
+              <center>
+                <small>Show More.</small>
+              </center>
+            </div>
+          </div>
+          <div class="row pt-3 align-items-center" v-if="uploadedCSV">
+            <div class="col">
+              <center>
+                <small
+                  >{{
+                    slicedPhones.reduce(
+                      (acc, element) => acc + element.length,
+                      0
+                    )
+                  }}
+                  of {{ phones.length }}</small
+                >
+              </center>
+            </div>
+          </div>
+          <button
+            class="btn mt-5"
+            :disabled="canSubmit || isLoading"
+            @click="resendAirtime"
           >
-            <center>
-              <small>Show More.</small>
-            </center>
-          </div>
+            <icon
+              name="loading"
+              spin
+              class="mr-1"
+              size="0.9"
+              v-if="isLoading"
+            />Resend
+          </button>
         </div>
-        <div class="row pt-3 align-items-center" v-if="uploadedCSV">
-          <div class="col">
-            <center>
-              <small>{{slicedPhones.reduce((acc,element) => acc + element.length, 0)}} of {{phones.length}}</small>
-            </center>
-          </div>
-        </div>
-        <button class="btn mt-5" :disabled="canSubmit || isLoading" @click="resendAirtime">
-          <icon name="loading" spin class="mr-1" size="0.9" v-if="isLoading" />Resend
-        </button>
       </div>
     </div>
   </div>
 </template>
 <script>
-import axios from "axios";
-import moment from "moment";
-import Helpers from "../../utils/Helpers";
-import countries_code from "../../country_code.json";
+import axios from 'axios';
+import moment from 'moment';
+import Helpers from '../../utils/Helpers';
+import countries_code from '../../country_code.json';
+import SideNav from '../../components/SideNav.vue';
 
 export default {
   data() {
     return {
       visible: 1,
-      amount: "",
+      amount: '',
       phones: [],
       isLoading: false,
       isFetchingTransaction: false,
       uploadedCSV: false,
-      errorMessage: "",
+      errorMessage: '',
       countriesCode: countries_code,
-      defaultCode: "NG"
+      defaultCode: 'NG',
     };
   },
   computed: {
@@ -93,7 +124,7 @@ export default {
       if (this.phones.length < 2) {
         return this.countriesCode;
       }
-      return this.countriesCode.filter(cc => cc == this.defaultCode);
+      return this.countriesCode.filter((cc) => cc == this.defaultCode);
     },
     slicedPhones() {
       let slicedPhones = [];
@@ -105,17 +136,15 @@ export default {
     },
     refinedPhoneNumbers() {
       let refinedArray = [];
-      this.phones.forEach(phone => {
-        refinedArray.push(phone.value.split("-")[0]);
+      this.phones.forEach((phone) => {
+        refinedArray.push(phone.value.split('-')[0]);
       });
       return refinedArray.filter(
         (phone, index) => refinedArray.indexOf(phone) === index
       );
     },
     canSubmit() {
-      if (
-        !this.phones[this.phones.length - 1].value
-      ) {
+      if (!this.phones[this.phones.length - 1].value) {
         return true;
       }
       return false;
@@ -128,17 +157,17 @@ export default {
     getTransaction() {
       if (this.isFetchingTransaction) return;
       this.isFetchingTransaction = true;
-      this.errorMessage = "";
+      this.errorMessage = '';
       const transactionId = this.$route.params.id;
       const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/transaction/${transactionId}`;
       axios
         .get(url)
-        .then(response => {
+        .then((response) => {
           this.isFetchingTransaction = false;
           this.setTransaction(response.data.data);
         })
-        .catch(error => {
-          Helpers.errorResponse(error, response => {
+        .catch((error) => {
+          Helpers.errorResponse(error, (response) => {
             this.isFetchingTransaction = false;
             this.errorMessage = response;
             this.$toasted.show(response);
@@ -146,24 +175,27 @@ export default {
         });
     },
     setTransaction(transaction) {
-      transaction.failedPhoneNumber.forEach(phone => {
+      transaction.failedPhoneNumber.forEach((phone) => {
         this.phones.push({
           id: Math.random(),
-          value: phone.phoneNumber
+          value: phone.phoneNumber,
         });
       });
-      this.defaultCode = transaction.failedPhoneNumber[0].currencyCode.substring(0, transaction.failedPhoneNumber[0].currencyCode.length - 1)
+      this.defaultCode =
+        transaction.failedPhoneNumber[0].currencyCode.substring(
+          0,
+          transaction.failedPhoneNumber[0].currencyCode.length - 1
+        );
       this.amount = String(transaction.failedPhoneNumber[0].amount);
       this.transaction = transaction;
     },
     resendAirtime() {
       if (this.isLoading) return;
       this.isLoading = true;
-
       const url = `${process.env.VUE_APP_SENDY_SVC_URL}/sendy/airtime`;
       const currencyCode = Helpers.assignCurrencyCode(this.defaultCode);
       const airtimeAmount = this.amount;
-      const options = this.refinedPhoneNumbers.map(function(element) {
+      const options = this.refinedPhoneNumbers.map(function (element) {
         const newData = {};
         newData.amount = Number(airtimeAmount);
         newData.phoneNumber = element;
@@ -173,30 +205,50 @@ export default {
       const data = {
         transaction: this.transaction.id,
         failedPhoneNumber: options || [],
-        category: "resendFailedAirtime",
+        category: 'resendFailedAirtime',
       };
-
       axios
         .post(url, data)
-        .then(response => {
+        .then((response) => {
           this.isLoading = false;
           this.$toasted.show(response.data.message);
-          this.$store.dispatch("getActivities");
-          this.$router.push({ name: "home" });
+          this.$store.dispatch('getActivities');
+          this.$router.push({ name: 'home' });
         })
-        .catch(error => {
-          Helpers.errorResponse(error, response => {
+        .catch((error) => {
+          Helpers.errorResponse(error, (response) => {
             this.isLoading = false;
             this.$toasted.show(response);
           });
         });
     },
-  }
+  },
+  components: { SideNav },
 };
 </script>
 <style lang="scss">
 .resend-airtime {
-  margin-top: 55px;
   padding: 20px;
+  margin-top: 55px auto;
+}
+
+.main {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+
+  @media (min-width: 1024px) {
+    height: 100vh;
+    display: flex;
+    overflow-y: hidden;
+  }
+}
+
+.content {
+  @media (min-width: 1024px) {
+    min-height: 100vh;
+    flex: 1;
+    overflow-y: auto;
+  }
 }
 </style>

@@ -13,19 +13,19 @@ pipelines:
         script: # Modify the commands below to build your repository.
           - yarn install
     - step:
-            name: Deploy to staging
-            deployment: staging
-            script:
-            - eval `ssh-agent`
-            - ssh-add /opt/atlassian/pipelines/agent/data/id_rsa
-            - cat ./deploy_project_staging.sh | ssh -oStrictHostKeyChecking=no -v $USER@$HOST
-            - echo "Deploying to staging environment"
+        name: Deploy to staging
+        deployment: staging
+        script:
+          - eval `ssh-agent`
+          - ssh-add /opt/atlassian/pipelines/agent/data/id_rsa
+          - cat ./deploy_project_staging.sh | ssh -oStrictHostKeyChecking=no -v $USER@$HOST
+          - echo "Deploying to staging environment"
     - step:
         name: Deploy to production
         deployment: production
         trigger: manual
         script:
-        - eval `ssh-agent`
-        - ssh-add /opt/atlassian/pipelines/agent/data/id_rsa
-        - cat ./deploy_project.sh | ssh -oStrictHostKeyChecking=no -v $USER@$HOST
-        - echo "Deploying to production environment"
+          - eval `ssh-agent`
+          - ssh-add /opt/atlassian/pipelines/agent/data/id_rsa
+          - cat ./deploy_project.sh | ssh -oStrictHostKeyChecking=no -v $USER@$HOST
+          - echo "Deploying to production environment"
