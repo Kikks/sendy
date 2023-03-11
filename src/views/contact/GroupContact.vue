@@ -50,8 +50,77 @@
           </div>
         </div>
 
-        <div class="row pt-3 justify-content-end align-items-center">
-          <div class="col-3">
+        <div v-if="uploadedCSV" class="row pt-3 align-items-center">
+          <div
+            v-if="!(visible < 2)"
+            class="col"
+            @click="visible = visible > 1 ? visible - 1 : visible"
+          >
+            <center>
+              <small class="cursor-pointer">Show Less.</small>
+            </center>
+          </div>
+          <div
+            v-if="!(visible * 5 >= phones.length)"
+            class="col"
+            @click="
+              visible = visible * 5 >= phones.length ? visible : visible + 1
+            "
+          >
+            <center>
+              <small class="cursor-pointer">Show More.</small>
+            </center>
+          </div>
+        </div>
+        <div v-if="uploadedCSV" class="row pt-3 align-items-center">
+          <div class="col">
+            <center>
+              <small
+                >{{
+                  slicedPhones.reduce((acc, element) => acc + element.length, 0)
+                }}
+                of {{ phones.length }}</small
+              >
+            </center>
+          </div>
+        </div>
+
+        <div class="row pt-3 mb-5 justify-content-end align-items-center">
+          <div v-if="phones.length <= 1" class="col-4">
+            <a
+              target="_blank"
+              href="/create-contact-template.csv"
+              download
+              class="btn small-item link"
+              style="padding: 0 1px 0 1px"
+            >
+              <small>Download CSV format.</small>
+            </a>
+          </div>
+
+          <div v-if="phones.length <= 1" class="col-4">
+            <div
+              class="upload-csv-section"
+              @click="$refs.CSVFileUpload.click()"
+            >
+              <span class="small-item">
+                {{
+                  uploadedFileNameTextFormat
+                    ? uploadedFileNameTextFormat
+                    : '+ Upload CSV'
+                }}
+                <icon v-if="isUploadingCSV" name="loading" spin size="0.7" />
+              </span>
+              <input
+                ref="CSVFileUpload"
+                type="file"
+                accept=".csv"
+                @change="handlePhoneCSVUpload"
+              />
+            </div>
+          </div>
+
+          <div class="col-4">
             <button
               class="btn small"
               :disabled="!phones[phones.length - 1].value"
@@ -63,14 +132,23 @@
           </div>
         </div>
 
-        <tl-input
-          v-model="amount"
-          label="Airtime Amount"
-          placeholder="Airtime Amount"
-          type="number"
-        />
+        <div class="frequency mb-3">
+          <div>Frequency</div>
+          <div class="freq" @click="changeIcon('daily')">
+            <div>Daily</div>
+            <icon v-if="ticked == 'daily'" name="check"></icon>
+          </div>
+          <div class="freq" @click="changeIcon('weekly')">
+            <div>Weekly</div>
+            <icon v-if="ticked == 'weekly'" name="check"></icon>
+          </div>
+          <div class="freq" @click="changeIcon('monthly')">
+            <div>Monthly</div>
+            <icon v-if="ticked == 'monthly'" name="check"></icon>
+          </div>
+        </div>
 
-        <div class="row mt-4 mb-5">
+        <div class="row mb-3">
           <div class="col-6">
             <date-picker
               v-model="startDate"
@@ -96,23 +174,14 @@
           </div>
         </div>
 
-        <div class="frequency mb-5">
-          <div>Frequency</div>
-          <div class="freq" @click="changeIcon('daily')">
-            <div>Daily</div>
-            <icon v-if="ticked == 'daily'" name="check"></icon>
-          </div>
-          <div class="freq" @click="changeIcon('weekly')">
-            <div>Weekly</div>
-            <icon v-if="ticked == 'weekly'" name="check"></icon>
-          </div>
-          <div class="freq" @click="changeIcon('monthly')">
-            <div>Monthly</div>
-            <icon v-if="ticked == 'monthly'" name="check"></icon>
-          </div>
-        </div>
+        <tl-input
+          v-model="amount"
+          label="Airtime Amount"
+          placeholder="Airtime Amount"
+          type="number"
+        />
 
-        <div class="row justify-content-space-between">
+        <div class="row mt-5 justify-content-space-between">
           <div class="col">Scheduled</div>
           <div class="col-6 text-right">
             <toggle-button
@@ -145,6 +214,7 @@
 <script>
 import axios from 'axios';
 import moment from 'moment';
+import Papa from 'papaparse';
 import Helpers from '../../utils/Helpers.js';
 import countries_code from '../../country_code.json';
 import SideNav from '../../components/SideNav.vue';
@@ -187,8 +257,9 @@ export default {
     },
     airtimeMultiples() {
       if (this.amount && this.phones[this.phones.length - 1].value) {
-        this.currencyCode =
-          this.phones[this.phones.length - 1].value.split('-')[1];
+        this.setCurrencyCode(
+          this.phones[this.phones.length - 1].value.split('-')[1]
+        );
         if (this.currencyCode) {
           this.splitAirtime();
           return true;
@@ -199,10 +270,10 @@ export default {
     },
     slicedPhones() {
       const slicedPhones = [];
-      for (let i = 0; i < this.visible; i++) {
+      for (let i = 0; i < this.visible; i += 1) {
         slicedPhones.push(this.phones.slice(i * 5, i * 5 + 5));
       }
-      if (this.phones.length > 5) this.uploadedCSV = true;
+      if (this.phones.length > 5) this.toggleUploadedCSV(true);
       return slicedPhones;
     },
     refinedPhoneNumbers() {
@@ -239,6 +310,17 @@ export default {
     },
   },
   methods: {
+    setCurrencyCode(value) {
+      this.currencyCode = value;
+    },
+    toggleUploadedCSV(value) {
+      this.uploadedCSV =
+        typeof value === 'undefined' ? !this.uploadedCSV : value;
+    },
+    toggleIsUploadingCSV(value) {
+      this.isUploadingCSV =
+        typeof value === 'undefined' ? !this.isUploadingCSV : value;
+    },
     handlePhoneCSVUpload(e) {
       const fileElement = e.target;
       const fileObject = fileElement.files[0];
@@ -262,32 +344,35 @@ export default {
     },
     uploadPhoneCsv(fileObject) {
       this.isUploadingCSV = true;
-      const url = `https://api.foodjaar.com/csv`;
-      const uploadCSVFormData = new FormData();
-      uploadCSVFormData.append('csv', fileObject);
-      axios
-        .post(url, uploadCSVFormData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        })
-        .then((response) => {
-          this.setPhoneNumbers(response.data.data);
-          this.isUploadingCSV = false;
-        })
-        .catch((error) => {
-          Helpers.errorResponse(error, (response) => {
-            this.isUploadingCSV = false;
-            this.$toasted.show(response);
-          });
-        });
-    },
-    setPhoneNumbers(phones) {
-      const numbers = [];
-      phones.forEach((phone) => {
-        for (const key in phone) {
-          numbers.push({ id: Math.random(), value: phone[key] });
-        }
+
+      const setPhones = (array) => {
+        this.phones = array;
+      };
+
+      const { toggleIsUploadingCSV } = this;
+
+      Papa.parse(fileObject, {
+        header: true,
+        complete(results) {
+          const { data } = results;
+          const phoneNumbers = [];
+          for (let i = 0; i < data.length; i += 1) {
+            phoneNumbers.push({
+              id: i,
+              value: data[i]['Phone Number'],
+            });
+          }
+          setPhones(phoneNumbers);
+          toggleIsUploadingCSV(false);
+        },
+        error(error) {
+          this.$toasted.show(
+            error.message ||
+              'We could not parse your CSV file. Try again later.'
+          );
+          toggleIsUploadingCSV(false);
+        },
       });
-      this.phones = numbers;
     },
     changeIcon(data) {
       this.ticked = data;
@@ -296,8 +381,11 @@ export default {
       if (!this.phones[this.phones.length - 1].value) {
         return;
       }
-      this.defaultCode =
+
+      const countryCodeFromNumber =
         this.phones[this.phones.length - 1].value.split('-')[1];
+      this.defaultCode = countryCodeFromNumber;
+
       this.phones.push({
         value: '',
         id: Math.random(),
@@ -331,17 +419,23 @@ export default {
 
       this.isLoading = true;
       const url = `${process.env.VUE_APP_SENDY_SVC_URL}/contacts`;
-      this.defaultCode =
-        this.phones[this.phones.length - 1].value.split('-')[1];
+
+      const countryCodeFromNumber =
+        this.phones[this.phones.length - 1].value.split('-')[1] ||
+        this.defaultCode;
+
+      this.defaultCode = countryCodeFromNumber;
       const currencyCode = Helpers.assignCurrencyCode(this.defaultCode);
       const airtimeAmount = this.amount;
-      const options = this.refinedPhoneNumbers.map(function (element) {
-        const newData = {};
-        newData.amount = Number(airtimeAmount);
-        newData.phone_number = element.split('+')[1];
-        newData.currency_code = currencyCode;
-        return newData;
-      });
+
+      const options = this.refinedPhoneNumbers.map((number) => ({
+        amount: Number(airtimeAmount),
+        phone_number: number.split('+')[1]
+          ? number.split('+')[1]
+          : `234${number.substring(1)}`,
+        currency_code: currencyCode,
+      }));
+
       const data = {
         name: this.groupName,
         recipients: options,
@@ -426,9 +520,10 @@ export default {
     border-radius: 4px;
     text-align: center;
     cursor: pointer;
+    padding: 0.25rem;
 
     span {
-      font-size: 12px;
+      font-size: 0.8rem;
       color: $text-color;
     }
 
@@ -460,5 +555,15 @@ export default {
 
 .icon-btn {
   cursor: pointer;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.small-item {
+  @media (max-width: 600px) {
+    font-size: 0.75rem !important;
+  }
 }
 </style>

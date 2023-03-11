@@ -14,7 +14,7 @@
         </div>
         <div v-if="!isFetchingContact && !errorMessage && phones.length > 0">
           <p class="text-center">
-            Enter contacts's name, phone number and airtime frequency
+            Enter contact's name, phone number and airtime frequency
           </p>
 
           <tl-input

@@ -87,9 +87,7 @@
               :class="activity.entry_type === 'credit' ? 'green' : 'red'"
             >
               NGN
-              {{
-                ((activity.amount - activity.calc_fees) / 100).toLocaleString()
-              }}
+              {{ (activity.amount - activity.calc_fees).toLocaleString() }}
             </div>
             <div
               v-if="
@@ -126,9 +124,7 @@
               :class="activity.entry_type === 'credit' ? 'green' : 'red'"
             >
               NGN
-              {{
-                ((activity.amount - activity.calc_fees) / 100).toLocaleString()
-              }}
+              {{ (activity.amount - activity.calc_fees).toLocaleString() }}
             </div>
             <div
               v-if="activity.airtime > 0 && activity.entry_type === 'debit'"
