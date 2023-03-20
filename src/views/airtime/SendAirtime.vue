@@ -597,7 +597,7 @@ export default {
       };
 
       if (this.tab) {
-        data.options = this.refinedPhoneNumbers.map((number) => ({
+        data.recipients = this.refinedPhoneNumbers.map((number) => ({
           amount: Number(airtimeAmount),
           phone_number: number.split('+')[1]
             ? number.split('+')[1]

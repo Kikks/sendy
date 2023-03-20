@@ -10,22 +10,65 @@
     "
     @click="handleCick"
   >
-    <div class="card__icon"><card-icon :type="type" /></div>
+    <div class="card__icon">
+      <card-icon :type="type" />
+
+      <div class="dropdown" @click="show()">
+        <div>
+          <icon name="dots-vertical" color="white" />
+        </div>
+        <div class="dropdown-menu" :class="showMenu ? 'show' : ''">
+          <div class="dropdown-item" @click="showDeleteCardModal()">
+            <span>Delete</span>
+          </div>
+        </div>
+      </div>
+    </div>
     <h3 class="card__number">
       <span>****</span> <span>****</span> <span>****</span>
       <span>{{ last4 }}</span>
     </h3>
     <div class="card__details">
-      <span class="card__name">Olufemi Samuel</span>
+      <span class="card__name">{{ name }}</span>
 
       <span>{{ month }}/{{ year }}</span>
     </div>
+
+    <tl-modal :name="deleteCardModal">
+      <div class="row justify-content-center">
+        <div class="col-11">
+          <h2>Delete Card</h2>
+          <span style="color: black">
+            Are you sure you want to delete this card?
+          </span>
+          <div class="row my-2 buttons">
+            <div class="col">
+              <button
+                class="btn small btn--cancel"
+                @click="hideDeleteCardModal"
+              >
+                No
+              </button>
+            </div>
+            <div class="col">
+              <button class="btn small block btn--delete" @click="deleteCard">
+                Yes, delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </tl-modal>
   </div>
 </template>
 
 <script>
 export default {
   props: {
+    id: {
+      type: [String, Number],
+      default: '',
+    },
     type: {
       type: String,
       default: '',
@@ -47,9 +90,30 @@ export default {
       default: '',
     },
   },
+  data() {
+    return {
+      deleteCardModal: 'delete-card-modal',
+      loading: false,
+      showMenu: false,
+    };
+  },
   methods: {
     handleCick() {
       this.$emit('click');
+    },
+    show() {
+      this.showMenu = !this.showMenu;
+    },
+    showDeleteCardModal() {
+      this.$modal.show(this.deleteCardModal);
+    },
+    hideDeleteCardModal() {
+      this.$modal.hide(this.deleteCardModal);
+    },
+    deleteCard() {
+      this.isLoading = true;
+      this.$emit('delete', this.id);
+      this.$modal.hide(this.deleteCardModal);
     },
   },
 };
@@ -73,7 +137,9 @@ export default {
   }
 
   &__icon {
-    justify-self: end;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
   }
 
   &__number {
@@ -99,6 +165,37 @@ export default {
 
     @media (max-width: 600px) {
       font-size: 0.8rem;
+    }
+  }
+
+  .dropdown {
+    cursor: pointer;
+    .show {
+      display: block;
+    }
+
+    &-item {
+      cursor: pointer;
+    }
+  }
+  .dropdown-menu {
+    right: -6px;
+    left: initial;
+    top: initial;
+    float: initial;
+    min-width: 120px;
+    z-index: 7;
+  }
+
+  .btn {
+    &--delete {
+      background-color: red !important;
+      border: none !important;
+    }
+    &--cancel {
+      background-color: transparent !important;
+      border: none !important;
+      color: black !important;
     }
   }
 

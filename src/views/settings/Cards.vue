@@ -32,12 +32,14 @@
       <div v-else class="cards">
         <credit-card
           v-for="(card, index) in cards"
+          :id="card.id"
           :key="index"
           :type="card.card_type"
           :last4="card.card_last4"
           :name="card.name"
           :month="card.card_exp_month"
           :year="card.card_exp_year"
+          @delete="handleDeleteCard"
         />
       </div>
     </div>
@@ -138,7 +140,10 @@ export default {
 
       try {
         const url = `${process.env.VUE_APP_SENDY_SVC_URL}/cards/initialize`;
-        const response = await axios.post(url, { amount: Number(this.amount) });
+        const response = await axios.post(url, {
+          amount: Number(this.amount),
+          // redirect_url: process.env.VUE_APP_BASE_URL,
+        });
         const { authorization_url, reference } = response.data.data;
 
         if (authorization_url && reference) {
@@ -172,6 +177,23 @@ export default {
         localStorage.removeItem('tinylabs-sendy-reference');
         this.isLoading = false;
         this.getCards();
+      }
+    },
+    async handleDeleteCard(id) {
+      this.isLoading = true;
+
+      try {
+        const url = `${process.env.VUE_APP_SENDY_SVC_URL}/cards/${id}`;
+        await axios.delete(url);
+        this.getCards();
+      } catch (error) {
+        if (error.message) {
+          Helpers.errorResponse(error, (res) => {
+            this.$toasted.show(res);
+          });
+        } else this.$toasted.show('Could not delete card.');
+      } finally {
+        this.isLoading = false;
       }
     },
   },
